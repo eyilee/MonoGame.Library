@@ -22,7 +22,7 @@ public class Material : INamedResource, IDisposable
 
     public RasterizerState RasterizerState { get; }
 
-    public ushort BatcherId { get; }
+    public ushort BatcherId { get; set; } = RenderBatcherRegistry.GetId ("Sprite");
 
     private readonly Dictionary<int, EffectParameter?> _parameters = [];
 
@@ -33,8 +33,7 @@ public class Material : INamedResource, IDisposable
         int samplerSlot = 0,
         SamplerState? samplerState = null,
         DepthStencilState? depthStencilState = null,
-        RasterizerState? rasterizerState = null,
-        ushort batcherId = 0)
+        RasterizerState? rasterizerState = null)
     {
         Id = MaterialRegistry.Regist (name, this);
         Name = name;
@@ -44,23 +43,11 @@ public class Material : INamedResource, IDisposable
         SamplerState = samplerState ?? SamplerState.LinearClamp;
         DepthStencilState = depthStencilState ?? DepthStencilState.None;
         RasterizerState = rasterizerState ?? RasterizerState.CullCounterClockwise;
-        BatcherId = batcherId;
 
         foreach (EffectParameter? parameter in Effect.Parameters)
         {
             _parameters[MaterialPropertyIds.GetId (parameter.Name)] = parameter;
         }
-    }
-
-    public Material (string name, Effect effect,
-        BlendState? blendState = null,
-        int samplerSlot = 0,
-        SamplerState? samplerState = null,
-        DepthStencilState? depthStencilState = null,
-        RasterizerState? rasterizerState = null,
-        string? batcherName = null)
-        : this (name, effect, blendState, samplerSlot, samplerState, depthStencilState, rasterizerState, RenderBatcherRegistry.GetId (batcherName ?? string.Empty))
-    {
     }
 
     ~Material () => Dispose (false);

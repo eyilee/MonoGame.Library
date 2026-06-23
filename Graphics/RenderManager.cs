@@ -5,9 +5,29 @@ namespace MonoGame.Library.Graphics;
 
 public class RenderManager
 {
+    private readonly struct SortKey (int index, ulong value) : IComparable<SortKey>
+    {
+        public int Index { get; } = index;
+
+        public ulong Value { get; } = value;
+
+        public readonly int CompareTo (SortKey other)
+        {
+            int r = Value.CompareTo (other.Value);
+            if (r != 0)
+            {
+                return r;
+            }
+
+            return Index.CompareTo (other.Index);
+        }
+    }
+
+    private SortKey[] _sortKeys = new SortKey[32];
+
     private RenderCommand[] _commands = new RenderCommand[32];
-    private SortingIndex[] _sortingIndices = new SortingIndex[32];
-    private int _commandCount = 0;
+
+    private int _count = 0;
 
     public RenderManager (GraphicsDevice graphicsDevice)
     {
@@ -15,85 +35,77 @@ public class RenderManager
         _ = new QuadInstanceBatcher<VertexSdfInstance> (graphicsDevice, "SdfInstance", new SdfInstanceBatchEncoder ());
     }
 
-    public void Enqueue (RenderCommand command)
+    public void Enqueue (in RenderCommand command)
     {
         EnsureArrayCapacity ();
 
-        int index = _commandCount++;
+        int index = _count++;
+        _sortKeys[index] = new SortKey (index, command.SortKey);
         _commands[index] = command;
-        _sortingIndices[index] = new SortingIndex (index, command.SortKey);
     }
 
     private void EnsureArrayCapacity ()
     {
-        if (_commandCount >= _commands.Length)
-        {
-            RenderCommand[] newCommands = new RenderCommand[_commands.Length * 2];
-            _commands.CopyTo (newCommands, 0);
-            _commands = newCommands;
-        }
-
-        if (_commandCount >= _sortingIndices.Length)
-        {
-            SortingIndex[] newSortingIndices = new SortingIndex[_sortingIndices.Length * 2];
-            _sortingIndices.CopyTo (newSortingIndices, 0);
-            _sortingIndices = newSortingIndices;
-        }
-    }
-
-    public void Draw ()
-    {
-        if (_commandCount == 0)
+        if (_count < _sortKeys.Length)
         {
             return;
         }
 
-        Array.Sort (_sortingIndices, 0, _commandCount);
+        Array.Resize (ref _sortKeys, _sortKeys.Length * 2);
+        Array.Resize (ref _commands, _commands.Length * 2);
+    }
+
+    public void Draw ()
+    {
+        if (_count == 0)
+        {
+            return;
+        }
+
+        Array.Sort (_sortKeys, 0, _count);
 
         int batchStartIndex = 0;
-        while (batchStartIndex < _commandCount)
+        while (batchStartIndex < _count)
         {
-            ref SortingIndex firstSortingIndex = ref _sortingIndices[batchStartIndex];
-            ref RenderCommand firstCommand = ref _commands[firstSortingIndex.Index];
+            int firstCommandIndex = _sortKeys[batchStartIndex].Index;
+            ref RenderCommand firstCommand = ref _commands[firstCommandIndex];
 
-            RenderBatcherRegistry.TryGetValue (firstCommand.BatcherId, out RenderBatcher? batcher);
-
-            int batchEndIndex = FindBatchEnd (batchStartIndex, firstCommand);
-            for (int i = batchStartIndex; i < batchEndIndex; i++)
+            int batchEndIndex = batchStartIndex + 1;
+            while (batchEndIndex < _count)
             {
-                ref RenderCommand command = ref _commands[_sortingIndices[i].Index];
-                batcher?.Batch (command.Mesh);
+                int nextCommandIndex = _sortKeys[batchEndIndex].Index;
+                ref RenderCommand nextCommand = ref _commands[nextCommandIndex];
+
+                if (!CanBatch (firstCommand, nextCommand))
+                {
+                    break;
+                }
+
+                batchEndIndex++;
             }
 
-            batcher?.DrawBatch (firstCommand.Material, firstCommand.Properties, firstCommand.Texture?.Texture);
+            if (RenderBatcherRegistry.TryGetValue (firstCommand.BatcherId, out RenderBatcher? batcher) && batcher != null)
+            {
+                for (int i = batchStartIndex; i < batchEndIndex; i++)
+                {
+                    int commandIndex = _sortKeys[i].Index;
+                    ref RenderCommand command = ref _commands[commandIndex];
+                    batcher.Batch (command.Mesh);
+                }
+
+                batcher.DrawBatch (firstCommand.Material, firstCommand.Properties, firstCommand.Texture?.Texture);
+            }
 
             batchStartIndex = batchEndIndex;
         }
 
-        _commandCount = 0;
-    }
-
-    private int FindBatchEnd (int startIndex, in RenderCommand firstCommand)
-    {
-        int commandIndex = startIndex + 1;
-        while (commandIndex < _commandCount)
-        {
-            if (!CanBatch (firstCommand, _commands[_sortingIndices[commandIndex].Index]))
-            {
-                break;
-            }
-
-            commandIndex++;
-        }
-
-        return commandIndex;
+        _count = 0;
     }
 
     private static bool CanBatch (in RenderCommand firstCommand, in RenderCommand nextCommand)
     {
-        return ReferenceEquals (nextCommand.Material, firstCommand.Material) &&
-            ReferenceEquals (nextCommand.Properties, firstCommand.Properties) &&
-            ReferenceEquals (nextCommand.Texture, firstCommand.Texture) &&
-            nextCommand.BatcherId == firstCommand.BatcherId;
+        return ReferenceEquals (nextCommand.Material, firstCommand.Material)
+            && ReferenceEquals (nextCommand.Properties, firstCommand.Properties)
+            && ReferenceEquals (nextCommand.Texture, firstCommand.Texture);
     }
 }

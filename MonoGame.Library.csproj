@@ -22,9 +22,6 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
   <Target Name="CompileShaders" BeforeTargets="Build" Inputs="@(ShaderFiles)" Outputs="@(ShaderFiles -> '%(RelativeDir)%(Filename).mgfxo')">
     <Exec Command="dotnet mgfxc %(ShaderFiles.Identity) %(RelativeDir)%(Filename).mgfxo /Profile:OpenGL" />
   </Target>

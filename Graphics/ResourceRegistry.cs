@@ -9,7 +9,7 @@ public class ResourceRegistry<T> where T : class, INamedResource
 
     private static readonly Dictionary<string, T> s_names = [];
 
-    private static ushort s_nextId = 0;
+    private static ushort s_nextId = 1;
 
     private static bool[] s_accquiredIds = new bool[32];
 
@@ -61,7 +61,26 @@ public class ResourceRegistry<T> where T : class, INamedResource
         ReleaseId (resource.Id);
     }
 
-    internal static void UnRegist (T resource) => UnRegist (resource.Id);
+    internal static void UnRegist (T resource)
+    {
+        if (!s_ids.TryGetValue (resource.Id, out T? idResource))
+        {
+            return;
+        }
+
+        if (!s_names.TryGetValue (resource.Name, out T? nameResource))
+        {
+            return;
+        }
+
+        if (!ReferenceEquals (resource, idResource) || !ReferenceEquals (resource, nameResource))
+        {
+            return;
+        }
+
+        s_ids.Remove (resource.Id);
+        s_names.Remove (resource.Name);
+    }
 
     public static bool TryGetValue (ushort id, out T? resource) => s_ids.TryGetValue (id, out resource);
 
@@ -93,7 +112,7 @@ public class ResourceRegistry<T> where T : class, INamedResource
 
         unchecked
         {
-            while (s_accquiredIds[s_nextId])
+            while (s_nextId == 0 || s_accquiredIds[s_nextId])
             {
                 s_nextId++;
 
