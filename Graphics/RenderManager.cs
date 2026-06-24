@@ -5,6 +5,8 @@ namespace MonoGame.Library.Graphics;
 
 public class RenderManager
 {
+    public MaterialInstance SpriteMaterial { get; }
+
     private readonly struct SortKey (int index, ulong value) : IComparable<SortKey>
     {
         public int Index { get; } = index;
@@ -33,6 +35,8 @@ public class RenderManager
     {
         _ = new QuadBatcher<VertexPositionColorTexture> (graphicsDevice, "Sprite", new SpriteBatchEncoder ());
         _ = new QuadInstanceBatcher<VertexSdfInstance> (graphicsDevice, "SdfInstance", new SdfInstanceBatchEncoder ());
+
+        SpriteMaterial = new Material ("Sprite", new SpriteEffect (graphicsDevice)).CreateInstance ();
     }
 
     public void Enqueue (in RenderCommand command)
@@ -84,7 +88,7 @@ public class RenderManager
                 batchEndIndex++;
             }
 
-            if (RenderBatcherRegistry.TryGetValue (firstCommand.BatcherId, out RenderBatcher? batcher) && batcher != null)
+            if (RenderBatcher.TryGetValue (firstCommand.BatcherId, out RenderBatcher? batcher) && batcher != null)
             {
                 for (int i = batchStartIndex; i < batchEndIndex; i++)
                 {
@@ -104,8 +108,8 @@ public class RenderManager
 
     private static bool CanBatch (in RenderCommand firstCommand, in RenderCommand nextCommand)
     {
-        return ReferenceEquals (nextCommand.Material, firstCommand.Material)
-            && ReferenceEquals (nextCommand.Properties, firstCommand.Properties)
-            && ReferenceEquals (nextCommand.Texture, firstCommand.Texture);
+        return ReferenceEquals (firstCommand.Material, nextCommand.Material)
+            && ReferenceEquals (firstCommand.Properties, nextCommand.Properties)
+            && ReferenceEquals (firstCommand.Texture, nextCommand.Texture);
     }
 }

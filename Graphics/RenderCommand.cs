@@ -1,6 +1,4 @@
-﻿using MonoGame.Library.Content;
-
-namespace MonoGame.Library.Graphics;
+﻿namespace MonoGame.Library.Graphics;
 
 public readonly struct RenderCommand
 {
@@ -12,13 +10,13 @@ public readonly struct RenderCommand
 
     public Mesh Mesh { get; }
 
-    public TextureHandle? Texture { get; }
+    public TextureResource? Texture { get; }
 
     public float Depth { get; }
 
     public ulong SortKey { get; }
 
-    public RenderCommand (MaterialInstance material, MaterialPropertyBlock? properties, Mesh mesh, TextureHandle? texture, float depth = 0f)
+    public RenderCommand (MaterialInstance material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource? texture, float depth = 0f)
     {
         Material = material;
         Properties = properties;
@@ -28,7 +26,7 @@ public readonly struct RenderCommand
         SortKey = GetSortKey ();
     }
 
-    public RenderCommand (MaterialInstance material, Mesh mesh, TextureHandle? texture, float depth = 0f)
+    public RenderCommand (MaterialInstance material, Mesh mesh, TextureResource? texture, float depth = 0f)
         : this (material, null, mesh, texture, depth)
     {
     }

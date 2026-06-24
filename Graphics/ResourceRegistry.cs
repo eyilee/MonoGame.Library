@@ -5,70 +5,70 @@ namespace MonoGame.Library.Graphics;
 
 public class ResourceRegistry<T> where T : class, INamedResource
 {
-    private static readonly Dictionary<ushort, T> s_ids = [];
+    private readonly Dictionary<ushort, T> _ids = [];
 
-    private static readonly Dictionary<string, T> s_names = [];
+    private readonly Dictionary<string, T> _names = [];
 
-    private static ushort s_nextId = 1;
+    private ushort _nextId = 1;
 
-    private static bool[] s_accquiredIds = new bool[32];
+    private bool[] _accquiredIds = new bool[32];
 
-    internal static ushort Regist (string name, T resource)
+    internal ushort Regist (string name, T resource)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual (s_ids.Count, ushort.MaxValue + 1);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual (_ids.Count, ushort.MaxValue + 1);
 
-        if (s_names.ContainsKey (name))
+        if (_names.ContainsKey (name))
         {
             throw new ArgumentException ($"A resource type of '{typeof (T)}' with the name '{name}' already exists.");
         }
 
         ushort id = AccquireId ();
 
-        if (s_ids.ContainsKey (id))
+        if (_ids.ContainsKey (id))
         {
             throw new ArgumentException ($"A resource type of '{typeof (T)}' with the id '{id}' already exists.");
         }
 
-        s_ids.Add (id, resource);
-        s_names.Add (name, resource);
+        _ids.Add (id, resource);
+        _names.Add (name, resource);
 
         return id;
     }
 
-    internal static void UnRegist (ushort id)
+    internal void UnRegist (ushort id)
     {
-        if (!s_ids.TryGetValue (id, out T? resource))
+        if (!_ids.TryGetValue (id, out T? resource))
         {
             return;
         }
 
-        s_ids.Remove (id);
-        s_names.Remove (resource.Name);
+        _ids.Remove (id);
+        _names.Remove (resource.Name);
 
         ReleaseId (id);
     }
 
-    internal static void UnRegist (string name)
+    internal void UnRegist (string name)
     {
-        if (!s_names.TryGetValue (name, out T? resource))
+        if (!_names.TryGetValue (name, out T? resource))
         {
             return;
         }
 
-        s_ids.Remove (resource.Id);
-        s_names.Remove (name);
+        _ids.Remove (resource.Id);
+        _names.Remove (name);
 
         ReleaseId (resource.Id);
     }
 
-    internal static void UnRegist (T resource)
+    internal void UnRegist (T resource)
     {
-        if (!s_ids.TryGetValue (resource.Id, out T? idResource))
+        if (!_ids.TryGetValue (resource.Id, out T? idResource))
         {
             return;
         }
 
-        if (!s_names.TryGetValue (resource.Name, out T? nameResource))
+        if (!_names.TryGetValue (resource.Name, out T? nameResource))
         {
             return;
         }
@@ -78,17 +78,17 @@ public class ResourceRegistry<T> where T : class, INamedResource
             return;
         }
 
-        s_ids.Remove (resource.Id);
-        s_names.Remove (resource.Name);
+        _ids.Remove (resource.Id);
+        _names.Remove (resource.Name);
     }
 
-    public static bool TryGetValue (ushort id, out T? resource) => s_ids.TryGetValue (id, out resource);
+    public bool TryGetValue (ushort id, out T? resource) => _ids.TryGetValue (id, out resource);
 
-    public static bool TryGetValue (string name, out T? resource) => s_names.TryGetValue (name, out resource);
+    public bool TryGetValue (string name, out T? resource) => _names.TryGetValue (name, out resource);
 
-    public static ushort GetId (string name)
+    public ushort GetId (string name)
     {
-        if (s_names.TryGetValue (name, out T? resource))
+        if (_names.TryGetValue (name, out T? resource))
         {
             return resource.Id;
         }
@@ -96,9 +96,9 @@ public class ResourceRegistry<T> where T : class, INamedResource
         return 0;
     }
 
-    public static string GetName (ushort id)
+    public string GetName (ushort id)
     {
-        if (s_ids.TryGetValue (id, out T? resource))
+        if (_ids.TryGetValue (id, out T? resource))
         {
             return resource.Name;
         }
@@ -106,35 +106,35 @@ public class ResourceRegistry<T> where T : class, INamedResource
         return string.Empty;
     }
 
-    private static ushort AccquireId ()
+    private ushort AccquireId ()
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual (s_ids.Count, ushort.MaxValue + 1);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual (_ids.Count, ushort.MaxValue + 1);
 
         unchecked
         {
-            while (s_nextId == 0 || s_accquiredIds[s_nextId])
+            while (_nextId == 0 || _accquiredIds[_nextId])
             {
-                s_nextId++;
+                _nextId++;
 
-                if (s_nextId >= s_accquiredIds.Length)
+                if (_nextId >= _accquiredIds.Length)
                 {
-                    Array.Resize (ref s_accquiredIds, s_accquiredIds.Length * 2);
+                    Array.Resize (ref _accquiredIds, _accquiredIds.Length * 2);
                 }
             }
         }
 
-        s_accquiredIds[s_nextId] = true;
+        _accquiredIds[_nextId] = true;
 
-        return s_nextId;
+        return _nextId;
     }
 
-    private static void ReleaseId (ushort id)
+    private void ReleaseId (ushort id)
     {
-        if (id >= s_accquiredIds.Length)
+        if (id >= _accquiredIds.Length)
         {
             return;
         }
 
-        s_accquiredIds[id] = false;
+        _accquiredIds[id] = false;
     }
 }

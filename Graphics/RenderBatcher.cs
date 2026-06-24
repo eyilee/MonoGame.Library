@@ -11,13 +11,15 @@ public abstract class RenderBatcher : INamedResource, IDisposable
 
     protected readonly GraphicsDevice _graphicsDevice;
 
+    private static readonly ResourceRegistry<RenderBatcher> s_registry = new ();
+
     private bool _disposed;
 
     public RenderBatcher (GraphicsDevice graphicsDevice, string name)
     {
         _graphicsDevice = graphicsDevice;
 
-        Id = RenderBatcherRegistry.Regist (name, this);
+        Id = s_registry.Regist (name, this);
         Name = name;
     }
 
@@ -26,6 +28,14 @@ public abstract class RenderBatcher : INamedResource, IDisposable
     public abstract void Batch (Mesh mesh);
 
     public abstract void DrawBatch (MaterialInstance material, MaterialPropertyBlock? properties, Texture? texture);
+
+    public static bool TryGetValue (ushort id, out RenderBatcher? renderBatcher) => s_registry.TryGetValue (id, out renderBatcher);
+
+    public static bool TryGetValue (string name, out RenderBatcher? renderBatcher) => s_registry.TryGetValue (name, out renderBatcher);
+
+    public static ushort GetId (string name) => s_registry.GetId (name);
+
+    public static string GetName (ushort id) => s_registry.GetName (id);
 
     public void Dispose ()
     {
@@ -39,7 +49,7 @@ public abstract class RenderBatcher : INamedResource, IDisposable
         {
             if (disposing)
             {
-                RenderBatcherRegistry.UnRegist (this);
+                s_registry.UnRegist (this);
             }
 
             _disposed = true;
