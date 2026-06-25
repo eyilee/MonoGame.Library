@@ -15,6 +15,19 @@ public class Sprite (TextureRegion region)
         }
     }
 
+    public Vector2 Size
+    {
+        get { return _size; }
+        set
+        {
+            if (_size != value)
+            {
+                _size = value;
+                _dirty = true;
+            }
+        }
+    }
+
     public Vector2 Position
     {
         get { return _position; }
@@ -54,19 +67,6 @@ public class Sprite (TextureRegion region)
         }
     }
 
-    public Vector2 Scale
-    {
-        get { return _scale; }
-        set
-        {
-            if (_scale != value)
-            {
-                _scale = value;
-                _dirty = true;
-            }
-        }
-    }
-
     public Vector2 Origin
     {
         get { return _origin; }
@@ -93,22 +93,18 @@ public class Sprite (TextureRegion region)
         }
     }
 
-    public float LayerDepth
+    public float Depth
     {
-        get { return _layerDepth; }
+        get { return _depth; }
         set
         {
-            if (_layerDepth != value)
+            if (_depth != value)
             {
-                _layerDepth = value;
+                _depth = value;
                 _dirty = true;
             }
         }
     }
-
-    public float Width => Region.Width * Scale.X;
-
-    public float Height => Region.Height * Scale.Y;
 
     private MaterialInstance? _material;
 
@@ -116,43 +112,60 @@ public class Sprite (TextureRegion region)
 
     private TextureRegion _region = region;
 
+    private Vector2 _size = new (region.Width, region.Height);
+
     private Vector2 _position = Vector2.Zero;
 
     private Color _color = Color.White;
 
     private float _rotation = 0f;
 
-    private Vector2 _scale = Vector2.One;
-
-    private Vector2 _origin = Vector2.Zero;
+    private Vector2 _origin = new (region.Width / 2f, region.Height / 2f);
 
     private SpriteEffects _spriteEffects = SpriteEffects.None;
 
-    private float _layerDepth = 0f;
+    private float _depth = 0f;
 
     private bool _dirty = true;
 
     private void PopulateMesh ()
     {
-        float x = Position.X;
-        float y = Position.Y;
-        float w = Width;
-        float h = Height;
-        float depth = LayerDepth;
+        float x = _position.X;
+        float y = _position.Y;
+        float w = _size.X;
+        float h = _size.Y;
+        float dx = -_origin.X;
+        float dy = -_origin.Y;
+        float depth = _depth;
 
-        _mesh.SetVertices ([
-            new Vector3 (x, y, depth),
-            new Vector3 (x + w, y, depth),
-            new Vector3 (x, y + h, depth),
-            new Vector3 (x + w, y + h, depth)
-            ]);
+        if (_rotation == 0f)
+        {
+            _mesh.SetVertices ([
+                new Vector3 (x - dx, y - dy, depth),
+                new Vector3 (x - dx + w, y - dy, depth),
+                new Vector3 (x - dx, y - dy + h, depth),
+                new Vector3 (x - dx + w, y - dy + h, depth)
+                ]);
+        }
+        else
+        {
+            float sin = float.Sin (_rotation);
+            float cos = float.Cos (_rotation);
+
+            _mesh.SetVertices ([
+                new Vector3 (x + dx * cos - dy * sin, y + dx * sin + dy * cos, depth),
+                new Vector3 (x + (dx + w) * cos - dy * sin, y + (dx + w) * sin + dy * cos, depth),
+                new Vector3 (x + dx * cos - (dy + h) * sin, y + dx * sin + (dy + h) * cos, depth),
+                new Vector3 (x + (dx + w) * cos - (dy + h) * sin, y + (dx + w) * sin + (dy + h) * cos, depth)
+                ]);
+        }
 
         _mesh.SetColors ([Color, Color, Color, Color]);
 
-        float top = Region.TopTextureCoordinate;
-        float bottom = Region.BottomTextureCoordinate;
-        float left = Region.LeftTextureCoordinate;
-        float right = Region.RightTextureCoordinate;
+        float top = _region.TopTextureCoordinate;
+        float bottom = _region.BottomTextureCoordinate;
+        float left = _region.LeftTextureCoordinate;
+        float right = _region.RightTextureCoordinate;
 
         _mesh.SetUVs ([
             new Vector2 (left, top),
