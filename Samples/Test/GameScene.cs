@@ -11,6 +11,7 @@ public class GameScene : Scene
     private Sprite? _batSprite;
     private Texture2DResource? _pixelTexture;
     private Sprite? _pixelSprite;
+    private Canvas? _canvas;
 
     public override void Initialize ()
     {
@@ -48,6 +49,17 @@ public class GameScene : Scene
             Color = Color.White,
         };
 
+        _canvas = new Canvas (GraphicsDevice, "canvas1", 0, 0, 64, 64);
+        _canvas.Clear (Color.Red);
+
+        for (int i = 0; i < 16; i++)
+        {
+            for (int j = 0; j < 16; j++)
+            {
+                _canvas.SetPixel (i, j, Color.Blue);
+            }
+        }
+
         base.LoadContent ();
     }
 
@@ -74,6 +86,7 @@ public class GameScene : Scene
         _slimeSprite?.Draw (Render);
         _batSprite?.Draw (Render);
         _pixelSprite?.Draw (Render);
+        _canvas?.Draw (Render);
 
         base.Draw (gameTime);
     }

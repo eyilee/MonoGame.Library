@@ -5,13 +5,29 @@ namespace MonoGame.Library.Graphics;
 
 public class Sprite (TextureRegion region)
 {
+    public MaterialInstance? Material
+    {
+        get { return _material; }
+        set
+        {
+            if (!ReferenceEquals (_material, value))
+            {
+                _material = value;
+                _dirty = true;
+            }
+        }
+    }
+
     public TextureRegion Region
     {
         get { return _region; }
         set
         {
-            _region = value;
-            _dirty = true;
+            if (!ReferenceEquals (_region, value))
+            {
+                _region = value;
+                _dirty = true;
+            }
         }
     }
 
@@ -166,6 +182,16 @@ public class Sprite (TextureRegion region)
         float bottom = _region.BottomTextureCoordinate;
         float left = _region.LeftTextureCoordinate;
         float right = _region.RightTextureCoordinate;
+
+        if (_spriteEffects.HasFlag (SpriteEffects.FlipHorizontally))
+        {
+            (left, right) = (right, left);
+        }
+
+        if (_spriteEffects.HasFlag (SpriteEffects.FlipVertically))
+        {
+            (top, bottom) = (bottom, top);
+        }
 
         _mesh.SetUVs ([
             new Vector2 (left, top),
