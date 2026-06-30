@@ -152,15 +152,14 @@ public class Sprite (TextureRegion region)
         float h = _size.Y;
         float dx = -_origin.X;
         float dy = -_origin.Y;
-        float depth = _depth;
 
         if (_rotation == 0f)
         {
             _mesh.SetVertices ([
-                new Vector3 (x - dx, y - dy, depth),
-                new Vector3 (x - dx + w, y - dy, depth),
-                new Vector3 (x - dx, y - dy + h, depth),
-                new Vector3 (x - dx + w, y - dy + h, depth)
+                new Vector3 (x - dx, y - dy, _depth),
+                new Vector3 (x - dx + w, y - dy, _depth),
+                new Vector3 (x - dx, y - dy + h, _depth),
+                new Vector3 (x - dx + w, y - dy + h, _depth)
                 ]);
         }
         else
@@ -169,10 +168,10 @@ public class Sprite (TextureRegion region)
             float cos = float.Cos (_rotation);
 
             _mesh.SetVertices ([
-                new Vector3 (x + dx * cos - dy * sin, y + dx * sin + dy * cos, depth),
-                new Vector3 (x + (dx + w) * cos - dy * sin, y + (dx + w) * sin + dy * cos, depth),
-                new Vector3 (x + dx * cos - (dy + h) * sin, y + dx * sin + (dy + h) * cos, depth),
-                new Vector3 (x + (dx + w) * cos - (dy + h) * sin, y + (dx + w) * sin + (dy + h) * cos, depth)
+                new Vector3 (x + dx * cos - dy * sin, y + dx * sin + dy * cos, _depth),
+                new Vector3 (x + (dx + w) * cos - dy * sin, y + (dx + w) * sin + dy * cos, _depth),
+                new Vector3 (x + dx * cos - (dy + h) * sin, y + dx * sin + (dy + h) * cos, _depth),
+                new Vector3 (x + (dx + w) * cos - (dy + h) * sin, y + (dx + w) * sin + (dy + h) * cos, _depth)
                 ]);
         }
 

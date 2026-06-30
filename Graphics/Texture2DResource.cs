@@ -9,4 +9,8 @@ public class Texture2DResource (string name, Texture2D texture) : TextureResourc
     public int Width => Texture.Width;
 
     public int Height => Texture.Height;
+
+    public float TexelWidth => 1f / Texture.Width;
+
+    public float TexelHeight => 1f / Texture.Height;
 }

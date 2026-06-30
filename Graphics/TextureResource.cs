@@ -36,6 +36,7 @@ public class TextureResource : INamedResource, IDisposable
         {
             if (disposing)
             {
+                s_registry.UnRegist (this);
                 Texture.Dispose ();
             }
 

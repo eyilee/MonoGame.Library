@@ -12,6 +12,10 @@ public class GameScene : Scene
     private Texture2DResource? _pixelTexture;
     private Sprite? _pixelSprite;
     private Canvas? _canvas;
+    private FontResource? _font;
+    private Text? _text;
+    private Text? _textFlipX;
+    private Text? _textFlipY;
 
     public override void Initialize ()
     {
@@ -35,6 +39,8 @@ public class GameScene : Scene
             _batSprite = new Sprite (batRegion)
             {
                 Position = new Vector2 (200, 100),
+                Rotation = float.Pi / 4f,
+                SpriteEffects = SpriteEffects.FlipHorizontally
             };
         }
 
@@ -59,6 +65,30 @@ public class GameScene : Scene
                 _canvas.SetPixel (i, j, Color.Blue);
             }
         }
+
+        _font = new FontResource ("DefaultFont", Content.Load<SpriteFont> ("DefaultFont"));
+
+        _text = new Text (_font)
+        {
+            Value = "MonoGame",
+            Position = new Vector2 (150, 170),
+            Rotation = float.Pi / 4f           ,
+            SpriteEffects = SpriteEffects.FlipHorizontally
+        };
+
+        _textFlipX = new Text (_font)
+        {
+            Value = "MonoGame",
+            Position = new Vector2 (150, 190),
+            SpriteEffects = SpriteEffects.FlipHorizontally
+        };
+
+        _textFlipY = new Text (_font)
+        {
+            Value = "MonoGame",
+            Position = new Vector2 (150, 210),
+            SpriteEffects = SpriteEffects.FlipVertically
+        };
 
         base.LoadContent ();
     }
@@ -87,6 +117,9 @@ public class GameScene : Scene
         _batSprite?.Draw (Render);
         _pixelSprite?.Draw (Render);
         _canvas?.Draw (Render);
+        _text?.Draw (Render);
+        _textFlipX?.Draw (Render);
+        _textFlipY?.Draw (Render);
 
         base.Draw (gameTime);
     }
