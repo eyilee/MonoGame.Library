@@ -156,10 +156,10 @@ public class Sprite (TextureRegion region)
         if (_rotation == 0f)
         {
             _mesh.SetVertices ([
-                new Vector3 (x - dx, y - dy, _depth),
-                new Vector3 (x - dx + w, y - dy, _depth),
-                new Vector3 (x - dx, y - dy + h, _depth),
-                new Vector3 (x - dx + w, y - dy + h, _depth)
+                new Vector3 (x + dx, y + dy, _depth),
+                new Vector3 (x + dx + w, y + dy, _depth),
+                new Vector3 (x + dx, y + dy + h, _depth),
+                new Vector3 (x + dx + w, y + dy + h, _depth)
                 ]);
         }
         else

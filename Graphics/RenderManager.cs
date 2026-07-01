@@ -7,6 +7,8 @@ public class RenderManager
 {
     public MaterialInstance SpriteMaterial { get; }
 
+    public MaterialInstance CanvasMaterial { get; }
+
     private readonly struct SortKey (int index, ulong value) : IComparable<SortKey>
     {
         public int Index { get; } = index;
@@ -37,6 +39,7 @@ public class RenderManager
         _ = new QuadInstanceBatcher<VertexSdfInstance> (graphicsDevice, "SdfInstance", new SdfInstanceBatchEncoder ());
 
         SpriteMaterial = new Material ("Sprite", new SpriteEffect (graphicsDevice)).CreateInstance ();
+        CanvasMaterial = new Material ("Canvas", new SpriteEffect (graphicsDevice), samplerState: SamplerState.PointClamp).CreateInstance ();
     }
 
     public void Enqueue (in RenderCommand command)

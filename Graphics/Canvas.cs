@@ -62,7 +62,7 @@ public class Canvas : IDisposable
 
     private bool _disposed;
 
-    public Canvas (GraphicsDevice graphicsDevice, string name, int x, int y, int width, int height)
+    public Canvas (GraphicsDevice graphicsDevice, string name, int x, int y, int width, int height, int cellSize)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero (width, nameof (width));
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero (height, nameof (height));
@@ -74,8 +74,10 @@ public class Canvas : IDisposable
 
         _sprite = new Sprite (new TextureRegion (_textureResource, new Rectangle (0, 0, width, height)))
         {
+            Material = Core.Render.CanvasMaterial,
+            Size = new Vector2 (width * cellSize, height * cellSize),
             Position = new Vector2 (x, y),
-            Size = new Vector2 (width, height)
+            Origin = new Vector2 (width * cellSize / 2f, height * cellSize / 2f)
         };
 
         _pixels = new Color[width * height];

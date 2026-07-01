@@ -55,7 +55,7 @@ public class GameScene : Scene
             Color = Color.White,
         };
 
-        _canvas = new Canvas (GraphicsDevice, "canvas1", 0, 0, 64, 64);
+        _canvas = new Canvas (GraphicsDevice, "canvas1", 32, 32, 64, 64, 1);
         _canvas.Clear (Color.Red);
 
         for (int i = 0; i < 16; i++)
