@@ -90,7 +90,16 @@ public class Canvas : IDisposable
         _dirty = true;
     }
 
+    public void SetPixel (int index, Color color)
+    {
+        _pixels[index] = color;
+
+        _dirty = true;
+    }
+
     public Color GetPixel (int x, int y) => _pixels[GetIndex (x, y)];
+
+    public Color GetPixel (int index) => _pixels[index];
 
     private int GetIndex (int x, int y) => y * TextureWidth + x;
 

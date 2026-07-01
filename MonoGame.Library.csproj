@@ -12,9 +12,9 @@
     <EmbeddedResource Include="Shaders\Sdf\*.mgfxo" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="samples\**" />
-    <EmbeddedResource Remove="samples\**" />
-    <None Remove="samples\**" />
+    <Compile Remove="Samples\**" />
+    <EmbeddedResource Remove="Samples\**" />
+    <None Remove="Samples\**" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Gum.MonoGame" Version="2026.4.5.1" />
