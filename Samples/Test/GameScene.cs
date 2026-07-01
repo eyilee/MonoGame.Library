@@ -71,9 +71,7 @@ public class GameScene : Scene
         _text = new Text (_font)
         {
             Value = "MonoGame",
-            Position = new Vector2 (150, 170),
-            Rotation = float.Pi / 4f           ,
-            SpriteEffects = SpriteEffects.FlipHorizontally
+            Position = new Vector2 (150, 170)
         };
 
         _textFlipX = new Text (_font)

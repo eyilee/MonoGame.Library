@@ -1,5 +1,4 @@
-﻿using Gum.Forms.Controls;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
@@ -29,6 +28,7 @@ public class Text (FontResource font)
             {
                 _font = value;
                 _dirty = true;
+                _sizeDirty = true;
             }
         }
     }
@@ -42,7 +42,22 @@ public class Text (FontResource font)
             {
                 _value = value;
                 _dirty = true;
+                _sizeDirty = true;
             }
+        }
+    }
+
+    public Vector2 Size
+    {
+        get
+        {
+            if (_sizeDirty)
+            {
+                _size = _font.MeasureString (_value);
+                _sizeDirty = false;
+            }
+
+            return _size;
         }
     }
 
@@ -132,6 +147,8 @@ public class Text (FontResource font)
 
     private string _value = string.Empty;
 
+    private Vector2 _size = Vector2.Zero;
+
     private Vector2 _position = Vector2.Zero;
 
     private Color _color = Color.White;
@@ -146,11 +163,13 @@ public class Text (FontResource font)
 
     private bool _dirty = true;
 
+    private bool _sizeDirty = true;
+
     private void PopulateMesh ()
     {
         _meshes.Clear ();
 
-        Vector2 origin = _origin ?? _font.MeasureString (_value) / 2f;
+        Vector2 origin = _origin ?? _size / 2f;
         bool flipHorizontally = _spriteEffects.HasFlag (SpriteEffects.FlipHorizontally);
         bool flipVertically = _spriteEffects.HasFlag (SpriteEffects.FlipVertically);
 
@@ -216,12 +235,12 @@ public class Text (FontResource font)
             float left = glyph.BoundsInTexture.X * _font.Texture.TexelWidth;
             float right = (glyph.BoundsInTexture.X + glyph.BoundsInTexture.Width) * _font.Texture.TexelWidth;
 
-            if (_spriteEffects.HasFlag (SpriteEffects.FlipHorizontally))
+            if (flipHorizontally)
             {
                 (left, right) = (right, left);
             }
 
-            if (_spriteEffects.HasFlag (SpriteEffects.FlipVertically))
+            if (flipVertically)
             {
                 (top, bottom) = (bottom, top);
             }
@@ -252,6 +271,12 @@ public class Text (FontResource font)
 
     public void Draw (RenderManager render)
     {
+        if (_sizeDirty)
+        {
+            _size = _font.MeasureString (_value);
+            _sizeDirty = false;
+        }
+
         if (_dirty)
         {
             PopulateMesh ();
