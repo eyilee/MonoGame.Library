@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace MonoGame.Library.Graphics;
 
-public class ResourceRegistry<T> where T : class, INamedResource
+public class ResourceRegistry<T> where T : class, IResource
 {
-    private readonly Dictionary<ushort, T> _ids = [];
+    private static readonly Dictionary<ushort, T> _ids = [];
 
-    private readonly Dictionary<string, T> _names = [];
+    private static readonly Dictionary<string, T> _names = [];
 
-    private ushort _nextId = 1;
+    private static ushort _nextId = 1;
 
-    private bool[] _accquiredIds = new bool[32];
+    private static bool[] _accquiredIds = new bool[32];
 
-    internal ushort Regist (string name, T resource)
+    internal static ushort Regist (string name, T resource)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual (_ids.Count, ushort.MaxValue + 1);
 
@@ -35,7 +35,7 @@ public class ResourceRegistry<T> where T : class, INamedResource
         return id;
     }
 
-    internal void UnRegist (ushort id)
+    internal static void UnRegist (ushort id)
     {
         if (!_ids.TryGetValue (id, out T? resource))
         {
@@ -48,7 +48,7 @@ public class ResourceRegistry<T> where T : class, INamedResource
         ReleaseId (id);
     }
 
-    internal void UnRegist (string name)
+    internal static void UnRegist (string name)
     {
         if (!_names.TryGetValue (name, out T? resource))
         {
@@ -61,7 +61,7 @@ public class ResourceRegistry<T> where T : class, INamedResource
         ReleaseId (resource.Id);
     }
 
-    internal void UnRegist (T resource)
+    internal static void UnRegist (T resource)
     {
         if (!_ids.TryGetValue (resource.Id, out T? idResource))
         {
@@ -82,11 +82,11 @@ public class ResourceRegistry<T> where T : class, INamedResource
         _names.Remove (resource.Name);
     }
 
-    public bool TryGetValue (ushort id, out T? resource) => _ids.TryGetValue (id, out resource);
+    public static bool TryGetValue (ushort id, out T? resource) => _ids.TryGetValue (id, out resource);
 
-    public bool TryGetValue (string name, out T? resource) => _names.TryGetValue (name, out resource);
+    public static bool TryGetValue (string name, out T? resource) => _names.TryGetValue (name, out resource);
 
-    public ushort GetId (string name)
+    public static ushort GetId (string name)
     {
         if (_names.TryGetValue (name, out T? resource))
         {
@@ -96,7 +96,7 @@ public class ResourceRegistry<T> where T : class, INamedResource
         return 0;
     }
 
-    public string GetName (ushort id)
+    public static string GetName (ushort id)
     {
         if (_ids.TryGetValue (id, out T? resource))
         {
@@ -106,7 +106,7 @@ public class ResourceRegistry<T> where T : class, INamedResource
         return string.Empty;
     }
 
-    private ushort AccquireId ()
+    private static ushort AccquireId ()
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual (_ids.Count, ushort.MaxValue + 1);
 
@@ -128,7 +128,7 @@ public class ResourceRegistry<T> where T : class, INamedResource
         return _nextId;
     }
 
-    private void ReleaseId (ushort id)
+    private static void ReleaseId (ushort id)
     {
         if (id >= _accquiredIds.Length)
         {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MonoGame.Library.Graphics;
 
-public class Material : INamedResource, IDisposable
+public class Material : ResourceRegistry<Material>, IResource, IDisposable
 {
     public ushort Id { get; }
 
@@ -26,8 +26,6 @@ public class Material : INamedResource, IDisposable
 
     private readonly Dictionary<int, EffectParameter?> _parameters = [];
 
-    private static readonly ResourceRegistry<Material> s_registry = new ();
-
     private bool _disposed;
 
     public Material (string name, Effect effect,
@@ -37,7 +35,7 @@ public class Material : INamedResource, IDisposable
         DepthStencilState? depthStencilState = null,
         RasterizerState? rasterizerState = null)
     {
-        Id = s_registry.Regist (name, this);
+        Id = Regist (name, this);
         Name = name;
         Effect = effect;
         BlendState = blendState ?? BlendState.AlphaBlend;
@@ -69,10 +67,6 @@ public class Material : INamedResource, IDisposable
 
     public MaterialInstance CreateInstance () => new (this);
 
-    public static bool TryGetValue (ushort id, out Material? material) => s_registry.TryGetValue (id, out material);
-
-    public static bool TryGetValue (string name, out Material? material) => s_registry.TryGetValue (name, out material);
-
     public void Dispose ()
     {
         Dispose (true);
@@ -85,7 +79,7 @@ public class Material : INamedResource, IDisposable
         {
             if (disposing)
             {
-                s_registry.UnRegist (this);
+                UnRegist (this);
             }
 
             _disposed = true;

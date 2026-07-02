@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MonoGame.Library.Graphics;
 
-public class FontResource : INamedResource, IDisposable
+public class FontResource : ResourceRegistry<FontResource>, IResource, IDisposable
 {
     public ushort Id { get; }
 
@@ -26,13 +26,11 @@ public class FontResource : INamedResource, IDisposable
 
     public Vector2 MeasureString (StringBuilder text) => Font.MeasureString (text);
 
-    private static readonly ResourceRegistry<FontResource> s_registry = new ();
-
     private bool _disposed;
 
     public FontResource (string name, SpriteFont font)
     {
-        Id = s_registry.Regist (name, this);
+        Id = Regist (name, this);
         Name = name;
         Font = font;
         Glyphs = font.GetGlyphs ();
@@ -53,7 +51,7 @@ public class FontResource : INamedResource, IDisposable
         {
             if (disposing)
             {
-                s_registry.UnRegist (this);
+                UnRegist (this);
                 Texture.Dispose ();
             }
 

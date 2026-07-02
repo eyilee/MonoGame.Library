@@ -1,6 +1,6 @@
 ﻿namespace MonoGame.Library.Graphics;
 
-public interface INamedResource
+public interface IResource
 {
     public ushort Id { get; }
 

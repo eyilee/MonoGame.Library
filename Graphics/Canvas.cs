@@ -103,6 +103,16 @@ public class Canvas : IDisposable
 
     public Color GetPixel (int index) => _pixels[index];
 
+    public Vector2 GetPosition (int x, int y) => new (x * Size.X / TextureWidth, y * Size.Y / TextureHeight);
+
+    public Vector2 GetPosition (int index)
+    {
+        int x = index % TextureWidth;
+        int y = index / TextureWidth;
+
+        return GetPosition (x, y);
+    }
+
     private int GetIndex (int x, int y) => y * TextureWidth + x;
 
     public void Clear (Color? color)

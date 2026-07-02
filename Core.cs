@@ -13,17 +13,17 @@ namespace MonoGame.Library;
 
 public class Core : Game
 {
-    private static Core? s_instance;
+    private static Core? _instance;
 
-    public static Core Instance => s_instance!;
+    public static Core Instance => _instance!;
 
-    private static Scene? s_activeScene;
+    private static Scene? _activeScene;
 
-    private static Scene? s_nextScene;
+    private static Scene? _nextScene;
 
-    public static Scene? ActiveScene => s_activeScene;
+    public static Scene? ActiveScene => _activeScene;
 
-    private static Camera s_defaultCamera = null!;
+    private static Camera _defaultCamera = null!;
 
     public static Camera MainCamera { get; private set; } = null!;
 
@@ -49,12 +49,12 @@ public class Core : Game
 
     public Core (string title, int width, int height, bool isFullScreen)
     {
-        if (s_instance != null)
+        if (_instance != null)
         {
             throw new InvalidOperationException ($"Only a single Core instance can be created");
         }
 
-        s_instance = this;
+        _instance = this;
 
         Window.Title = title;
 
@@ -108,9 +108,9 @@ public class Core : Game
 
     protected override void LoadContent ()
     {
-        s_defaultCamera = new Camera (GraphicsDevice);
+        _defaultCamera = new Camera (GraphicsDevice);
 
-        SetCamera (s_defaultCamera);
+        SetCamera (_defaultCamera);
 
         base.LoadContent ();
     }
@@ -124,12 +124,12 @@ public class Core : Game
             Exit ();
         }
 
-        if (s_nextScene != null)
+        if (_nextScene != null)
         {
             TransitionScene ();
         }
 
-        s_activeScene?.Update (gameTime);
+        _activeScene?.Update (gameTime);
 
         GumUI.Update (gameTime);
 
@@ -138,7 +138,7 @@ public class Core : Game
 
     protected override void Draw (GameTime gameTime)
     {
-        s_activeScene?.Draw (gameTime);
+        _activeScene?.Draw (gameTime);
 
         Render.Draw ();
 
@@ -149,27 +149,27 @@ public class Core : Game
 
     public static void ChangeScene (Scene next)
     {
-        if (s_activeScene != next)
+        if (_activeScene != next)
         {
-            s_nextScene = next;
+            _nextScene = next;
         }
     }
 
     private static void TransitionScene ()
     {
-        s_activeScene?.Dispose ();
+        _activeScene?.Dispose ();
 
         GC.Collect ();
 
-        s_activeScene = s_nextScene;
+        _activeScene = _nextScene;
 
-        s_nextScene = null;
+        _nextScene = null;
 
-        s_activeScene?.Initialize ();
+        _activeScene?.Initialize ();
     }
 
     public static void SetCamera (Camera? camera)
     {
-        MainCamera = camera ?? s_defaultCamera;
+        MainCamera = camera ?? _defaultCamera;
     }
 }

@@ -100,7 +100,7 @@ public class Text (FontResource font)
         }
     }
 
-    public Vector2 Origin
+    public Vector2? Origin
     {
         get { return _origin ?? Vector2.Zero; }
         set
@@ -168,6 +168,11 @@ public class Text (FontResource font)
     private void PopulateMesh ()
     {
         _meshes.Clear ();
+
+        if (string.IsNullOrEmpty (_value))
+        {
+            return;
+        }
 
         Vector2 origin = _origin ?? _size / 2f;
         bool flipHorizontally = _spriteEffects.HasFlag (SpriteEffects.FlipHorizontally);
@@ -290,4 +295,16 @@ public class Text (FontResource font)
             render.Enqueue (new RenderCommand (_material, null, mesh, _font.Texture));
         }
     }
+
+    public Text Clone () => new (_font)
+    {
+        Material = _material,
+        Value = _value,
+        Position = _position,
+        Color = _color,
+        Rotation = _rotation,
+        Origin = _origin,
+        SpriteEffects = _spriteEffects,
+        Depth = _depth
+    };
 }

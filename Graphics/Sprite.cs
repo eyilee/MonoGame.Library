@@ -212,4 +212,16 @@ public class Sprite (TextureRegion region)
 
         render.Enqueue (new RenderCommand (_material, null, _mesh, Region.Texture));
     }
+
+    public Sprite Clone () => new (Region)
+    {
+        Material = Material,
+        Size = Size,
+        Position = Position,
+        Color = Color,
+        Rotation = Rotation,
+        Origin = Origin,
+        SpriteEffects = SpriteEffects,
+        Depth = Depth
+    };
 }
