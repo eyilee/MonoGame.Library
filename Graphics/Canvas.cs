@@ -74,7 +74,6 @@ public class Canvas : IDisposable
 
         _sprite = new Sprite (new TextureRegion (_textureResource, new Rectangle (0, 0, width, height)))
         {
-            Material = Core.Render.CanvasMaterial,
             Size = new Vector2 (width * cellSize, height * cellSize),
             Position = new Vector2 (x, y),
             Origin = new Vector2 (width * cellSize / 2f, height * cellSize / 2f)
@@ -129,6 +128,8 @@ public class Canvas : IDisposable
             _textureResource.Texture.SetData (_pixels);
             _dirty = false;
         }
+
+        _sprite.Material ??= render.CanvasMaterial;
 
         _sprite.Draw (render);
     }

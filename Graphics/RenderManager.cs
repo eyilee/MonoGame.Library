@@ -38,8 +38,10 @@ public class RenderManager
         _ = new QuadBatcher<VertexPositionColorTexture> (graphicsDevice, "Sprite", new SpriteBatchEncoder ());
         _ = new QuadInstanceBatcher<VertexSdfInstance> (graphicsDevice, "SdfInstance", new SdfInstanceBatchEncoder ());
 
-        SpriteMaterial = new Material ("Sprite", new SpriteEffect (graphicsDevice)).CreateInstance ();
-        CanvasMaterial = new Material ("Canvas", new SpriteEffect (graphicsDevice), samplerState: SamplerState.PointClamp).CreateInstance ();
+        Material spriteMaterial = new ("Sprite", new SpriteEffect (graphicsDevice));
+        SpriteMaterial = spriteMaterial.CreateInstance ();
+        CanvasMaterial = spriteMaterial.CreateInstance ();
+        CanvasMaterial.SamplerState = SamplerState.PointClamp;
     }
 
     public void Enqueue (in RenderCommand command)
