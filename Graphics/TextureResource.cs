@@ -35,7 +35,6 @@ public class TextureResource : ResourceRegistry<TextureResource>, IResource, IDi
             if (disposing)
             {
                 UnRegist (this);
-                Texture.Dispose ();
             }
 
             _disposed = true;

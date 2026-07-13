@@ -52,6 +52,8 @@ public class Canvas : IDisposable
         set => _sprite.Depth = value;
     }
 
+    private readonly Texture2D _texture;
+
     private readonly Texture2DResource _textureResource;
 
     private readonly Sprite _sprite;
@@ -70,7 +72,9 @@ public class Canvas : IDisposable
         TextureWidth = width;
         TextureHeight = height;
 
-        _textureResource = new Texture2DResource (name, new (graphicsDevice, width, height, false, SurfaceFormat.Color));
+        _texture = new Texture2D (graphicsDevice, width, height);
+
+        _textureResource = new Texture2DResource (name, _texture);
 
         _sprite = new Sprite (new TextureRegion (_textureResource, new Rectangle (0, 0, width, height)))
         {
@@ -147,6 +151,7 @@ public class Canvas : IDisposable
             if (disposing)
             {
                 _textureResource.Dispose ();
+                _texture.Dispose ();
             }
 
             _disposed = true;
