@@ -1,10 +1,10 @@
 ﻿#include "Sdf.fxh"
 
 // pos: local position
-// k: parabola coefficient
-// o: offset translation
 // a: angle of vector from vertex to focus
-float sdfParabola (float2 pos, float k, float2 o, float a)
+// o: offset translation
+// k: parabola coefficient
+float sdfParabola (float2 pos, float a, float2 o, float k)
 {
     pos = rotate2D (pos, a);
     pos += o;

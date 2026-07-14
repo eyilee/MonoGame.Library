@@ -21,8 +21,10 @@ public class SdfCircle : SdfShape
 
     protected override void PopulateMesh ()
     {
+        _scale = new Vector2 ((_radius + _thickness) * 2f, (_radius + _thickness) * 2f);
+
         _mesh.SetUVs ([_position]);
-        _mesh.SetUV1s ([new Vector4 (_rotation, (_radius + _thickness) * 2f, (_radius + _thickness) * 2f, _thickness)]);
+        _mesh.SetUV1s ([new Vector4 (_rotation, _scale.X, _scale.Y, _thickness)]);
         _mesh.SetUV2s ([_radius]);
         _mesh.SetColors ([_color]);
     }

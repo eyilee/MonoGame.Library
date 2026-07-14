@@ -71,15 +71,13 @@ public class GameScene : Scene
 
         _parabola = new SdfParabola
         {
+            Position = _vertexPoint,
             Rotation = _rotation,
+            Scale = new Vector2 (100f, 100f),
             Thickness = 3f,
             Color = Color.Yellow,
             Focus = focusPoint,
-            Vertex = _vertexPoint,
-            Left = 50f,
-            Top = 50f,
-            Right = 50f,
-            Bottom = 50f
+            Vertex = _vertexPoint
         };
 
         base.LoadContent ();

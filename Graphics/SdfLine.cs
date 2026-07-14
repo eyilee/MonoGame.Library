@@ -36,12 +36,12 @@ public class SdfLine : SdfShape
 
     protected override void PopulateMesh ()
     {
-        Vector2 position = (_start + _end) * 0.5f;
-        Vector2 scale = new (float.Abs (_end.X - _start.X) + _thickness * 2f, float.Abs (_end.Y - _start.Y) + _thickness * 2f);
+        _position = (_start + _end) * 0.5f;
+        _scale = new (float.Abs (_end.X - _start.X) + _thickness * 2f, float.Abs (_end.Y - _start.Y) + _thickness * 2f);
 
-        _mesh.SetUVs ([position]);
-        _mesh.SetUV1s ([new Vector4 (_rotation, scale.X, scale.Y, _thickness)]);
-        _mesh.SetUV2s ([new Vector4 (_start.X - position.X, _start.Y - position.Y, _end.X - position.X, _end.Y - position.Y)]);
+        _mesh.SetUVs ([_position]);
+        _mesh.SetUV1s ([new Vector4 (_rotation, _scale.X, _scale.Y, _thickness)]);
+        _mesh.SetUV2s ([new Vector4 (_start.X - _position.X, _start.Y - _position.Y, _end.X - _position.X, _end.Y - _position.Y)]);
         _mesh.SetColors ([_color]);
     }
 

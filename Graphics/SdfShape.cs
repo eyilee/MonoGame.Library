@@ -30,6 +30,19 @@ public abstract class SdfShape
         }
     }
 
+    public Vector2 Scale
+    {
+        get { return _scale; }
+        set
+        {
+            if (_scale != value)
+            {
+                _scale = value;
+                _dirty = true;
+            }
+        }
+    }
+
     public float Thickness
     {
         get { return _thickness; }
@@ -72,6 +85,8 @@ public abstract class SdfShape
     protected readonly Mesh _mesh = new ();
 
     protected Vector2 _position = Vector2.Zero;
+
+    protected Vector2 _scale = Vector2.Zero;
 
     protected float _rotation = 0f;
 
