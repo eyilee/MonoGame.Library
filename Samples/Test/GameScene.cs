@@ -7,15 +7,25 @@ namespace Test;
 
 public class GameScene : Scene
 {
-    private Sprite? _slimeSprite;
-    private Sprite? _batSprite;
-    private Texture2DResource? _pixelTexture;
-    private Sprite? _pixelSprite;
-    private Canvas? _canvas;
-    private FontResource? _font;
-    private Text? _text;
-    private Text? _textFlipX;
-    private Text? _textFlipY;
+    private Texture2D _pixelTexture = null!;
+
+    private Texture2DResource _pixel = null!;
+
+    private Sprite _boundary = null!;
+
+    private SdfCircle _focus = null!;
+
+    private SdfCircle _vertex = null!;
+
+    private SdfParabola _parabola = null!;
+
+    private float _rotation = 0f;
+
+    private Vector2 _vertexPoint = new (400f, 300f);
+
+    private float _angle = 0f;
+
+    private readonly float _length = 20f;
 
     public override void Initialize ()
     {
@@ -24,68 +34,52 @@ public class GameScene : Scene
 
     public override void LoadContent ()
     {
-        TextureAtlas atlas = TextureAtlas.FromFile (Content, "atlas-definition.xml");
+        _pixelTexture = new Texture2D (GraphicsDevice, 1, 1);
+        _pixelTexture.SetData ([Color.White]);
 
-        if (atlas.TryGetRegion ("slime", out TextureRegion? slimeRegion) && slimeRegion != null)
+        _pixel = new Texture2DResource ("Pixel", _pixelTexture);
+
+        _boundary = new Sprite (new TextureRegion (_pixel, new Rectangle (0, 0, 1, 1)))
         {
-            _slimeSprite = new Sprite (slimeRegion)
-            {
-                Position = new Vector2 (100, 100),
-            };
-        }
-
-        if (atlas.TryGetRegion ("bat", out TextureRegion? batRegion) && batRegion != null)
-        {
-            _batSprite = new Sprite (batRegion)
-            {
-                Position = new Vector2 (200, 100),
-                Rotation = float.Pi / 4f,
-                SpriteEffects = SpriteEffects.FlipHorizontally
-            };
-        }
-
-        Texture2D texture = new (GraphicsDevice, 1, 1);
-        texture.SetData ([Color.White]);
-        _pixelTexture = new Texture2DResource ("pixel", texture);
-
-        _pixelSprite = new Sprite (new TextureRegion (_pixelTexture, new Rectangle (0, 0, 1, 1)))
-        {
-            Size = new Vector2 (2, 2),
-            Position = new Vector2 (100, 100),
-            Color = Color.White,
+            Size = new Vector2 (100f, 100f),
+            Position = _vertexPoint,
+            Color = Color.Green,
+            Rotation = _rotation,
+            Origin = new Vector2 (50f, 50f)
         };
 
-        _canvas = new Canvas (GraphicsDevice, "canvas1", 32, 32, 64, 64, 1);
-        _canvas.Clear (Color.Red);
+        Vector2 offset = Vector2.One * _length;
+        offset.Rotate (_angle);
 
-        for (int i = 0; i < 16; i++)
+        Vector2 focusPoint = _vertexPoint + offset;
+
+        _focus = new SdfCircle
         {
-            for (int j = 0; j < 16; j++)
-            {
-                _canvas.SetPixel (i, j, Color.Blue);
-            }
-        }
-
-        _font = new FontResource ("DefaultFont", Content.Load<SpriteFont> ("DefaultFont"));
-
-        _text = new Text (_font)
-        {
-            Value = "MonoGame",
-            Position = new Vector2 (150, 170)
+            Position = focusPoint,
+            Thickness = 1f,
+            Color = Color.Blue,
+            Radius = 3f
         };
 
-        _textFlipX = new Text (_font)
+        _vertex = new SdfCircle
         {
-            Value = "MonoGame",
-            Position = new Vector2 (150, 190),
-            SpriteEffects = SpriteEffects.FlipHorizontally
+            Position = _vertexPoint,
+            Thickness = 1f,
+            Color = Color.Red,
+            Radius = 3f
         };
 
-        _textFlipY = new Text (_font)
+        _parabola = new SdfParabola
         {
-            Value = "MonoGame",
-            Position = new Vector2 (150, 210),
-            SpriteEffects = SpriteEffects.FlipVertically
+            Rotation = _rotation,
+            Thickness = 3f,
+            Color = Color.Yellow,
+            Focus = focusPoint,
+            Vertex = _vertexPoint,
+            Left = 50f,
+            Top = 50f,
+            Right = 50f,
+            Bottom = 50f
         };
 
         base.LoadContent ();
@@ -107,17 +101,35 @@ public class GameScene : Scene
         base.Dispose (disposing);
     }
 
+    public override void Update (GameTime gameTime)
+    {
+        _rotation += (float.Pi / 4f * (float)gameTime.ElapsedGameTime.TotalSeconds);
+        _angle += (float.Pi / 4f * (float)gameTime.ElapsedGameTime.TotalSeconds);
+
+        Vector2 offset = -Vector2.UnitY * _length;
+        offset.Rotate (_angle);
+
+        Vector2 focusPoint = _vertexPoint + offset;
+
+        _boundary.Rotation = _rotation;
+        _parabola.Rotation = _rotation;
+        _parabola.Focus = focusPoint;
+
+        offset.Rotate (_rotation);
+
+        _focus.Position = _vertexPoint + offset;
+
+        base.Update (gameTime);
+    }
+
     public override void Draw (GameTime gameTime)
     {
         GraphicsDevice.Clear (Color.CornflowerBlue);
 
-        _slimeSprite?.Draw (Render);
-        _batSprite?.Draw (Render);
-        _pixelSprite?.Draw (Render);
-        _canvas?.Draw (Render);
-        _text?.Draw (Render);
-        _textFlipX?.Draw (Render);
-        _textFlipY?.Draw (Render);
+        _boundary.Draw (Render);
+        _focus.Draw (Render);
+        _vertex.Draw (Render);
+        _parabola?.Draw (Render);
 
         base.Draw (gameTime);
     }

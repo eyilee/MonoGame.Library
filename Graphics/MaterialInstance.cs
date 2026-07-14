@@ -65,6 +65,8 @@ public class MaterialInstance (Material material)
 
     public void ApplyProperties (MaterialPropertyBlock? propertyBlock = null)
     {
+        Material.OnApply ();
+
         PropertyBlock.ApplyTo (Material);
         propertyBlock?.ApplyTo (Material);
     }

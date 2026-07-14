@@ -54,11 +54,15 @@ public class Mesh
 
     public void SetColors (Color[] colors) => _colors = colors;
 
+    public void SetUVs (float[] uvs) => SetUVs (ref uvs, ref _uvs);
+
     public void SetUVs (Vector2[] uvs) => SetUVs (ref uvs, ref _uvs);
 
     public void SetUVs (Vector3[] uvs) => SetUVs (ref uvs, ref _uvs);
 
     public void SetUVs (Vector4[] uvs) => _uvs = uvs;
+
+    public void SetUV1s (float[] uvs) => SetUVs (ref uvs, ref _uv1s);
 
     public void SetUV1s (Vector2[] uvs) => SetUVs (ref uvs, ref _uv1s);
 
@@ -66,11 +70,15 @@ public class Mesh
 
     public void SetUV1s (Vector4[] uvs) => _uv1s = uvs;
 
+    public void SetUV2s (float[] uvs) => SetUVs (ref uvs, ref _uv2s);
+
     public void SetUV2s (Vector2[] uvs) => SetUVs (ref uvs, ref _uv2s);
 
     public void SetUV2s (Vector3[] uvs) => SetUVs (ref uvs, ref _uv2s);
 
     public void SetUV2s (Vector4[] uvs) => _uv2s = uvs;
+
+    public void SetUV3s (float[] uvs) => SetUVs (ref uvs, ref _uv3s);
 
     public void SetUV3s (Vector2[] uvs) => SetUVs (ref uvs, ref _uv3s);
 
@@ -78,11 +86,15 @@ public class Mesh
 
     public void SetUV3s (Vector4[] uvs) => _uv3s = uvs;
 
+    public void SetUV4s (float[] uvs) => SetUVs (ref uvs, ref _uv4s);
+
     public void SetUV4s (Vector2[] uvs) => SetUVs (ref uvs, ref _uv4s);
 
     public void SetUV4s (Vector3[] uvs) => SetUVs (ref uvs, ref _uv4s);
 
     public void SetUV4s (Vector4[] uvs) => _uv4s = uvs;
+
+    public void SetUV5s (float[] uvs) => SetUVs (ref uvs, ref _uv5s);
 
     public void SetUV5s (Vector2[] uvs) => SetUVs (ref uvs, ref _uv5s);
 
@@ -90,17 +102,32 @@ public class Mesh
 
     public void SetUV5s (Vector4[] uvs) => _uv5s = uvs;
 
+    public void SetUV6s (float[] uvs) => SetUVs (ref uvs, ref _uv6s);
+
     public void SetUV6s (Vector2[] uvs) => SetUVs (ref uvs, ref _uv6s);
 
     public void SetUV6s (Vector3[] uvs) => SetUVs (ref uvs, ref _uv6s);
 
     public void SetUV6s (Vector4[] uvs) => _uv6s = uvs;
 
+    public void SetUV7s (float[] uvs) => SetUVs (ref uvs, ref _uv7s);
+
     public void SetUV7s (Vector2[] uvs) => SetUVs (ref uvs, ref _uv7s);
 
     public void SetUV7s (Vector3[] uvs) => SetUVs (ref uvs, ref _uv7s);
 
     public void SetUV7s (Vector4[] uvs) => _uv7s = uvs;
+
+    private static void SetUVs (ref float[] from, ref Vector4[]? to)
+    {
+        to = new Vector4[from.Length];
+
+        for (int i = 0; i < from.Length; i++)
+        {
+            float uv = from[i];
+            to[i] = new Vector4 (uv, 0f, 0f, 0f);
+        }
+    }
 
     private static void SetUVs (ref Vector2[] from, ref Vector4[]? to)
     {

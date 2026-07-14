@@ -175,7 +175,7 @@ public class Sprite (TextureRegion region)
                 ]);
         }
 
-        _mesh.SetColors ([Color, Color, Color, Color]);
+        _mesh.SetColors ([_color, _color, _color, _color]);
 
         float top = _region.TopTextureCoordinate;
         float bottom = _region.BottomTextureCoordinate;

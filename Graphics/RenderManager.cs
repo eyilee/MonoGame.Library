@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Library.Shaders;
 using System;
 
 namespace MonoGame.Library.Graphics;
@@ -8,6 +9,12 @@ public class RenderManager
     public MaterialInstance SpriteMaterial { get; }
 
     public MaterialInstance CanvasMaterial { get; }
+
+    public MaterialInstance SdfCircleMaterial { get; }
+
+    public MaterialInstance SdfLineMaterial { get; }
+
+    public MaterialInstance SdfParabolaMaterial { get; }
 
     private readonly struct SortKey (int index, ulong value) : IComparable<SortKey>
     {
@@ -38,10 +45,14 @@ public class RenderManager
         _ = new QuadBatcher<VertexPositionColorTexture> (graphicsDevice, "Sprite", new SpriteBatchEncoder ());
         _ = new QuadInstanceBatcher<VertexSdfInstance> (graphicsDevice, "SdfInstance", new SdfInstanceBatchEncoder ());
 
-        Material spriteMaterial = new ("Sprite", new SpriteEffect (graphicsDevice));
+        Material spriteMaterial = new ("Sprite", new SpriteEffect (graphicsDevice), batcherId: RenderBatcher.GetId ("Sprite"));
         SpriteMaterial = spriteMaterial.CreateInstance ();
         CanvasMaterial = spriteMaterial.CreateInstance ();
         CanvasMaterial.SamplerState = SamplerState.PointClamp;
+
+        SdfCircleMaterial = new SdfMaterial ("SdfCircle", new SdfCircleEffect (graphicsDevice), batcherId: RenderBatcher.GetId ("SdfInstance")).CreateInstance ();
+        SdfLineMaterial = new SdfMaterial ("SdfLine", new SdfLineEffect (graphicsDevice), batcherId: RenderBatcher.GetId ("SdfInstance")).CreateInstance ();
+        SdfParabolaMaterial = new SdfMaterial ("SdfParabola", new SdfParabolaEffect (graphicsDevice), batcherId: RenderBatcher.GetId ("SdfInstance")).CreateInstance ();
     }
 
     public void Enqueue (in RenderCommand command)

@@ -22,7 +22,7 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
 
     public RasterizerState RasterizerState { get; }
 
-    public ushort BatcherId { get; set; } = RenderBatcher.GetId ("Sprite");
+    public ushort BatcherId { get; }
 
     private readonly Dictionary<int, EffectParameter?> _parameters = [];
 
@@ -33,7 +33,8 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
         int samplerSlot = 0,
         SamplerState? samplerState = null,
         DepthStencilState? depthStencilState = null,
-        RasterizerState? rasterizerState = null)
+        RasterizerState? rasterizerState = null,
+        ushort batcherId = 0)
     {
         Id = Regist (name, this);
         Name = name;
@@ -43,6 +44,7 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
         SamplerState = samplerState ?? SamplerState.LinearClamp;
         DepthStencilState = depthStencilState ?? DepthStencilState.None;
         RasterizerState = rasterizerState ?? RasterizerState.CullCounterClockwise;
+        BatcherId = batcherId;
 
         foreach (EffectParameter? parameter in Effect.Parameters)
         {
@@ -64,6 +66,8 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
 
         return parameter;
     }
+
+    public virtual void OnApply () { }
 
     public MaterialInstance CreateInstance () => new (this);
 

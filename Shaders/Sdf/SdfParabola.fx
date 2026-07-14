@@ -3,8 +3,10 @@
 // pos: local position
 // k: parabola coefficient
 // o: offset translation
-float sdfParabola (float2 pos, float k, float2 o)
+// a: angle of vector from vertex to focus
+float sdfParabola (float2 pos, float k, float2 o, float a)
 {
+    pos = rotate2D (pos, a);
     pos += o;
     pos.x = abs (pos.x);
 
@@ -45,7 +47,8 @@ float sdfParabola (float2 pos, float k, float2 o)
 
 float4 MainPS (PSInput i) : SV_Target
 {
-    float distance = sdfParabola (i.LocalPos, i.ShapeData0.x, i.ShapeData0.yz);
+    float2 offset = rotate2D (i.ShapeData0.yz, -i.Rotation_Scale_Thickness.x);
+    float distance = sdfParabola (i.LocalPos, i.ShapeData0.x, offset, i.ShapeData0.w);
     float thickness = i.Rotation_Scale_Thickness.w / 2.0;
     float w = fwidth (distance);
     float alpha = 1.0 - smoothstep (thickness - w, thickness + w, distance);
