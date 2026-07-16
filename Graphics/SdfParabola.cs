@@ -37,7 +37,7 @@ public class SdfParabola : SdfShape
     protected override void PopulateMesh ()
     {
         float angle = float.Atan2 (_focus.Y - _vertex.Y, _focus.X - _vertex.X) - (float.Pi / 2f);
-        Vector2 offset = _position - _vertex;
+        Vector2 offset = _vertex - _position;
 
         _mesh.SetUVs ([_position]);
         _mesh.SetUV1s ([new Vector4 (_rotation, _scale.X, _scale.Y, _thickness)]);
