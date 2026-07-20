@@ -96,7 +96,7 @@ public abstract class SdfShape
 
     protected float _depth = 0f;
 
-    protected bool _dirty;
+    protected bool _dirty = true;
 
     protected abstract void PopulateMesh ();
 
