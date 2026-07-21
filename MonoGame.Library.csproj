@@ -6,10 +6,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
   <ItemGroup>
-    <ShaderFiles Include="Shaders\Sdf\*.fx" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Shaders\Sdf\*.mgfxo" />
+    <None Include="Shaders\Sdf\*.fx" />
+    <ShaderFiles Include="Shaders\Sdf\*.fx">
+      <OutputFile>%(RelativeDir)%(Filename).mgfxo</OutputFile>
+    </ShaderFiles>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Samples\**" />
@@ -22,7 +22,14 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <Target Name="CompileShaders" BeforeTargets="Build" Inputs="@(ShaderFiles)" Outputs="@(ShaderFiles -> '%(RelativeDir)%(Filename).mgfxo')">
-    <Exec Command="dotnet mgfxc %(ShaderFiles.Identity) %(RelativeDir)%(Filename).mgfxo /Profile:OpenGL" />
+  <Target Name="CompileShaders" BeforeTargets="PrepareForBuild" Inputs="@(ShaderFiles)" Outputs="@(ShaderFiles->'%(OutputFile)')">
+    <Exec Command="dotnet mgfxc %(ShaderFiles.Identity) %(ShaderFiles.OutputFile) /Profile:OpenGL" />
+    <ItemGroup>
+      <EmbeddedResource Include="%(ShaderFiles.OutputFile)" />
+      <FileWrites Include="%(OutputFile)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="CleanShaders" BeforeTargets="Clean">
+    <Delete Files="@(ShaderFiles->'%(OutputFile)')" />
   </Target>
 </Project>
