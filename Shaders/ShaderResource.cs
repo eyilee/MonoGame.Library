@@ -6,11 +6,11 @@ namespace MonoGame.Library.Shaders;
 
 internal class ShaderResource (string name)
 {
-    public const string SdfCircleName = "MonoGame.Library.Shaders.Sdf.SdfCircle.mgfxo";
+    public const string SdfCircleName = "SdfCircle.mgfxo";
 
-    public const string SdfLineName = "MonoGame.Library.Shaders.Sdf.SdfLine.mgfxo";
+    public const string SdfLineName = "SdfLine.mgfxo";
 
-    public const string SdfParabolaName = "MonoGame.Library.Shaders.Sdf.SdfParabola.mgfxo";
+    public const string SdfParabolaName = "SdfParabola.mgfxo";
 
     public static readonly ShaderResource SdfCircle = new (SdfCircleName);
 
