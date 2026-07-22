@@ -1,31 +1,24 @@
-﻿using Gum.Forms;
-using Gum.Forms.Controls;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Library.Graphics;
 using MonoGame.Library.Input;
-using MonoGameGum;
 using System;
 
 namespace MonoGame.Library;
 
 public class Core : Game
 {
-    private static Core? _instance;
-
     public static Core Instance => _instance!;
-
-    private static Scene? _activeScene;
-
-    private static Scene? _nextScene;
 
     public static Scene? ActiveScene => _activeScene;
 
-    private static Camera _defaultCamera = null!;
-
-    public static Camera MainCamera { get; private set; } = null!;
+    public static Camera MainCamera
+    {
+        get => _mainCamera;
+        set => _mainCamera = value ?? _defaultCamera;
+    }
 
     public static GraphicsDeviceManager Graphics { get; private set; } = null!;
 
@@ -37,15 +30,21 @@ public class Core : Game
 
     public static int ScreenHeight => Graphics.PreferredBackBufferHeight;
 
-    public static SpriteBatch SpriteBatch { get; private set; } = null!;
-
     public static RenderManager Render { get; private set; } = null!;
 
     public static InputManager Input { get; private set; } = null!;
 
     public static bool ExitOnEscape { get; set; }
 
-    public static GumService GumUI => GumService.Default;
+    private static Core? _instance;
+
+    private static Scene? _activeScene;
+
+    private static Scene? _nextScene;
+
+    private static Camera _mainCamera = null!;
+
+    private static Camera _defaultCamera = null!;
 
     public Core (string title, int width, int height, bool isFullScreen)
     {
@@ -77,42 +76,24 @@ public class Core : Game
     {
         GraphicsDevice = base.GraphicsDevice;
 
-        SpriteBatch = new SpriteBatch (GraphicsDevice);
-
         Render = new RenderManager (GraphicsDevice);
 
         Input = new InputManager ();
 
-        InitializeUI ();
+        _mainCamera = new Camera (GraphicsDevice);
+        _defaultCamera = _mainCamera;
 
         base.Initialize ();
     }
 
-    private void InitializeUI ()
-    {
-        GumUI.Initialize (this, DefaultVisualsVersion.V3);
-
-        if (GumUI.ContentLoader != null)
-        {
-            GumUI.ContentLoader.XnaContentManager = Content;
-        }
-
-        GumUI.UseKeyboardDefaults ();
-
-        GumUI.UseGamepadDefaults ();
-
-        FrameworkElement.TabReverseKeyCombos.Add (new KeyCombo () { PushedKey = Keys.Up });
-
-        FrameworkElement.TabKeyCombos.Add (new KeyCombo () { PushedKey = Keys.Down });
-    }
-
     protected override void LoadContent ()
     {
-        _defaultCamera = new Camera (GraphicsDevice);
-
-        SetCamera (_defaultCamera);
-
         base.LoadContent ();
+    }
+
+    protected override void UnloadContent ()
+    {
+        base.UnloadContent ();
     }
 
     protected override void Update (GameTime gameTime)
@@ -131,8 +112,6 @@ public class Core : Game
 
         _activeScene?.Update (gameTime);
 
-        GumUI.Update (gameTime);
-
         base.Update (gameTime);
     }
 
@@ -141,8 +120,6 @@ public class Core : Game
         _activeScene?.Draw (gameTime);
 
         Render.Draw ();
-
-        GumUI.Draw ();
 
         base.Draw (gameTime);
     }
@@ -166,10 +143,5 @@ public class Core : Game
         _nextScene = null;
 
         _activeScene?.Initialize ();
-    }
-
-    public static void SetCamera (Camera? camera)
-    {
-        MainCamera = camera ?? _defaultCamera;
     }
 }

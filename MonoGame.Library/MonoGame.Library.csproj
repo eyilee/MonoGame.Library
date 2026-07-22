@@ -3,19 +3,16 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
 
   <ItemGroup>
-    <PackageReference Include="Gum.MonoGame" Version="2026.4.5.1" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*">
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.5">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Shaders\Sdf\*.fx" />
-    <ShaderFiles Include="Shaders\Sdf\*.fx">
+    <None Include="Shaders\**\*.fx" />
+    <ShaderFiles Include="Shaders\**\*.fx">
       <OutputFile>%(RelativeDir)%(Filename).mgfxo</OutputFile>
       <LogicalName>%(Filename).mgfxo</LogicalName>
     </ShaderFiles>
@@ -27,7 +24,7 @@
     <None Remove="Samples\**" />
   </ItemGroup>
 
-  <Target Name="CompileShaders" BeforeTargets="PrepareForBuild" Inputs="@(ShaderFiles)" Outputs="@(ShaderFiles->'%(OutputFile)')">
+  <!--<Target Name="CompileShaders" BeforeTargets="PrepareForBuild" Inputs="@(ShaderFiles)" Outputs="@(ShaderFiles->'%(OutputFile)')">
     <Exec Command="dotnet mgfxc %(ShaderFiles.Identity) %(ShaderFiles.OutputFile) /Profile:OpenGL" />
     <ItemGroup>
       <EmbeddedResource Include="%(ShaderFiles.OutputFile)">
@@ -39,5 +36,7 @@
 
   <Target Name="CleanShaders" BeforeTargets="Clean">
     <Delete Files="@(ShaderFiles->'%(OutputFile)')" />
-  </Target>
+  </Target>-->
+
+  <Import Project="..\MonoGame.Library.Content\BuildContent.targets" />
 </Project>

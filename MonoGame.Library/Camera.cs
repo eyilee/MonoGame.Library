@@ -9,7 +9,7 @@ public class Camera
     public static Camera Main
     {
         get => Core.MainCamera;
-        set => Core.SetCamera (value);
+        set => Core.MainCamera = value;
     }
 
     public int Width => _graphicsDevice.Viewport.Width;

@@ -13,8 +13,6 @@ public abstract class Scene : IDisposable
 
     public static RenderManager Render => Core.Render;
 
-    public static SpriteBatch SpriteBatch => Core.SpriteBatch;
-
     public static InputManager Input => Core.Input;
 
     protected ContentManager Content { get; }

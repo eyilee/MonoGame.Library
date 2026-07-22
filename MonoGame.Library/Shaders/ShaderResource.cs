@@ -24,11 +24,11 @@ internal class ShaderResource (string name)
     {
         get
         {
-            if (_bytecode is null)
+            if (_bytecode == null)
             {
                 lock (_locker)
                 {
-                    if (_bytecode is not null)
+                    if (_bytecode != null)
                     {
                         return _bytecode;
                     }
