@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace MonoGame.Library;
+namespace MonoGame.Library.Utilities;
 
 public static class ColorUtility
 {

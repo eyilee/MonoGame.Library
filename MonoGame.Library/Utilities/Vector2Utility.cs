@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MonoGame.Library;
+namespace MonoGame.Library.Utilities;
 
 public static class Vector2Utility
 {

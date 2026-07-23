@@ -1,4 +1,4 @@
-﻿namespace MonoGame.Library;
+﻿namespace MonoGame.Library.Utilities;
 
 public static class FloatUtility
 {

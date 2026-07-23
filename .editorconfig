@@ -13,7 +13,7 @@ tab_width = 4
 
 # 新行喜好設定
 end_of_line = crlf
-insert_final_newline = false
+insert_final_newline = true
 
 #### .NET 程式碼動作 ####
 

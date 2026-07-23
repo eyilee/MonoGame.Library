@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Library.Graphics;
 using MonoGame.Library.Input;
+using MonoGame.Library.Resource;
 using System;
 
 namespace MonoGame.Library;

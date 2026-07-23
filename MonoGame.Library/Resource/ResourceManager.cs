@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace MonoGame.Library;
+namespace MonoGame.Library.Resource;
 
 public class ResourceManager (IServiceProvider servicesProvider) : ContentManager (servicesProvider)
 {
