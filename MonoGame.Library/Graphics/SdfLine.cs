@@ -53,6 +53,6 @@ public class SdfLine : SdfShape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (render.SdfLineMaterial, _mesh, _depth));
+        render.Enqueue (new RenderCommand (Materials.SdfLine, _mesh, _depth));
     }
 }

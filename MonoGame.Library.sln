@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Library", "MonoGame.Library\MonoGame.Library.csproj", "{EFE9DDBE-D612-C7EC-A8D4-B30BDF641AEF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{80DE140F-B6E0-4090-A9D9-00389DA1F84C} = {80DE140F-B6E0-4090-A9D9-00389DA1F84C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Library.Content", "MonoGame.Library.Content\MonoGame.Library.Content.csproj", "{80DE140F-B6E0-4090-A9D9-00389DA1F84C}"
 EndProject

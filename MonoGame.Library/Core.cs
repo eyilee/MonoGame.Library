@@ -36,6 +36,8 @@ public class Core : Game
 
     public static bool ExitOnEscape { get; set; }
 
+    internal static ResourceManager Resource { get; private set; } = null!;
+
     private static Core? _instance;
 
     private static Scene? _activeScene;
@@ -70,13 +72,15 @@ public class Core : Game
         IsMouseVisible = true;
 
         ExitOnEscape = true;
+
+        Resource = new ResourceManager (Services);
     }
 
     protected override void Initialize ()
     {
         GraphicsDevice = base.GraphicsDevice;
 
-        Render = new RenderManager (GraphicsDevice);
+        Render = new RenderManager ();
 
         Input = new InputManager ();
 

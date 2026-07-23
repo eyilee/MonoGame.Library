@@ -10,33 +10,5 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="Shaders\**\*.fx" />
-    <ShaderFiles Include="Shaders\**\*.fx">
-      <OutputFile>%(RelativeDir)%(Filename).mgfxo</OutputFile>
-      <LogicalName>%(Filename).mgfxo</LogicalName>
-    </ShaderFiles>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Samples\**" />
-    <EmbeddedResource Remove="Samples\**" />
-    <None Remove="Samples\**" />
-  </ItemGroup>
-
-  <!--<Target Name="CompileShaders" BeforeTargets="PrepareForBuild" Inputs="@(ShaderFiles)" Outputs="@(ShaderFiles->'%(OutputFile)')">
-    <Exec Command="dotnet mgfxc %(ShaderFiles.Identity) %(ShaderFiles.OutputFile) /Profile:OpenGL" />
-    <ItemGroup>
-      <EmbeddedResource Include="%(ShaderFiles.OutputFile)">
-        <LogicalName>%(ShaderFiles.LogicalName)</LogicalName>
-      </EmbeddedResource>
-      <FileWrites Include="%(OutputFile)" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="CleanShaders" BeforeTargets="Clean">
-    <Delete Files="@(ShaderFiles->'%(OutputFile)')" />
-  </Target>-->
-
   <Import Project="..\MonoGame.Library.Content\BuildContent.targets" />
 </Project>

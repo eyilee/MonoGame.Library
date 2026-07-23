@@ -7,6 +7,8 @@ namespace Test;
 
 public class GameScene : Scene
 {
+    private Text _text = null!;
+
     private Texture2D _pixelTexture = null!;
 
     private Texture2DResource _pixel = null!;
@@ -34,6 +36,9 @@ public class GameScene : Scene
 
     public override void LoadContent ()
     {
+        _text = new Text (Fonts.Default);
+        _text.Position = _vertexPoint - new Vector2 (0f, 100f);
+
         _pixelTexture = new Texture2D (GraphicsDevice, 1, 1);
         _pixelTexture.SetData ([Color.White]);
 
@@ -104,6 +109,8 @@ public class GameScene : Scene
         _rotation += (float.Pi / 4f * (float)gameTime.ElapsedGameTime.TotalSeconds);
         _angle += (float.Pi / 4f * (float)gameTime.ElapsedGameTime.TotalSeconds);
 
+        _text.Value = _rotation.ToString ("F4");
+
         Vector2 offset = -Vector2.UnitY * _length;
         offset.Rotate (_angle);
 
@@ -124,6 +131,7 @@ public class GameScene : Scene
     {
         GraphicsDevice.Clear (Color.CornflowerBlue);
 
+        _text.Draw (Render);
         _boundary.Draw (Render);
         _focus.Draw (Render);
         _vertex.Draw (Render);

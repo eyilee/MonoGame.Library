@@ -67,7 +67,7 @@ internal class QuadBatcher<T> : RenderBatcher where T : struct, IVertexType
         _batchCount++;
     }
 
-    public override void DrawBatch (MaterialInstance material, MaterialPropertyBlock? properties, Texture? texture)
+    public override void DrawBatch (Material material, MaterialPropertyBlock? properties, Texture? texture)
     {
         if (_batchCount == 0)
         {
@@ -97,7 +97,7 @@ internal class QuadBatcher<T> : RenderBatcher where T : struct, IVertexType
         _batchCount = 0;
     }
 
-    private void FlushArray (MaterialInstance material, Texture? texture, int startIndex, int batchCount)
+    private void FlushArray (Material material, Texture? texture, int startIndex, int batchCount)
     {
         if (batchCount <= 0)
         {

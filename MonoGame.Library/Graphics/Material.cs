@@ -22,29 +22,30 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
 
     public RasterizerState RasterizerState { get; }
 
-    public ushort BatcherId { get; }
+    public RenderBatcher RenderBatcher { get; }
+
+    public MaterialPropertyBlock PropertyBlock { get; } = new ();
 
     private readonly Dictionary<int, EffectParameter?> _parameters = [];
 
     private bool _disposed;
 
-    public Material (string name, Effect effect,
+    public Material (string name, Effect effect, RenderBatcher renderBatcher,
         BlendState? blendState = null,
         int samplerSlot = 0,
         SamplerState? samplerState = null,
         DepthStencilState? depthStencilState = null,
-        RasterizerState? rasterizerState = null,
-        ushort batcherId = 0)
+        RasterizerState? rasterizerState = null)
     {
         Id = Regist (name, this);
         Name = name;
         Effect = effect;
+        RenderBatcher = renderBatcher;
         BlendState = blendState ?? BlendState.AlphaBlend;
         SamplerSlot = samplerSlot;
         SamplerState = samplerState ?? SamplerState.LinearClamp;
         DepthStencilState = depthStencilState ?? DepthStencilState.None;
         RasterizerState = rasterizerState ?? RasterizerState.CullCounterClockwise;
-        BatcherId = batcherId;
 
         foreach (EffectParameter? parameter in Effect.Parameters)
         {
@@ -69,7 +70,23 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
 
     public virtual void OnApply () { }
 
-    public MaterialInstance CreateInstance () => new (this);
+    public void ApplyStates (GraphicsDevice graphicsDevice)
+    {
+        ArgumentNullException.ThrowIfNull (graphicsDevice);
+
+        graphicsDevice.BlendState = BlendState;
+        graphicsDevice.DepthStencilState = DepthStencilState;
+        graphicsDevice.RasterizerState = RasterizerState;
+        graphicsDevice.SamplerStates[SamplerSlot] = SamplerState;
+    }
+
+    public void ApplyProperties (MaterialPropertyBlock? propertyBlock = null)
+    {
+        OnApply ();
+
+        PropertyBlock.ApplyTo (this);
+        propertyBlock?.ApplyTo (this);
+    }
 
     public void Dispose ()
     {

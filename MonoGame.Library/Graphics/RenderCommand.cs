@@ -2,9 +2,7 @@
 
 public readonly struct RenderCommand
 {
-    public MaterialInstance Material { get; }
-
-    public readonly ushort BatcherId => Material.BatcherId;
+    public Material Material { get; }
 
     public MaterialPropertyBlock? Properties { get; }
 
@@ -16,7 +14,7 @@ public readonly struct RenderCommand
 
     public ulong SortKey { get; }
 
-    public RenderCommand (MaterialInstance material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource? texture, float depth = 0f)
+    public RenderCommand (Material material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource? texture, float depth = 0f)
     {
         Material = material;
         Properties = properties;
@@ -26,12 +24,12 @@ public readonly struct RenderCommand
         SortKey = GetSortKey ();
     }
 
-    public RenderCommand (MaterialInstance material, Mesh mesh, TextureResource? texture, float depth = 0f)
+    public RenderCommand (Material material, Mesh mesh, TextureResource? texture, float depth = 0f)
         : this (material, null, mesh, texture, depth)
     {
     }
 
-    public RenderCommand (MaterialInstance material, Mesh mesh, float depth = 0f)
+    public RenderCommand (Material material, Mesh mesh, float depth = 0f)
         : this (material, null, mesh, null, depth)
     {
     }

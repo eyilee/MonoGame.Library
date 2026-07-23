@@ -8,6 +8,8 @@ public class Builder : ContentBuilder
     {
         var contentCollection = new ContentCollection ();
 
+        contentCollection.Include<WildcardRule> ("**.spritefont");
+
         contentCollection.Include<WildcardRule> ("**.fx");
 
         // By default, no content will be imported from the Assets folder using the default importer for their file type.

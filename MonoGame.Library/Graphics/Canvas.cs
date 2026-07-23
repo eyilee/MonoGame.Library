@@ -133,7 +133,7 @@ public class Canvas : IDisposable
             _dirty = false;
         }
 
-        _sprite.Material ??= render.CanvasMaterial;
+        _sprite.Material ??= Materials.Canvas;
 
         _sprite.Draw (render);
     }

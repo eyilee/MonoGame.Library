@@ -5,7 +5,7 @@ namespace MonoGame.Library.Graphics;
 
 public class Sprite (TextureRegion region)
 {
-    public MaterialInstance? Material
+    public Material? Material
     {
         get { return _material; }
         set
@@ -122,7 +122,7 @@ public class Sprite (TextureRegion region)
         }
     }
 
-    private MaterialInstance? _material;
+    private Material? _material;
 
     private readonly Mesh _mesh = new ();
 
@@ -208,7 +208,7 @@ public class Sprite (TextureRegion region)
             _dirty = false;
         }
 
-        _material ??= render.SpriteMaterial;
+        _material ??= Materials.Sprite;
 
         render.Enqueue (new RenderCommand (_material, null, _mesh, Region.Texture));
     }

@@ -8,14 +8,14 @@ public class VertexDeclarationCache<T> where T : struct, IVertexType
     {
         get
         {
-            if (s_cache == null)
+            if (_cache == null)
             {
-                s_cache = default (T).VertexDeclaration;
+                _cache = default (T).VertexDeclaration;
             }
 
-            return s_cache;
+            return _cache;
         }
     }
 
-    private static VertexDeclaration? s_cache;
+    private static VertexDeclaration? _cache;
 }

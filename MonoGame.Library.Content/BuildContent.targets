@@ -11,9 +11,8 @@
    </Target>
   <Target Name="AddGeneratedContentAssets" AfterTargets="BuildContent">
     <ItemGroup>
-      <EmbeddedResource Include="$(ProjectDir)$(OutputPath)Content\**\*">
-        <LogicalName>%(Filename)%(Extension)</LogicalName>
-      </EmbeddedResource>
+      <Assets Include="$(ProjectDir)$(OutputPath)Content\**\*" />
+      <EmbeddedResource Include="@(Assets)" LogicalName="%(Filename)%(Extension)"/>
     </ItemGroup>
   </Target>
 </Project>

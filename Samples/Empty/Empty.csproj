@@ -11,10 +11,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
-    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.5" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MonoGame.Library.csproj" />
+    <ProjectReference Include="..\..\MonoGame.Library\MonoGame.Library.csproj" />
   </ItemGroup>
 </Project>

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace MonoGame.Library.Graphics;
 
-public class Text (FontResource font)
+public class Text (Font font)
 {
-    public MaterialInstance? Material
+    public Material? Material
     {
         get { return _material; }
         set
@@ -19,7 +19,7 @@ public class Text (FontResource font)
         }
     }
 
-    public FontResource Font
+    public Font Font
     {
         get { return _font; }
         set
@@ -139,11 +139,11 @@ public class Text (FontResource font)
         }
     }
 
-    private MaterialInstance? _material;
+    private Material? _material;
 
     private readonly List<Mesh> _meshes = [];
 
-    private FontResource _font = font;
+    private Font _font = font;
 
     private string _value = string.Empty;
 
@@ -288,7 +288,7 @@ public class Text (FontResource font)
             _dirty = false;
         }
 
-        _material ??= render.SpriteMaterial;
+        _material ??= Materials.Sprite;
 
         foreach (Mesh mesh in _meshes)
         {

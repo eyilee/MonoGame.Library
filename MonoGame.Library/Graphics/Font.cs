@@ -6,38 +6,38 @@ using System.Text;
 
 namespace MonoGame.Library.Graphics;
 
-public class FontResource : ResourceRegistry<FontResource>, IResource, IDisposable
+public class Font : ResourceRegistry<Font>, IResource, IDisposable
 {
     public ushort Id { get; }
 
     public string Name { get; }
 
-    public SpriteFont Font { get; }
+    public SpriteFont SpriteFont { get; }
 
-    public int LineSpacing => Font.LineSpacing;
+    public int LineSpacing => SpriteFont.LineSpacing;
 
-    public float Spacing => Font.Spacing;
+    public float Spacing => SpriteFont.Spacing;
 
     public Dictionary<char, SpriteFont.Glyph> Glyphs { get; }
 
     public Texture2DResource Texture { get; }
 
-    public Vector2 MeasureString (string text) => Font.MeasureString (text);
+    public Vector2 MeasureString (string text) => SpriteFont.MeasureString (text);
 
-    public Vector2 MeasureString (StringBuilder text) => Font.MeasureString (text);
+    public Vector2 MeasureString (StringBuilder text) => SpriteFont.MeasureString (text);
 
     private bool _disposed;
 
-    public FontResource (string name, SpriteFont font)
+    public Font (string name, SpriteFont spriteFont)
     {
         Id = Regist (name, this);
         Name = name;
-        Font = font;
-        Glyphs = font.GetGlyphs ();
-        Texture = new Texture2DResource (name, font.Texture);
+        SpriteFont = spriteFont;
+        Glyphs = spriteFont.GetGlyphs ();
+        Texture = new Texture2DResource (name, spriteFont.Texture);
     }
 
-    ~FontResource () => Dispose (false);
+    ~Font () => Dispose (false);
 
     public void Dispose ()
     {
