@@ -2,11 +2,11 @@
 
 namespace MonoGame.Library.Graphics;
 
-public class TextureRegion (Texture2DResource texture, in Rectangle sourceRectangle)
+public class TextureRegion (Texture2DResource texture, in Rectangle? sourceRectangle = null)
 {
     public Texture2DResource Texture { get; } = texture;
 
-    public Rectangle SourceRectangle { get; } = sourceRectangle;
+    public Rectangle SourceRectangle { get; } = sourceRectangle ?? new Rectangle (0, 0, texture.Width, texture.Height);
 
     public int Width => SourceRectangle.Width;
 
