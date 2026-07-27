@@ -4,8 +4,6 @@ namespace MonoGame.Library.Graphics;
 
 public class SdfInstanceBatchEncoder : IBatchEncoder<VertexSdfInstance>
 {
-    public int VertexCount => 1;
-
     public void Encode (VertexSdfInstance[] batchVertices, int index, Mesh mesh)
     {
         Vector4[]? uvs = mesh.UVs;

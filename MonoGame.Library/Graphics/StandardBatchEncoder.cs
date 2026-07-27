@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGame.Library.Graphics;
 
-public class SpriteBatchEncoder : IBatchEncoder<VertexPositionColorTexture>
+public class StandardBatchEncoder : IBatchEncoder<VertexPositionColorTexture>
 {
     public void Encode (VertexPositionColorTexture[] batchVertices, int index, Mesh mesh)
     {
@@ -14,7 +14,7 @@ public class SpriteBatchEncoder : IBatchEncoder<VertexPositionColorTexture>
         bool hasColors = colors != null;
         bool hasUVs = uvs != null;
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < vertices.Length; i++)
         {
             ref VertexPositionColorTexture vertex = ref batchVertices[index + i];
 

@@ -5,6 +5,16 @@ namespace MonoGame.Library.Graphics;
 
 public static class Materials
 {
+    public static Material Standard
+    {
+        get
+        {
+            _standard ??= new Material ("Standard", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Standard);
+
+            return _standard;
+        }
+    }
+
     public static Material Sprite
     {
         get
@@ -54,6 +64,8 @@ public static class Materials
             return _sdfParabola;
         }
     }
+
+    private static Material? _standard;
 
     private static Material? _sprite;
 

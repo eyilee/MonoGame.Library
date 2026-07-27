@@ -1,16 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace MonoGame.Library.Graphics;
 
-internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexType
+internal class StandardBatcher<T> : RenderBatcher where T : struct, IVertexType
 {
     public static VertexDeclaration VertexDeclaration => VertexDeclarationCache<T>.VertexDeclaration;
 
-    private const int IndexCount = 6;
+    private const int IndexCount = 3;
 
-    private const int VertexCount = 4;
+    private const int VertexCount = 3;
 
     private const int InitialCapacity = 32;
 
@@ -20,15 +19,15 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
 
     private int _batchCount;
 
+    private ushort[] _batchIndices;
+
     private T[] _batchVertices;
 
-    private readonly IndexBuffer _indexBuffer;
+    private readonly DynamicIndexBuffer _indexBuffer;
 
-    private readonly VertexBuffer _vertexBuffer;
+    private readonly DynamicVertexBuffer _vertexBuffer;
 
-    private readonly DynamicVertexBuffer _instanceBuffer;
-
-    public QuadInstanceBatcher (GraphicsDevice graphicsDevice, string name, IBatchEncoder<T> batchEncoder, int batchSize = ushort.MaxValue / IndexCount)
+    public StandardBatcher (GraphicsDevice graphicsDevice, string name, IBatchEncoder<T> batchEncoder, int batchSize = ushort.MaxValue / IndexCount)
         : base (graphicsDevice, name)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan (batchSize, ushort.MaxValue / IndexCount);
@@ -37,34 +36,46 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
         _batchSize = batchSize;
 
         _batchCount = 0;
+        _batchIndices = new ushort[InitialCapacity * IndexCount];
         _batchVertices = new T[InitialCapacity * VertexCount];
 
-        _indexBuffer = new IndexBuffer (graphicsDevice, IndexElementSize.SixteenBits, IndexCount, BufferUsage.WriteOnly);
-        _indexBuffer.SetData (new ushort[] { 0, 1, 2, 1, 3, 2 });
-
-        _vertexBuffer = new VertexBuffer (graphicsDevice, VertexDeclarationCache<VertexPosition>.VertexDeclaration, VertexCount, BufferUsage.WriteOnly);
-        _vertexBuffer.SetData ([
-            new VertexPosition (new Vector3 (-0.5f, -0.5f, 0f)),
-            new VertexPosition (new Vector3 (0.5f, -0.5f, 0f)),
-            new VertexPosition (new Vector3 (-0.5f, 0.5f, 0f)),
-            new VertexPosition (new Vector3 (0.5f, 0.5f, 0f))
-            ]);
-
-        _instanceBuffer = new DynamicVertexBuffer (graphicsDevice, VertexDeclaration, _batchSize, BufferUsage.WriteOnly);
+        _indexBuffer = new DynamicIndexBuffer (graphicsDevice, IndexElementSize.SixteenBits, _batchSize * IndexCount, BufferUsage.WriteOnly);
+        _vertexBuffer = new DynamicVertexBuffer (graphicsDevice, VertexDeclaration, _batchSize * VertexCount, BufferUsage.WriteOnly);
     }
 
     public override void Batch (Mesh mesh)
     {
-        EnsureVertexArrayCapacity ();
+        EnsureIndexArrayCapacity (mesh.Indices.Length);
+        EnsureVertexArrayCapacity (mesh.Vertices.Length);
 
+        int batchCount = mesh.Indices.Length / IndexCount;
+
+        mesh.Indices.CopyTo (_batchIndices, _batchCount * IndexCount);
         _batchEncoder.Encode (_batchVertices, _batchCount * VertexCount, mesh);
 
-        _batchCount++;
+        _batchCount += batchCount;
     }
 
-    private void EnsureVertexArrayCapacity ()
+    private void EnsureIndexArrayCapacity (int count)
     {
-        int size = _batchCount * VertexCount + 1;
+        int size = _batchCount * IndexCount + count;
+
+        if (size >= _batchIndices.Length)
+        {
+            int newSize = int.Max (_batchIndices.Length, InitialCapacity * IndexCount);
+
+            while (newSize < size)
+            {
+                newSize *= 2;
+            }
+
+            Array.Resize (ref _batchIndices, newSize);
+        }
+    }
+
+    private void EnsureVertexArrayCapacity (int count)
+    {
+        int size = _batchCount * VertexCount + count;
 
         if (size >= _batchVertices.Length)
         {
@@ -95,6 +106,7 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
         while (batchCount > 0)
         {
             int batchCountToProcess = batchCount;
+
             if (batchCountToProcess > _batchSize)
             {
                 batchCountToProcess = _batchSize;
@@ -116,17 +128,18 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
             return;
         }
 
-        _instanceBuffer.SetData (_batchVertices, batchIndex, batchCount, SetDataOptions.Discard);
+        _indexBuffer.SetData (_batchIndices, batchIndex * IndexCount, batchCount * IndexCount, SetDataOptions.Discard);
+        _vertexBuffer.SetData (_batchVertices, batchIndex * VertexCount, batchCount * VertexCount, SetDataOptions.Discard);
 
         _graphicsDevice.Indices = _indexBuffer;
-        _graphicsDevice.SetVertexBuffers (new VertexBufferBinding (_vertexBuffer, 0, 0), new VertexBufferBinding (_instanceBuffer, 0, 1));
+        _graphicsDevice.SetVertexBuffer (_vertexBuffer);
 
         foreach (EffectPass pass in material.Effect.CurrentTechnique.Passes)
         {
             pass.Apply ();
 
             _graphicsDevice.Textures[0] = texture;
-            _graphicsDevice.DrawInstancedPrimitives (PrimitiveType.TriangleList, 0, 0, 2, batchCount);
+            _graphicsDevice.DrawIndexedPrimitives (PrimitiveType.TriangleList, 0, 0, batchCount);
         }
     }
 }

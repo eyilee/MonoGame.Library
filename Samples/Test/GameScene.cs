@@ -9,10 +9,6 @@ public class GameScene : Scene
 {
     private Text _text = null!;
 
-    private Texture2D _pixelTexture = null!;
-
-    private Texture2DResource _pixel = null!;
-
     private Sprite _boundary = null!;
 
     private SdfCircle _focus = null!;
@@ -20,6 +16,8 @@ public class GameScene : Scene
     private SdfCircle _vertex = null!;
 
     private SdfParabola _parabola = null!;
+
+    private Mesh _mesh = null!;
 
     private float _rotation = 0f;
 
@@ -36,15 +34,12 @@ public class GameScene : Scene
 
     public override void LoadContent ()
     {
-        _text = new Text (Fonts.Default);
-        _text.Position = _vertexPoint - new Vector2 (0f, 100f);
+        _text = new Text (Fonts.Default)
+        {
+            Position = _vertexPoint - new Vector2 (0f, 100f)
+        };
 
-        _pixelTexture = new Texture2D (GraphicsDevice, 1, 1);
-        _pixelTexture.SetData ([Color.White]);
-
-        _pixel = new Texture2DResource ("Pixel", _pixelTexture);
-
-        _boundary = new Sprite (new TextureRegion (_pixel, new Rectangle (0, 0, 1, 1)))
+        _boundary = new Sprite (new TextureRegion (Textures.Pixel))
         {
             Size = new Vector2 (100f, 100f),
             Position = _vertexPoint,
@@ -85,13 +80,16 @@ public class GameScene : Scene
             Vertex = _vertexPoint
         };
 
+        _mesh = new Mesh ();
+        _mesh.SetIndices ([0, 1, 2]);
+        _mesh.SetVertices ([new Vector3 (200f, 200f, 0f), new Vector3 (250f, 200f, 0f), new Vector3 (200f, 250f, 0f)]);
+        _mesh.SetColors ([Color.Red, Color.Green, Color.Blue]);
+
         base.LoadContent ();
     }
 
     public override void UnloadContent ()
     {
-        _pixelTexture?.Dispose ();
-
         base.UnloadContent ();
     }
 
@@ -131,11 +129,13 @@ public class GameScene : Scene
     {
         GraphicsDevice.Clear (Color.CornflowerBlue);
 
-        _text.Draw (Render);
-        _boundary.Draw (Render);
-        _focus.Draw (Render);
-        _vertex.Draw (Render);
-        _parabola?.Draw (Render);
+        //_text.Draw (Render);
+        //_boundary.Draw (Render);
+        //_focus.Draw (Render);
+        //_vertex.Draw (Render);
+        //_parabola?.Draw (Render);
+
+        Render.Enqueue (new RenderCommand (Materials.Standard, _mesh, Textures.Pixel));
 
         base.Draw (gameTime);
     }

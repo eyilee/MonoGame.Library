@@ -11,6 +11,8 @@ internal class QuadBatcher<T> : RenderBatcher where T : struct, IVertexType
 
     private const int VertexCount = 4;
 
+    private const int InitialCapacity = 32;
+
     private readonly IBatchEncoder<T> _batchEncoder;
 
     private readonly int _batchSize;
@@ -32,7 +34,7 @@ internal class QuadBatcher<T> : RenderBatcher where T : struct, IVertexType
         _batchSize = batchSize;
 
         _batchCount = 0;
-        _batchVertices = new T[32 * VertexCount];
+        _batchVertices = new T[InitialCapacity * VertexCount];
 
         ushort[] indices = new ushort[_batchSize * IndexCount];
 
@@ -56,15 +58,28 @@ internal class QuadBatcher<T> : RenderBatcher where T : struct, IVertexType
 
     public override void Batch (Mesh mesh)
     {
-        int index = _batchCount * VertexCount;
-        if (index >= _batchVertices.Length)
-        {
-            Array.Resize (ref _batchVertices, _batchVertices.Length * 2);
-        }
+        EnsureVertexArrayCapacity ();
 
-        _batchEncoder.Encode (_batchVertices, index, mesh);
+        _batchEncoder.Encode (_batchVertices, _batchCount * VertexCount, mesh);
 
         _batchCount++;
+    }
+
+    private void EnsureVertexArrayCapacity ()
+    {
+        int size = (_batchCount + 1) * VertexCount;
+
+        if (size >= _batchVertices.Length)
+        {
+            int newSize = int.Max (_batchVertices.Length, InitialCapacity * VertexCount);
+
+            while (newSize < size)
+            {
+                newSize *= 2;
+            }
+
+            Array.Resize (ref _batchVertices, newSize);
+        }
     }
 
     public override void DrawBatch (Material material, MaterialPropertyBlock? properties, Texture? texture)
@@ -83,12 +98,13 @@ internal class QuadBatcher<T> : RenderBatcher where T : struct, IVertexType
         while (batchCount > 0)
         {
             int batchCountToProcess = batchCount;
+
             if (batchCountToProcess > _batchSize)
             {
                 batchCountToProcess = _batchSize;
             }
 
-            FlushArray (material, texture, batchIndex * VertexCount, batchCountToProcess);
+            FlushArray (material, texture, batchIndex, batchCountToProcess);
 
             batchIndex += batchCountToProcess;
             batchCount -= batchCountToProcess;
@@ -97,14 +113,14 @@ internal class QuadBatcher<T> : RenderBatcher where T : struct, IVertexType
         _batchCount = 0;
     }
 
-    private void FlushArray (Material material, Texture? texture, int startIndex, int batchCount)
+    private void FlushArray (Material material, Texture? texture, int batchIndex, int batchCount)
     {
         if (batchCount <= 0)
         {
             return;
         }
 
-        _vertexBuffer.SetData (_batchVertices, startIndex, batchCount * VertexCount, SetDataOptions.Discard);
+        _vertexBuffer.SetData (_batchVertices, batchIndex * VertexCount, batchCount * VertexCount, SetDataOptions.Discard);
 
         _graphicsDevice.Indices = _indexBuffer;
         _graphicsDevice.SetVertexBuffer (_vertexBuffer);

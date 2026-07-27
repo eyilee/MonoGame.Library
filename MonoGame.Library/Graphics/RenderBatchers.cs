@@ -4,6 +4,16 @@ namespace MonoGame.Library.Graphics;
 
 public static class RenderBatchers
 {
+    public static RenderBatcher Standard
+    {
+        get
+        {
+            _standard ??= new StandardBatcher<VertexPositionColorTexture> (Core.GraphicsDevice, "Standard", new StandardBatchEncoder ());
+
+            return _standard;
+        }
+    }
+
     public static RenderBatcher Sprite
     {
         get
@@ -23,6 +33,8 @@ public static class RenderBatchers
             return _sdfInstance;
         }
     }
+
+    private static RenderBatcher? _standard;
 
     private static RenderBatcher? _sprite;
 

@@ -4,7 +4,7 @@ namespace MonoGame.Library.Graphics;
 
 public class Mesh
 {
-    public int[] Indices => _indices;
+    public ushort[] Indices => _indices;
 
     public Vector3[] Vertices => _vertices;
 
@@ -26,7 +26,7 @@ public class Mesh
 
     public Vector4[]? UV7s => _uv7s;
 
-    protected int[] _indices = [];
+    protected ushort[] _indices = [];
 
     protected Vector3[] _vertices = [];
 
@@ -48,7 +48,7 @@ public class Mesh
 
     protected Vector4[]? _uv7s;
 
-    public void SetIndices (int[] indices) => _indices = indices;
+    public void SetIndices (ushort[] indices) => _indices = indices;
 
     public void SetVertices (Vector3[] vertices) => _vertices = vertices;
 
