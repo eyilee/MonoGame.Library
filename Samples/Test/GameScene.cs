@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Library;
 using MonoGame.Library.Graphics;
 
@@ -7,25 +8,22 @@ namespace Test;
 
 public class GameScene : Scene
 {
-    private Text _text = null!;
+    private SdfCircle _actor = null!;
 
-    private Sprite _boundary = null!;
+    private SdfCircle _aim = null!;
 
-    private SdfCircle _focus = null!;
+    private Vector2 _position = new (Core.ScreenWidth / 2f, Core.ScreenHeight / 2f);
 
-    private SdfCircle _vertex = null!;
-
-    private SdfParabola _parabola = null!;
-
-    private Mesh _mesh = null!;
+    private Vector2 _direction = new (50f, 0f);
 
     private float _rotation = 0f;
 
-    private Vector2 _vertexPoint = new (400f, 300f);
+    private float _rotationSpeed = float.Pi / 2f;
 
-    private float _angle = 0f;
-
-    private readonly float _length = 20f;
+    // right: 0
+    // down: 1/4
+    // left: 1/2
+    // up: 3/4
 
     public override void Initialize ()
     {
@@ -34,56 +32,26 @@ public class GameScene : Scene
 
     public override void LoadContent ()
     {
-        _text = new Text (Fonts.Default)
+        Vector2 offset = _direction;
+        offset.Rotate (_rotation);
+
+        Vector2 aim = _position + offset;
+
+        _actor = new SdfCircle
         {
-            Position = _vertexPoint - new Vector2 (0f, 100f)
-        };
-
-        _boundary = new Sprite (new TextureRegion (Textures.Pixel))
-        {
-            Size = new Vector2 (100f, 100f),
-            Position = _vertexPoint,
-            Color = Color.Green,
-            Rotation = _rotation,
-            Origin = new Vector2 (50f, 50f)
-        };
-
-        Vector2 offset = Vector2.One * _length;
-        offset.Rotate (_angle);
-
-        Vector2 focusPoint = _vertexPoint + offset;
-
-        _focus = new SdfCircle
-        {
-            Position = focusPoint,
-            Thickness = 1f,
+            Position = _position,
+            Thickness = 3f,
             Color = Color.Blue,
-            Radius = 3f
+            Radius = 5f
         };
 
-        _vertex = new SdfCircle
+        _aim = new SdfCircle
         {
-            Position = _vertexPoint,
+            Position = aim,
             Thickness = 1f,
             Color = Color.Red,
             Radius = 3f
         };
-
-        _parabola = new SdfParabola
-        {
-            Position = _vertexPoint,
-            Rotation = _rotation,
-            Scale = new Vector2 (100f, 100f),
-            Thickness = 3f,
-            Color = Color.Yellow,
-            Focus = focusPoint,
-            Vertex = _vertexPoint
-        };
-
-        _mesh = new Mesh ();
-        _mesh.SetIndices ([0, 1, 2]);
-        _mesh.SetVertices ([new Vector3 (200f, 200f, 0f), new Vector3 (250f, 200f, 0f), new Vector3 (200f, 250f, 0f)]);
-        _mesh.SetColors ([Color.Red, Color.Green, Color.Blue]);
 
         base.LoadContent ();
     }
@@ -104,38 +72,83 @@ public class GameScene : Scene
 
     public override void Update (GameTime gameTime)
     {
-        _rotation += (float.Pi / 4f * (float)gameTime.ElapsedGameTime.TotalSeconds);
-        _angle += (float.Pi / 4f * (float)gameTime.ElapsedGameTime.TotalSeconds);
+        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        _text.Value = _rotation.ToString ("F4");
+        float x = 0f;
+        float y = 0f;
 
-        Vector2 offset = -Vector2.UnitY * _length;
-        offset.Rotate (_angle);
+        if (Input.Keyboard.IsKeyDown (Keys.Up))
+        {
+            y -= 1f;
+        }
 
-        Vector2 focusPoint = _vertexPoint + offset;
+        if (Input.Keyboard.IsKeyDown (Keys.Down))
+        {
+            y += 1f;
+        }
 
-        _boundary.Rotation = _rotation;
-        _parabola.Rotation = _rotation;
-        _parabola.Focus = focusPoint;
+        if (Input.Keyboard.IsKeyDown (Keys.Left))
+        {
+            x -= 1f;
+        }
 
+        if (Input.Keyboard.IsKeyDown (Keys.Right))
+        {
+            x += 1f;
+        }
+
+        if (x != 0f || y != 0f)
+        {
+            float r = float.Atan2 (y, x);
+            _rotation += ToAngle (r, deltaTime);
+            _rotation %= float.Pi * 2f;
+        }
+
+        Vector2 offset = _direction;
         offset.Rotate (_rotation);
 
-        _focus.Position = _vertexPoint + offset;
+        Vector2 aim = _position + offset;
+        _aim.Position = aim;
 
         base.Update (gameTime);
+    }
+
+    private float ToAngle (float angle, float deltaTime)
+    {
+        float d = angle - _rotation;
+
+        if (float.Abs (d) >= float.Pi)
+        {
+            if (d > 0)
+            {
+                d -= float.Pi * 2f;
+            }
+            else if (d < 0)
+            {
+                d += float.Pi * 2f;
+            }
+        }
+
+        float amount = 0;
+
+        if (d > 0)
+        {
+            amount = float.Min (d, _rotationSpeed * deltaTime);
+        }
+        else if (d < 0)
+        {
+            amount = float.Max (d, -_rotationSpeed * deltaTime);
+        }
+
+        return amount;
     }
 
     public override void Draw (GameTime gameTime)
     {
         GraphicsDevice.Clear (Color.CornflowerBlue);
 
-        //_text.Draw (Render);
-        //_boundary.Draw (Render);
-        //_focus.Draw (Render);
-        //_vertex.Draw (Render);
-        //_parabola?.Draw (Render);
-
-        Render.Enqueue (new RenderCommand (Materials.Standard, _mesh, Textures.Pixel));
+        _actor.Draw (Render);
+        _aim.Draw (Render);
 
         base.Draw (gameTime);
     }
