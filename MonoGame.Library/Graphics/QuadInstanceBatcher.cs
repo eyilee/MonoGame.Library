@@ -57,7 +57,7 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
     {
         EnsureVertexArrayCapacity ();
 
-        _batchEncoder.Encode (_batchVertices, _batchCount * VertexCount, mesh);
+        _batchEncoder.Encode (_batchVertices, _batchCount, mesh);
 
         _batchCount++;
     }
