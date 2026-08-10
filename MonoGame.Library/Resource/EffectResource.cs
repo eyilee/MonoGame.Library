@@ -6,6 +6,8 @@ internal class EffectResource (string assetName)
 {
     public const string SdfCircleName = "SdfCircle.xnb";
 
+    public const string SdfFilledCircleName = "SdfFilledCircle.xnb";
+
     public const string SdfLineName = "SdfLine.xnb";
 
     public const string SdfParabolaName = "SdfParabola.xnb";
@@ -17,6 +19,15 @@ internal class EffectResource (string assetName)
             _sdfCircle ??= new EffectResource (SdfCircleName);
 
             return _sdfCircle;
+        }
+    }
+
+    public static EffectResource SdfFilledCircle
+    {
+        get
+        {
+            _sdfFilledCircle ??= new EffectResource (SdfFilledCircleName);
+            return _sdfFilledCircle;
         }
     }
 
@@ -41,6 +52,8 @@ internal class EffectResource (string assetName)
     }
 
     private static EffectResource? _sdfCircle;
+
+    private static EffectResource? _sdfFilledCircle;
 
     private static EffectResource? _sdfLine;
 

@@ -45,6 +45,15 @@ public static class Materials
         }
     }
 
+    public static SdfMaterial SdfFilledCircle
+    {
+        get
+        {
+            _sdfFilledCircle ??= new SdfMaterial ("SdfFilledCircle", EffectResource.SdfFilledCircle.Effect, RenderBatchers.SdfInstance);
+            return _sdfFilledCircle;
+        }
+    }
+
     public static SdfMaterial SdfLine
     {
         get
@@ -72,6 +81,8 @@ public static class Materials
     private static Material? _canvas;
 
     private static SdfMaterial? _sdfCircle;
+
+    private static SdfMaterial? _sdfFilledCircle;
 
     private static SdfMaterial? _sdfLine;
 

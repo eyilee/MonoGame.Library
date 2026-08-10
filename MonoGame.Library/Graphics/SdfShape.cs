@@ -6,7 +6,7 @@ public abstract class SdfShape
 {
     public Vector2 Position
     {
-        get { return _position; }
+        get => _position;
         set
         {
             if (_position != value)
@@ -19,7 +19,7 @@ public abstract class SdfShape
 
     public float Rotation
     {
-        get { return _rotation; }
+        get => _rotation;
         set
         {
             if (_rotation != value)
@@ -32,7 +32,7 @@ public abstract class SdfShape
 
     public Vector2 Scale
     {
-        get { return _scale; }
+        get => _scale;
         set
         {
             if (_scale != value)
@@ -45,7 +45,7 @@ public abstract class SdfShape
 
     public float Thickness
     {
-        get { return _thickness; }
+        get => _thickness;
         set
         {
             if (_thickness != value)
@@ -58,7 +58,7 @@ public abstract class SdfShape
 
     public Color Color
     {
-        get { return _color; }
+        get => _color;
         set
         {
             if (_color != value)
@@ -71,13 +71,25 @@ public abstract class SdfShape
 
     public float Depth
     {
-        get { return _depth; }
+        get => _depth;
         set
         {
             if (_depth != value)
             {
                 _depth = value;
                 _dirty = true;
+            }
+        }
+    }
+
+    public bool Filled
+    {
+        get => _filled;
+        set
+        {
+            if (_filled != value)
+            {
+                _filled = value;
             }
         }
     }
@@ -97,6 +109,8 @@ public abstract class SdfShape
     protected float _depth = 0f;
 
     protected bool _dirty = true;
+
+    protected bool _filled = false;
 
     protected abstract void PopulateMesh ();
 
