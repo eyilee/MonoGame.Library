@@ -74,6 +74,25 @@ public static class Materials
         }
     }
 
+    public static SdfMaterial SdfRectangle
+    {
+        get
+        {
+            _sdfRectangle ??= new SdfMaterial ("SdfRectangle", EffectResource.SdfRectangle.Effect, RenderBatchers.SdfInstance);
+
+            return _sdfRectangle;
+        }
+    }
+
+    public static SdfMaterial SdfFilledRectangle
+    {
+        get
+        {
+            _sdfFilledRectangle ??= new SdfMaterial ("SdfFilledRectangle", EffectResource.SdfFilledRectangle.Effect, RenderBatchers.SdfInstance);
+            return _sdfFilledRectangle;
+        }
+    }
+
     private static Material? _standard;
 
     private static Material? _sprite;
@@ -87,4 +106,8 @@ public static class Materials
     private static SdfMaterial? _sdfLine;
 
     private static SdfMaterial? _sdfParabola;
+
+    private static SdfMaterial? _sdfRectangle;
+
+    private static SdfMaterial? _sdfFilledRectangle;
 }

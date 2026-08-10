@@ -12,6 +12,10 @@ internal class EffectResource (string assetName)
 
     public const string SdfParabolaName = "SdfParabola.xnb";
 
+    public const string SdfRectangleName = "SdfRectangle.xnb";
+
+    public const string SdfFilledRectangleName = "SdfFilledRectangle.xnb";
+
     public static EffectResource SdfCircle
     {
         get
@@ -51,6 +55,25 @@ internal class EffectResource (string assetName)
         }
     }
 
+    public static EffectResource SdfRectangle
+    {
+        get
+        {
+            _sdfRectangle ??= new EffectResource (SdfRectangleName);
+
+            return _sdfRectangle;
+        }
+    }
+
+    public static EffectResource SdfFilledRectangle
+    {
+        get
+        {
+            _sdfFilledRectangle ??= new EffectResource (SdfFilledRectangleName);
+            return _sdfFilledRectangle;
+        }
+    }
+
     private static EffectResource? _sdfCircle;
 
     private static EffectResource? _sdfFilledCircle;
@@ -58,6 +81,10 @@ internal class EffectResource (string assetName)
     private static EffectResource? _sdfLine;
 
     private static EffectResource? _sdfParabola;
+
+    private static EffectResource? _sdfRectangle;
+
+    private static EffectResource? _sdfFilledRectangle;
 
     public Effect Effect { get; } = Core.Resource.Load<Effect> (assetName);
 }
