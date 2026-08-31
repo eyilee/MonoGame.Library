@@ -1,22 +1,66 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoGame.Library.Physics;
 
 namespace MonoGame.Library;
 
 public class Entity
 {
-    public Vector2 Position
+    public Transform Transform => _transform;
+
+    public virtual Vector2 Position
     {
-        get => _position;
-        set => _position = value;
+        get => _transform.Position;
+        set => _transform.Position = value;
     }
 
-    public float Rotation
+    public virtual float Rotation
     {
-        get => _rotation;
-        set => _rotation = value;
+        get => _transform.Rotation;
+        set => _transform.Rotation = value;
     }
 
-    private Vector2 _position;
+    public PhysicsBody? PhysicsBody => _physicsBody;
 
-    private float _rotation;
+    private readonly Transform _transform;
+
+    private PhysicsBody? _physicsBody;
+
+    public Entity ()
+    {
+        _transform = new Transform (this);
+        _transform.OnTransformChanged += OnTransformChanged;
+    }
+
+    public void AddPhysics (PhysicsWorld physicsWorld)
+    {
+        if (_physicsBody != null)
+        {
+            return;
+        }
+
+        _physicsBody = new PhysicsBody (this);
+
+        physicsWorld.Add (_physicsBody);
+    }
+
+    public void RemovePhysics (PhysicsWorld physicsWorld)
+    {
+        if (_physicsBody == null)
+        {
+            return;
+        }
+
+        physicsWorld.Remove (_physicsBody);
+
+        _physicsBody.Destroy ();
+        _physicsBody = null;
+    }
+
+    public virtual void OnTransformChanged () { }
+
+    public virtual void OnCollisionEnter (Collision collision) { }
+
+    public virtual void OnCollisionStay (Collision collision) { }
+
+    public virtual void OnCollisionExit (Collision collision) { }
 }

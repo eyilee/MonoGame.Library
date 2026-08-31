@@ -1,8 +1,28 @@
-﻿namespace MonoGame.Library.Physics;
+﻿using System;
+using System.Runtime.CompilerServices;
 
-public class Collision (Collider colliderA, Collider colliderB)
+namespace MonoGame.Library.Physics;
+
+public class Collision (PhysicsBody self, PhysicsBody other) : IEquatable<Collision>
 {
-    public Collider ColliderA { get; } = colliderA;
+    public PhysicsBody Self { get; } = self;
 
-    public Collider ColliderB { get; } = colliderB;
+    public PhysicsBody Other { get; } = other;
+
+    public Collision Reverse () => new (Other, Self);
+
+    bool IEquatable<Collision>.Equals (Collision? other)
+    {
+        return other != null && ReferenceEquals (Self, other.Self) && ReferenceEquals (Other, other.Other);
+    }
+
+    public override bool Equals (object? obj)
+    {
+        return Equals (obj as Collision);
+    }
+
+    public override int GetHashCode ()
+    {
+        return HashCode.Combine (RuntimeHelpers.GetHashCode (Self), RuntimeHelpers.GetHashCode (Other));
+    }
 }
