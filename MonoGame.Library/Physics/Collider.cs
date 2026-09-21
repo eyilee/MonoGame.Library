@@ -1,9 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
 
-public class Collider
+public abstract class Collider
 {
+    [Flags]
+    protected enum DirtyFlag
+    {
+        None = 0,
+        Bounds = 1,
+        Points = 2,
+        All = Bounds | Points
+    }
+
     public Vector2 Position
     {
         get => _position;
@@ -12,7 +23,7 @@ public class Collider
             if (_position != value)
             {
                 _position = value;
-                _dirty = true;
+                SetDirty (DirtyFlag.All);
             }
         }
     }
@@ -25,7 +36,7 @@ public class Collider
             if (_rotation != value)
             {
                 _rotation = value;
-                _dirty = true;
+                SetDirty (DirtyFlag.All);
             }
         }
     }
@@ -38,20 +49,7 @@ public class Collider
             if (_offset != value)
             {
                 _offset = value;
-                _dirty = true;
-            }
-        }
-    }
-
-    public Vector2 Size
-    {
-        get => _size;
-        set
-        {
-            if (_size != value)
-            {
-                _size = value;
-                _dirty = true;
+                SetDirty (DirtyFlag.All);
             }
         }
     }
@@ -60,13 +58,27 @@ public class Collider
     {
         get
         {
-            if (_dirty)
+            if (IsDirty (DirtyFlag.Bounds))
             {
                 _bounds = CalculateBounds ();
-                _dirty = false;
+                ClearDirty (DirtyFlag.Bounds);
             }
 
             return _bounds;
+        }
+    }
+
+    public List<Vector2> Points
+    {
+        get
+        {
+            if (IsDirty (DirtyFlag.Points))
+            {
+                _points = CalculatePoints ();
+                ClearDirty (DirtyFlag.Points);
+            }
+
+            return _points;
         }
     }
 
@@ -76,25 +88,31 @@ public class Collider
 
     private Vector2 _offset;
 
-    private Vector2 _size;
-
     private BoundingBox2D _bounds;
 
-    private bool _dirty = true;
+    private List<Vector2> _points = [];
 
-    private BoundingBox2D CalculateBounds ()
-    {
-        Vector2 halfSize = Size / 2f;
+    private DirtyFlag _dirtyFlags = DirtyFlag.All;
 
-        float cos = float.Abs (float.Cos (_rotation));
-        float sin = float.Abs (float.Sin (_rotation));
+    protected abstract BoundingBox2D CalculateBounds ();
 
-        float halfWidth = cos * halfSize.X + sin * halfSize.Y;
-        float halfHeight = sin * halfSize.X + cos * halfSize.Y;
+    protected abstract List<Vector2> CalculatePoints ();
 
-        Vector2 center = _position + _offset;
-        Vector2 extents = new (halfWidth, halfHeight);
+    protected bool IsDirty (DirtyFlag dirtyFlag) => _dirtyFlags.HasFlag (dirtyFlag);
 
-        return new BoundingBox2D (center - extents, center + extents);
-    }
+    protected void SetDirty (DirtyFlag dirtyFlag) => _dirtyFlags |= dirtyFlag;
+
+    protected void ClearDirty (DirtyFlag dirtyFlag) => _dirtyFlags &= ~dirtyFlag;
+
+    public abstract bool Intersects (Collider other);
+
+    public abstract bool Intersects (BoxCollider other);
+
+    public abstract bool Intersects (CircleCollider other);
+
+    public abstract bool TryGetContact (Collider other, out Contact contact);
+
+    public abstract bool TryGetContact (BoxCollider other, out Contact contact);
+
+    public abstract bool TryGetContact (CircleCollider other, out Contact contact);
 }

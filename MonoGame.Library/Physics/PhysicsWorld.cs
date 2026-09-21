@@ -13,6 +13,8 @@ public class PhysicsWorld
 
     private readonly QuadTree _quadTree = new (4, 4, new BoundingBox2D (new Vector2 (-1000f, -1000f), new Vector2 (1000f, 1000f)));
 
+    public PhysicsResolver Resolver { get; } = new ();
+
     public void Add (PhysicsBody body) => _bodies.Add (body);
 
     public void Remove (PhysicsBody body) => _bodies.Remove (body);
@@ -31,6 +33,8 @@ public class PhysicsWorld
 
         _collisions.Clear ();
         _quadTree.GetCollisions (_collisions);
+
+        Resolver.Resolve (_collisions);
 
         foreach (Collision collision in _collisions)
         {

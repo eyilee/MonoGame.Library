@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace MonoGame.Library.Physics;
@@ -11,9 +11,22 @@ public class Collision (PhysicsBody self, PhysicsBody other) : IEquatable<Collis
 
     public Collision Reverse () => new (Other, Self);
 
-    bool IEquatable<Collision>.Equals (Collision? other)
+    public bool TryGetContact (out Contact contact)
     {
-        return other != null && ReferenceEquals (Self, other.Self) && ReferenceEquals (Other, other.Other);
+        if (Self.Collider == null || Other.Collider == null)
+        {
+            contact = default;
+            return false;
+        }
+
+        return Self.Collider.TryGetContact (Other.Collider, out contact);
+    }
+
+    public bool Equals (Collision? other)
+    {
+        return other != null
+            && ((ReferenceEquals (Self, other.Self) && ReferenceEquals (Other, other.Other))
+            || (ReferenceEquals (Self, other.Other) && ReferenceEquals (Other, other.Self)));
     }
 
     public override bool Equals (object? obj)
@@ -23,6 +36,6 @@ public class Collision (PhysicsBody self, PhysicsBody other) : IEquatable<Collis
 
     public override int GetHashCode ()
     {
-        return HashCode.Combine (RuntimeHelpers.GetHashCode (Self), RuntimeHelpers.GetHashCode (Other));
+        return RuntimeHelpers.GetHashCode (Self) ^ RuntimeHelpers.GetHashCode (Other);
     }
 }

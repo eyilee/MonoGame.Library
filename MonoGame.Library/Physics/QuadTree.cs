@@ -30,10 +30,23 @@ public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Quad
         _nodes.Clear ();
     }
 
-    public void Insert (PhysicsBody body) => _bodies.Add (body);
+    public void Insert (PhysicsBody body)
+    {
+        if (body.Collider == null)
+        {
+            return;
+        }
+
+        _bodies.Add (body);
+    }
 
     public bool TryInsert (PhysicsBody body)
     {
+        if (body.Collider == null)
+        {
+            return false;
+        }
+
         if (!Bounds.Contains (body.Collider.Bounds))
         {
             return false;
@@ -101,6 +114,11 @@ public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Quad
             {
                 foreach (PhysicsBody ancestorBody in ancestorBodies)
                 {
+                    if (body.Collider == null || ancestorBody.Collider == null)
+                    {
+                        continue;
+                    }
+
                     if (body.Collider.Bounds.Intersects (ancestorBody.Collider.Bounds))
                     {
                         collisions.Add (new Collision (body, ancestorBody));
@@ -116,6 +134,11 @@ public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Quad
             for (int j = i + 1; j < _bodies.Count; j++)
             {
                 PhysicsBody bodyB = _bodies[j];
+
+                if (bodyA.Collider == null || bodyB.Collider == null)
+                {
+                    continue;
+                }
 
                 if (bodyA.Collider.Bounds.Intersects (bodyB.Collider.Bounds))
                 {

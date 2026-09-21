@@ -2,7 +2,9 @@
 
 public class PhysicsBody : EntityComponent
 {
-    public Collider Collider { get; } = new ();
+    public Collider? Collider { get; private set; }
+
+    public bool IsStatic { get; set; }
 
     public PhysicsBody (Entity owner) : base (owner)
     {
@@ -16,7 +18,21 @@ public class PhysicsBody : EntityComponent
 
     public virtual void OnTransformChanged ()
     {
-        Collider.Position = Owner.Position;
-        Collider.Rotation = Owner.Rotation;
+        if (Collider != null)
+        {
+            Collider.Position = Owner.Position;
+            Collider.Rotation = Owner.Rotation;
+        }
+    }
+
+    public void AttachCollider (Collider collider)
+    {
+        Collider = collider;
+        OnTransformChanged ();
+    }
+
+    public void DetachCollider ()
+    {
+        Collider = null;
     }
 }
