@@ -62,8 +62,6 @@ public abstract class Shape
 
     protected float _rotation = 0f;
 
-    protected float _thickness = 1f;
-
     protected Color _color = Color.White;
 
     protected float _depth = 0f;

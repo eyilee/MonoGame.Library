@@ -44,5 +44,7 @@ public abstract class SdfShape : Shape
 
     protected Vector2 _scale = Vector2.Zero;
 
+    protected float _thickness = 1f;
+
     protected bool _filled = false;
 }
