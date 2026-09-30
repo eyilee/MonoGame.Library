@@ -1,31 +1,31 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MonoGame.Library.Graphics;
+namespace MonoGame.Library.Graphics.Shapes;
 
-public class SdfRectangle : SdfShape
+public class Circle : SdfShape
 {
-    public Vector2 Size
+    public float Radius
     {
-        get { return _size; }
+        get { return _radius; }
         set
         {
-            if (_size != value)
+            if (_radius != value)
             {
-                _size = value;
+                _radius = value;
                 _dirty = true;
             }
         }
     }
 
-    protected Vector2 _size = Vector2.Zero;
+    protected float _radius = 0f;
 
     protected override void PopulateMesh ()
     {
-        _scale = new Vector2 ((_size.X * 0.5f + _thickness) * 2f, (_size.Y * 0.5f + _thickness) * 2f);
+        _scale = new Vector2 ((_radius + _thickness) * 2f, (_radius + _thickness) * 2f);
 
         _mesh.SetUVs ([_position]);
         _mesh.SetUV1s ([new Vector4 (_rotation, _scale.X, _scale.Y, _thickness)]);
-        _mesh.SetUV2s ([_size * 0.5f]);
+        _mesh.SetUV2s ([_radius]);
         _mesh.SetColors ([_color]);
     }
 
@@ -37,6 +37,6 @@ public class SdfRectangle : SdfShape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Filled ? Materials.SdfFilledRectangle : Materials.SdfRectangle, _mesh, _depth));
+        render.Enqueue (new RenderCommand (Filled ? Materials.SdfFilledCircle : Materials.SdfCircle, _mesh, _depth));
     }
 }

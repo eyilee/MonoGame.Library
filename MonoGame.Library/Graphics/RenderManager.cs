@@ -85,6 +85,12 @@ public class RenderManager
             {
                 int commandIndex = _sortKeys[i].Index;
                 ref RenderCommand command = ref _commands[commandIndex];
+
+                if (!batcher.CanBatch (command.Mesh))
+                {
+                    batcher.DrawBatch (firstCommand.Material, firstCommand.Properties, firstCommand.Texture?.Texture);
+                }
+
                 batcher.Batch (command.Mesh);
             }
 

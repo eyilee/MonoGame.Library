@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MonoGame.Library.Graphics;
+namespace MonoGame.Library.Graphics.Shapes;
 
-public abstract class SdfShape
+public abstract class Shape
 {
     public Vector2 Position
     {
@@ -25,32 +25,6 @@ public abstract class SdfShape
             if (_rotation != value)
             {
                 _rotation = value;
-                _dirty = true;
-            }
-        }
-    }
-
-    public Vector2 Scale
-    {
-        get => _scale;
-        set
-        {
-            if (_scale != value)
-            {
-                _scale = value;
-                _dirty = true;
-            }
-        }
-    }
-
-    public float Thickness
-    {
-        get => _thickness;
-        set
-        {
-            if (_thickness != value)
-            {
-                _thickness = value;
                 _dirty = true;
             }
         }
@@ -82,23 +56,9 @@ public abstract class SdfShape
         }
     }
 
-    public bool Filled
-    {
-        get => _filled;
-        set
-        {
-            if (_filled != value)
-            {
-                _filled = value;
-            }
-        }
-    }
-
     protected readonly Mesh _mesh = new ();
 
     protected Vector2 _position = Vector2.Zero;
-
-    protected Vector2 _scale = Vector2.Zero;
 
     protected float _rotation = 0f;
 
@@ -109,8 +69,6 @@ public abstract class SdfShape
     protected float _depth = 0f;
 
     protected bool _dirty = true;
-
-    protected bool _filled = false;
 
     protected abstract void PopulateMesh ();
 

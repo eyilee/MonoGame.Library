@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MonoGame.Library.Graphics;
+namespace MonoGame.Library.Graphics.Shapes;
 
-public class SdfParabola : SdfShape
+public class Parabola : SdfShape
 {
     public Vector2 Focus
     {
@@ -36,7 +36,7 @@ public class SdfParabola : SdfShape
 
     protected override void PopulateMesh ()
     {
-        float angle = float.Atan2 (_focus.Y - _vertex.Y, _focus.X - _vertex.X) - (float.Pi / 2f);
+        float angle = float.Atan2 (_focus.Y - _vertex.Y, _focus.X - _vertex.X) - float.Pi / 2f;
         Vector2 offset = _vertex - _position;
 
         _mesh.SetUVs ([_position]);

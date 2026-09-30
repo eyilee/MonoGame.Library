@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MonoGame.Library.Graphics;
+namespace MonoGame.Library.Graphics.Shapes;
 
-public class SdfLine : SdfShape
+public class Line : SdfShape
 {
     public Vector2 Start
     {

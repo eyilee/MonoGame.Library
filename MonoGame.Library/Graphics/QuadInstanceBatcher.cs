@@ -53,6 +53,11 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
         _instanceBuffer = new DynamicVertexBuffer (graphicsDevice, VertexDeclaration, _batchSize, BufferUsage.WriteOnly);
     }
 
+    public override bool CanBatch (Mesh mesh)
+    {
+        return true;
+    }
+
     public override void Batch (Mesh mesh)
     {
         EnsureVertexArrayCapacity ();
