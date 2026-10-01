@@ -9,7 +9,7 @@ public static class Materials
     {
         get
         {
-            _standard ??= new Material ("Standard", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Standard);
+            _standard ??= new SpriteMaterial ("Standard", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Standard);
 
             return _standard;
         }
@@ -19,7 +19,7 @@ public static class Materials
     {
         get
         {
-            _sprite ??= new Material ("Sprite", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Sprite);
+            _sprite ??= new SpriteMaterial ("Sprite", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Sprite);
 
             return _sprite;
         }
@@ -29,7 +29,7 @@ public static class Materials
     {
         get
         {
-            _canvas ??= new Material ("Canvas", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Sprite, samplerState: SamplerState.PointClamp);
+            _canvas ??= new SpriteMaterial ("Canvas", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Sprite, samplerState: SamplerState.PointClamp);
 
             return _canvas;
         }
