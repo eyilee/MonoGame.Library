@@ -1,17 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace MonoGame.Library.Graphics.Shapes;
+﻿namespace MonoGame.Library.Graphics.Shapes;
 
 public abstract class SdfShape : Shape
 {
-    public Vector2 Scale
+    public float Rotation
     {
-        get => _scale;
+        get => _rotation;
         set
         {
-            if (_scale != value)
+            if (_rotation != value)
             {
-                _scale = value;
+                _rotation = value;
                 _dirty = true;
             }
         }
@@ -30,21 +28,7 @@ public abstract class SdfShape : Shape
         }
     }
 
-    public bool Filled
-    {
-        get => _filled;
-        set
-        {
-            if (_filled != value)
-            {
-                _filled = value;
-            }
-        }
-    }
-
-    protected Vector2 _scale = Vector2.Zero;
+    protected float _rotation = 0f;
 
     protected float _thickness = 1f;
-
-    protected bool _filled = false;
 }

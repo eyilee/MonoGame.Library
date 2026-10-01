@@ -4,24 +4,39 @@ using System.Collections.Generic;
 
 namespace MonoGame.Library.Graphics.Shapes;
 
-public class Polygon : Shape
+public class PolygonShape : Shape
 {
+    public float Rotation
+    {
+        get => _rotation;
+        set
+        {
+            if (_rotation != value)
+            {
+                _rotation = value;
+                _dirty = true;
+            }
+        }
+    }
+
     public List<Vector2> Vertices => _vertices;
 
-    private readonly List<Vector2> _vertices = [];
+    protected float _rotation = 0f;
+
+    protected readonly List<Vector2> _vertices = [];
+
+    protected Vector2 _centroid = Vector2.Zero;
 
     public void SetVertices (List<Vector2> vertices)
     {
-        _vertices.Clear ();
+        _centroid = CalculateCentroid (vertices);
 
-        if (_vertices.Capacity < vertices.Count)
-        {
-            _vertices.Capacity = vertices.Count;
-        }
+        _vertices.Clear ();
+        _vertices.Capacity = vertices.Count;
 
         foreach (Vector2 vertex in vertices)
         {
-            _vertices.Add (vertex);
+            _vertices.Add (vertex - _centroid);
         }
 
         _dirty = true;
@@ -44,6 +59,36 @@ public class Polygon : Shape
         }
 
         render.Enqueue (new RenderCommand (Materials.Standard, _mesh, Textures.Pixel, _depth));
+    }
+
+    private static Vector2 CalculateCentroid (List<Vector2> vertices)
+    {
+        Vector2 centroid = Vector2.Zero;
+        float area = 0f;
+
+        for (int i = 0; i < vertices.Count; i++)
+        {
+            Vector2 p0 = vertices[i];
+            Vector2 p1 = vertices[(i + 1) % vertices.Count];
+
+            float cross = p0.X * p1.Y - p1.X * p0.Y;
+
+            area += cross;
+
+            centroid.X += (p0.X + p1.X) * cross;
+            centroid.Y += (p0.Y + p1.Y) * cross;
+        }
+
+        area *= 0.5f;
+
+        if (float.Abs (area) < float.Epsilon)
+        {
+            return Vector2.Zero;
+        }
+
+        centroid /= 6f * area;
+
+        return centroid;
     }
 
     private void CalculateIndices ()
@@ -150,7 +195,7 @@ public class Polygon : Shape
 
         foreach (Vector2 vertex in _vertices)
         {
-            vertices.Add (new Vector3 (vertex.X + _position.X, vertex.Y + _position.Y, 0f));
+            vertices.Add (new Vector3 (_centroid + Vector2.Rotate (vertex, _rotation), 0f));
         }
 
         _mesh.SetVertices ([.. vertices]);

@@ -2,8 +2,21 @@
 
 namespace MonoGame.Library.Graphics.Shapes;
 
-public class Circle : SdfShape
+public class SdfCircle : SdfShape
 {
+    public Vector2 Position
+    {
+        get => _position;
+        set
+        {
+            if (_position != value)
+            {
+                _position = value;
+                _dirty = true;
+            }
+        }
+    }
+
     public float Radius
     {
         get { return _radius; }
@@ -17,14 +30,30 @@ public class Circle : SdfShape
         }
     }
 
+    public bool Filled
+    {
+        get => _filled;
+        set
+        {
+            if (_filled != value)
+            {
+                _filled = value;
+            }
+        }
+    }
+
+    protected Vector2 _position = Vector2.Zero;
+
     protected float _radius = 0f;
+
+    protected bool _filled = false;
 
     protected override void PopulateMesh ()
     {
-        _scale = new Vector2 ((_radius + _thickness) * 2f, (_radius + _thickness) * 2f);
+        Vector2 scale = new ((_radius + _thickness) * 2f, (_radius + _thickness) * 2f);
 
         _mesh.SetUVs ([_position]);
-        _mesh.SetUV1s ([new Vector4 (_rotation, _scale.X, _scale.Y, _thickness)]);
+        _mesh.SetUV1s ([new Vector4 (_rotation, scale.X, scale.Y, _thickness)]);
         _mesh.SetUV2s ([_radius]);
         _mesh.SetColors ([_color]);
     }

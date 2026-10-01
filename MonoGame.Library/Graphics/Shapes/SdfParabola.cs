@@ -2,8 +2,34 @@
 
 namespace MonoGame.Library.Graphics.Shapes;
 
-public class Parabola : SdfShape
+public class SdfParabola : SdfShape
 {
+    public Vector2 Position
+    {
+        get => _position;
+        set
+        {
+            if (_position != value)
+            {
+                _position = value;
+                _dirty = true;
+            }
+        }
+    }
+
+    public Vector2 Scale
+    {
+        get => _scale;
+        set
+        {
+            if (_scale != value)
+            {
+                _scale = value;
+                _dirty = true;
+            }
+        }
+    }
+
     public Vector2 Focus
     {
         get { return _focus; }
@@ -29,6 +55,10 @@ public class Parabola : SdfShape
             }
         }
     }
+
+    protected Vector2 _position = Vector2.Zero;
+
+    protected Vector2 _scale = Vector2.Zero;
 
     protected Vector2 _focus = Vector2.Zero;
 
