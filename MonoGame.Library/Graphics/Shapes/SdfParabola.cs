@@ -69,7 +69,7 @@ public class SdfParabola : SdfShape
         float angle = float.Atan2 (_focus.Y - _vertex.Y, _focus.X - _vertex.X) - float.Pi / 2f;
         Vector2 offset = _vertex - _position;
 
-        _mesh.SetUVs ([_position]);
+        _mesh.SetUVs ([new Vector3 (_position, _depth)]);
         _mesh.SetUV1s ([new Vector4 (_rotation, _scale.X, _scale.Y, _thickness)]);
         _mesh.SetUV2s ([new Vector4 (-angle, offset.X, offset.Y, 1f / (4f * Vector2.Distance (_focus, _vertex)))]);
         _mesh.SetColors ([_color]);

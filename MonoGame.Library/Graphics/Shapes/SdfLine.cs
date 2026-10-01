@@ -39,7 +39,7 @@ public class SdfLine : SdfShape
         Vector2 position = (_start + _end) * 0.5f;
         Vector2 scale = new (float.Abs (_end.X - _start.X) + _thickness * 2f, float.Abs (_end.Y - _start.Y) + _thickness * 2f);
 
-        _mesh.SetUVs ([position]);
+        _mesh.SetUVs ([new Vector3 (position, _depth)]);
         _mesh.SetUV1s ([new Vector4 (_rotation, scale.X, scale.Y, _thickness)]);
         _mesh.SetUV2s ([new Vector4 (_start.X - position.X, _start.Y - position.Y, _end.X - position.X, _end.Y - position.Y)]);
         _mesh.SetColors ([_color]);

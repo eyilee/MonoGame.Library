@@ -50,6 +50,7 @@ public static class Materials
         get
         {
             _sdfFilledCircle ??= new SdfMaterial ("SdfFilledCircle", EffectResource.SdfFilledCircle.Effect, RenderBatchers.SdfInstance);
+
             return _sdfFilledCircle;
         }
     }
@@ -89,6 +90,7 @@ public static class Materials
         get
         {
             _sdfFilledRectangle ??= new SdfMaterial ("SdfFilledRectangle", EffectResource.SdfFilledRectangle.Effect, RenderBatchers.SdfInstance);
+
             return _sdfFilledRectangle;
         }
     }

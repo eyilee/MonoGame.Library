@@ -195,7 +195,7 @@ public class PolygonShape : Shape
 
         foreach (Vector2 vertex in _vertices)
         {
-            vertices.Add (new Vector3 (_centroid + Vector2.Rotate (vertex, _rotation), 0f));
+            vertices.Add (new Vector3 (_centroid + Vector2.Rotate (vertex, _rotation), _depth));
         }
 
         _mesh.SetVertices ([.. vertices]);

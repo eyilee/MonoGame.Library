@@ -52,7 +52,7 @@ public class SdfCircle : SdfShape
     {
         Vector2 scale = new ((_radius + _thickness) * 2f, (_radius + _thickness) * 2f);
 
-        _mesh.SetUVs ([_position]);
+        _mesh.SetUVs ([new Vector3 (_position, _depth)]);
         _mesh.SetUV1s ([new Vector4 (_rotation, scale.X, scale.Y, _thickness)]);
         _mesh.SetUV2s ([_radius]);
         _mesh.SetColors ([_color]);

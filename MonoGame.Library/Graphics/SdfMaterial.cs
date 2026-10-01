@@ -13,7 +13,7 @@ public class SdfMaterial : Material
         SamplerState? samplerState = null,
         DepthStencilState? depthStencilState = null,
         RasterizerState? rasterizerState = null)
-        : base (name, effect, renderBatcher, blendState, samplerSlot, samplerState, depthStencilState, rasterizerState)
+        : base (name, effect, renderBatcher, blendState, samplerSlot, samplerState, depthStencilState ?? DepthStencilState.DepthRead, rasterizerState)
     {
         _worldViewProjection = GetParameter (MaterialPropertyIds.GetId ("WorldViewProjection")) ?? throw new NullReferenceException ();
     }
