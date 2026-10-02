@@ -23,10 +23,15 @@ public class BoxCollider : Collider
 
     protected override BoundingBox2D CalculateBounds ()
     {
+        return CalculateBounds (Position, Rotation);
+    }
+
+    protected override BoundingBox2D CalculateBounds (Vector2 position, float rotation)
+    {
         Vector2 halfSize = Size / 2f;
 
-        float cos = float.Abs (float.Cos (Rotation));
-        float sin = float.Abs (float.Sin (Rotation));
+        float cos = float.Abs (float.Cos (rotation));
+        float sin = float.Abs (float.Sin (rotation));
 
         float halfWidth = cos * halfSize.X + sin * halfSize.Y;
         float halfHeight = sin * halfSize.X + cos * halfSize.Y;
@@ -39,6 +44,11 @@ public class BoxCollider : Collider
 
     protected override List<Vector2> CalculatePoints ()
     {
+        return CalculatePoints (Position, Rotation);
+    }
+
+    protected override List<Vector2> CalculatePoints (Vector2 position, float rotation)
+    {
         Vector2 halfSize = Size / 2f;
 
         List<Vector2> points = [
@@ -50,7 +60,7 @@ public class BoxCollider : Collider
 
         for (int i = 0; i < 4; i++)
         {
-            points[i] = Vector2.Rotate (points[i], Rotation) + Position + Offset;
+            points[i] = Position + Vector2.Rotate (points[i], Rotation) + Offset;
         }
 
         return points;
@@ -135,6 +145,11 @@ public class BoxCollider : Collider
         }
 
         return false;
+    }
+
+    public override bool Intersects (PolygonCollider other)
+    {
+        throw new System.NotImplementedException ();
     }
 
     public override bool TryGetContact (Collider other, out Contact contact)
@@ -300,5 +315,10 @@ public class BoxCollider : Collider
         };
 
         return true;
+    }
+
+    public override bool TryGetContact (PolygonCollider other, out Contact contact)
+    {
+        throw new System.NotImplementedException ();
     }
 }

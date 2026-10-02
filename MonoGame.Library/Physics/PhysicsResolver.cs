@@ -20,10 +20,10 @@ public class PhysicsResolver
 
     private static void Resolve (Collision collision)
     {
-        PhysicsBody bodyA = collision.Self;
-        PhysicsBody bodyB = collision.Other;
+        PhysicsBody bodySelf = collision.Self;
+        PhysicsBody bodyOther = collision.Other;
 
-        if (bodyA.IsStatic && bodyB.IsStatic)
+        if (bodySelf.IsStatic && bodyOther.IsStatic)
         {
             return;
         }
@@ -35,20 +35,20 @@ public class PhysicsResolver
 
         Vector2 correction = contact.Normal * contact.Penetration;
 
-        if (bodyA.IsStatic)
+        if (bodySelf.IsStatic)
         {
-            bodyB.Owner.Position -= correction;
+            bodyOther.Owner.Position -= correction;
         }
-        else if (bodyB.IsStatic)
+        else if (bodyOther.IsStatic)
         {
-            bodyA.Owner.Position += correction;
+            bodySelf.Owner.Position += correction;
         }
         else
         {
             Vector2 halfCorrection = correction / 2f;
 
-            bodyA.Owner.Position += halfCorrection;
-            bodyB.Owner.Position -= halfCorrection;
+            bodySelf.Owner.Position += halfCorrection;
+            bodyOther.Owner.Position -= halfCorrection;
         }
     }
 }

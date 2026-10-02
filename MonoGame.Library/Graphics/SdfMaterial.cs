@@ -20,7 +20,6 @@ public class SdfMaterial : Material
 
     public override void OnApply ()
     {
-        // TODO: modify only changed
         _worldViewProjection.SetValue (Camera.Main.GetViewProjectionMatrix ());
     }
 }

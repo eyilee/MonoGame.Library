@@ -21,6 +21,19 @@ public class PolygonShape : Shape
 
     public List<Vector2> Vertices => _vertices;
 
+    public Vector2 Centroid
+    {
+        get => _centroid;
+        set
+        {
+            if (_centroid != value)
+            {
+                _centroid = value;
+                _dirty = true;
+            }
+        }
+    }
+
     protected float _rotation = 0f;
 
     protected readonly List<Vector2> _vertices = [];

@@ -17,4 +17,8 @@ public struct BoundingBox2D (Vector2 min, Vector2 max)
     public readonly bool Contains (BoundingBox2D other) => Contains (other.Min) && Contains (other.Max);
 
     public readonly bool Intersects (BoundingBox2D other) => !(other.Min.X > Max.X || other.Max.X < Min.X || other.Min.Y > Max.Y || other.Max.Y < Min.Y);
+
+    public readonly BoundingBox2D Encapsulate (BoundingBox2D other) => new (Vector2.Min (Min, other.Min), Vector2.Max (Max, other.Max));
+
+    public readonly BoundingBox2D Expand (BoundingBox2D other) => new (Min + other.Size / 2f, Max + other.Size / 2f);
 }

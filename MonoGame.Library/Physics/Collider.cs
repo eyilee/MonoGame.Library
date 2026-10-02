@@ -98,6 +98,10 @@ public abstract class Collider
 
     protected abstract List<Vector2> CalculatePoints ();
 
+    protected abstract BoundingBox2D CalculateBounds (Vector2 position, float rotation);
+
+    protected abstract List<Vector2> CalculatePoints (Vector2 position, float rotation);
+
     protected bool IsDirty (DirtyFlag dirtyFlag) => _dirtyFlags.HasFlag (dirtyFlag);
 
     protected void SetDirty (DirtyFlag dirtyFlag) => _dirtyFlags |= dirtyFlag;
@@ -110,9 +114,13 @@ public abstract class Collider
 
     public abstract bool Intersects (CircleCollider other);
 
+    public abstract bool Intersects (PolygonCollider other);
+
     public abstract bool TryGetContact (Collider other, out Contact contact);
 
     public abstract bool TryGetContact (BoxCollider other, out Contact contact);
 
     public abstract bool TryGetContact (CircleCollider other, out Contact contact);
+
+    public abstract bool TryGetContact (PolygonCollider other, out Contact contact);
 }

@@ -22,15 +22,25 @@ public class CircleCollider : Collider
 
     protected override BoundingBox2D CalculateBounds ()
     {
+        return CalculateBounds (Position, Rotation);
+    }
+
+    protected override BoundingBox2D CalculateBounds (Vector2 position, float rotation)
+    {
         Vector2 center = Position + Offset;
-        Vector2 extents = new (_radius, _radius);
+        Vector2 extents = new (Radius, Radius);
 
         return new BoundingBox2D (center - extents, center + extents);
     }
 
     protected override List<Vector2> CalculatePoints ()
     {
-        return [Position + Offset];
+        return CalculatePoints (Position, Rotation);
+    }
+
+    protected override List<Vector2> CalculatePoints (Vector2 position, float rotation)
+    {
+        return [position + Offset];
     }
 
     public override bool Intersects (Collider other)
@@ -64,6 +74,11 @@ public class CircleCollider : Collider
         }
 
         return false;
+    }
+
+    public override bool Intersects (PolygonCollider other)
+    {
+        throw new System.NotImplementedException ();
     }
 
     public override bool TryGetContact (Collider other, out Contact contact)
@@ -106,5 +121,10 @@ public class CircleCollider : Collider
         };
 
         return true;
+    }
+
+    public override bool TryGetContact (PolygonCollider other, out Contact contact)
+    {
+        throw new System.NotImplementedException ();
     }
 }
