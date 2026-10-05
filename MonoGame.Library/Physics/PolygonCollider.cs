@@ -65,7 +65,7 @@ public class PolygonCollider : Collider
 
     public override bool Intersects (PolygonCollider other)
     {
-        return Physics2D.Intersects (Points, other.Points);
+        return Physics2D.Intersects (new Polygon (Points), new Polygon (other.Points));
     }
 
     public override bool TryGetContact (Collider other, out Contact contact)
@@ -85,6 +85,6 @@ public class PolygonCollider : Collider
 
     public override bool TryGetContact (PolygonCollider other, out Contact contact)
     {
-        return Physics2D.TryGetContact (Points, other.Points, out contact);
+        return Physics2D.TryGetContact (new Polygon (Points), new Polygon (other.Points), out contact);
     }
 }

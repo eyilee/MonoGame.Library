@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
@@ -7,27 +8,28 @@ public class Physics2D
 {
     public const float Epsilon = 1e-6f;
 
-    public static bool Intersects (List<Vector2> self, List<Vector2> other)
-    {
-        Vector2 direction = self[0] - other[0];
+    public const float EpsilonSquared = Epsilon * Epsilon;
 
-        if (direction.LengthSquared () < Epsilon)
+    public static bool Intersects (in ISupportable self, in ISupportable other)
+    {
+        return Intersects (self, other, out _);
+    }
+
+    public static bool Intersects (in ISupportable self, in ISupportable other, out List<Vector2> simplex)
+    {
+        Vector2 direction = self.Center - other.Center;
+
+        if (direction.LengthSquared () < EpsilonSquared)
         {
             direction = Vector2.UnitX;
         }
 
-        List<Vector2> simplex = [Support (self, other, direction)];
-
+        simplex = [self.Support (direction) - other.Support (-direction)];
         direction = -simplex[0];
 
         while (true)
         {
-            if (direction.LengthSquared () < Epsilon)
-            {
-                return true;
-            }
-
-            Vector2 point = Support (self, other, direction);
+            Vector2 point = self.Support (direction) - other.Support (-direction);
 
             if (Vector2.Dot (point, direction) <= 0)
             {
@@ -36,75 +38,42 @@ public class Physics2D
 
             simplex.Add (point);
 
-            if (HandleSimplex (simplex, ref direction))
+            if (simplex.Count == 2)
             {
-                return true;
+                Vector2 a = simplex[1];
+                Vector2 b = simplex[0];
+                Vector2 ab = b - a;
+                Vector2 ao = -a;
+
+                direction = TripleProduct (ab, ao, ab);
+            }
+            else if (simplex.Count == 3)
+            {
+                Vector2 a = simplex[2];
+                Vector2 b = simplex[1];
+                Vector2 c = simplex[0];
+                Vector2 ab = b - a;
+                Vector2 ac = c - a;
+                Vector2 ao = -a;
+                Vector2 abPerp = TripleProduct (ac, ab, ab);
+                Vector2 acPerp = TripleProduct (ab, ac, ac);
+
+                if (Vector2.Dot (abPerp, ao) > 0)
+                {
+                    simplex.RemoveAt (0);
+                    direction = abPerp;
+                }
+                else if (Vector2.Dot (acPerp, ao) > 0)
+                {
+                    simplex.RemoveAt (1);
+                    direction = acPerp;
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
-    }
-
-    private static Vector2 Support (List<Vector2> self, List<Vector2> other, Vector2 direction)
-    {
-        return GetFarthestPoint (self, direction) - GetFarthestPoint (other, -direction);
-    }
-
-    private static Vector2 GetFarthestPoint (List<Vector2> polygon, Vector2 direction)
-    {
-        float maxDot = float.NegativeInfinity;
-        Vector2 farthestPoint = Vector2.Zero;
-
-        foreach (Vector2 vertex in polygon)
-        {
-            float dot = Vector2.Dot (vertex, direction);
-            if (dot > maxDot)
-            {
-                maxDot = dot;
-                farthestPoint = vertex;
-            }
-        }
-
-        return farthestPoint;
-    }
-
-    private static bool HandleSimplex (List<Vector2> simplex, ref Vector2 direction)
-    {
-        if (simplex.Count == 2)
-        {
-            Vector2 a = simplex[1];
-            Vector2 b = simplex[0];
-            Vector2 ab = b - a;
-            Vector2 ao = -a;
-
-            direction = TripleProduct (ab, ao, ab);
-        }
-        else if (simplex.Count == 3)
-        {
-            Vector2 a = simplex[2];
-            Vector2 b = simplex[1];
-            Vector2 c = simplex[0];
-            Vector2 ab = b - a;
-            Vector2 ac = c - a;
-            Vector2 ao = -a;
-            Vector2 abPerp = TripleProduct (ac, ab, ab);
-            Vector2 acPerp = TripleProduct (ab, ac, ac);
-
-            if (Vector2.Dot (abPerp, ao) > 0)
-            {
-                simplex.RemoveAt (0);
-                direction = abPerp;
-            }
-            else if (Vector2.Dot (acPerp, ao) > 0)
-            {
-                simplex.RemoveAt (1);
-                direction = acPerp;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static Vector2 TripleProduct (Vector2 v1, Vector2 v2, Vector2 v3)
@@ -114,51 +83,39 @@ public class Physics2D
         return new Vector2 (-cross * v3.Y, cross * v3.X);
     }
 
-    public static bool TryGetContact (List<Vector2> self, List<Vector2> other, out Contact contact)
+    public static bool TryGetContact (in ISupportable self, in ISupportable other, out Contact contact)
     {
-        Vector2 direction = self[0] - other[0];
-
-        if (direction.LengthSquared () < Epsilon)
+        if (!Intersects (self, other, out List<Vector2> simplex))
         {
-            direction = Vector2.UnitX;
+            contact = default;
+
+            return false;
         }
 
-        List<Vector2> simplex = [Support (self, other, direction)];
-
-        direction = -simplex[0];
-
-        while (true)
-        {
-            if (direction.LengthSquared () < Epsilon)
-            {
-                return TryGetContact (self, other, simplex, out contact);
-            }
-
-            Vector2 point = Support (self, other, direction);
-
-            if (Vector2.Dot (point, direction) <= 0)
-            {
-                contact = default;
-
-                return false;
-            }
-
-            simplex.Add (point);
-
-            if (HandleSimplex (simplex, ref direction))
-            {
-                return TryGetContact (self, other, simplex, out contact);
-            }
-        }
+        var result = TryGetContact (self, other, simplex, out contact);
+        Console.WriteLine (result);
+        Console.WriteLine (contact.Penetration);
+        Console.WriteLine (contact.Normal);
+        return result;
     }
 
-    private static bool TryGetContact (List<Vector2> self, List<Vector2> other, List<Vector2> simplex, out Contact contact)
+    public static bool TryGetContact (in ISupportable self, in ISupportable other, List<Vector2> simplex, out Contact contact)
     {
-        while (true)
+        if (simplex.Count != 3)
+        {
+            contact = default;
+            return false;
+        }
+
+        List<float> distances = [];
+
+        for (int iteration = 0; iteration < 32; iteration++)
         {
             int cloestEdgeIndex = -1;
             Vector2 closestNormal = Vector2.Zero;
             float closestDistance = float.MaxValue;
+
+            distances.Clear ();
 
             for (int i = 0; i < simplex.Count; i++)
             {
@@ -166,7 +123,7 @@ public class Physics2D
                 Vector2 b = simplex[(i + 1) % simplex.Count];
                 Vector2 edge = b - a;
 
-                if (edge.LengthSquared () < Epsilon)
+                if (edge.LengthSquared () < EpsilonSquared)
                 {
                     continue;
                 }
@@ -182,7 +139,9 @@ public class Physics2D
                     distance = -distance;
                 }
 
-                if (distance < closestDistance)
+                distances.Add (distance);
+
+                if (distance <= closestDistance)
                 {
                     cloestEdgeIndex = i;
                     closestNormal = normal;
@@ -197,9 +156,21 @@ public class Physics2D
                 return false;
             }
 
-            Vector2 point = Support (self, other, closestNormal);
+            Vector2 point = self.Support (closestNormal) - other.Support (-closestNormal);
 
-            if (simplex.Contains (point))
+            bool duplicate = false;
+
+            for (int i = 0; i < simplex.Count; i++)
+            {
+                if (Vector2.DistanceSquared (point, simplex[i]) <= Epsilon)
+                {
+                    duplicate = true;
+                }
+            }
+
+            float pointDistance = Vector2.Dot (closestNormal, point);
+
+            if (pointDistance - closestDistance < Epsilon || duplicate)
             {
                 contact = new Contact
                 {
@@ -210,7 +181,16 @@ public class Physics2D
                 return true;
             }
 
+            if (simplex.Contains (point))
+            {
+                Console.WriteLine ("");
+            }
+
             simplex.Insert (cloestEdgeIndex + 1, point);
         }
+
+        contact = default;
+
+        return false;
     }
 }

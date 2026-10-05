@@ -1,14 +1,17 @@
 using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
 
 public class PhysicsResolver
 {
-    public int Iterations { get; set; } = 4;
+    public int Iterations { get; set; } = 1;
 
     public void Resolve (HashSet<Collision> collisions)
     {
+        Console.WriteLine ("Resolve BEGIN");
+
         for (int i = 0; i < Iterations; i++)
         {
             foreach (Collision collision in collisions)
@@ -16,6 +19,8 @@ public class PhysicsResolver
                 Resolve (collision);
             }
         }
+
+        Console.WriteLine ("Resolve END");
     }
 
     private static void Resolve (Collision collision)

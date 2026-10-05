@@ -69,7 +69,7 @@ public class CircleCollider : Collider
 
     public override bool Intersects (PolygonCollider other)
     {
-        throw new System.NotImplementedException ();
+        return Physics2D.Intersects (new Circle (Points[0], Radius), new Polygon (other.Points));
     }
 
     public override bool TryGetContact (Collider other, out Contact contact)
