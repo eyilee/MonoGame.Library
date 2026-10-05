@@ -34,6 +34,8 @@ public class PhysicsWorld
         _collisions.Clear ();
         _quadTree.GetCollisions (_collisions);
 
+        _collisions.RemoveWhere (x => !x.Intersects);
+
         Resolver.Resolve (_collisions);
 
         foreach (Collision collision in _collisions)

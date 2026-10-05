@@ -6,6 +6,19 @@ namespace MonoGame.Library.Graphics.Shapes;
 
 public class PolygonShape : Shape
 {
+    public Vector2 Position
+    {
+        get => _position;
+        set
+        {
+            if (_position != value)
+            {
+                _position = value;
+                _dirty = true;
+            }
+        }
+    }
+
     public float Rotation
     {
         get => _rotation;
@@ -21,35 +34,20 @@ public class PolygonShape : Shape
 
     public List<Vector2> Vertices => _vertices;
 
-    public Vector2 Centroid
-    {
-        get => _centroid;
-        set
-        {
-            if (_centroid != value)
-            {
-                _centroid = value;
-                _dirty = true;
-            }
-        }
-    }
+    protected Vector2 _position = Vector2.Zero;
 
     protected float _rotation = 0f;
 
     protected readonly List<Vector2> _vertices = [];
 
-    protected Vector2 _centroid = Vector2.Zero;
-
     public void SetVertices (List<Vector2> vertices)
     {
-        _centroid = CalculateCentroid (vertices);
-
         _vertices.Clear ();
         _vertices.Capacity = vertices.Count;
 
         foreach (Vector2 vertex in vertices)
         {
-            _vertices.Add (vertex - _centroid);
+            _vertices.Add (vertex);
         }
 
         _dirty = true;
@@ -72,36 +70,6 @@ public class PolygonShape : Shape
         }
 
         render.Enqueue (new RenderCommand (Materials.Standard, _mesh, Textures.Pixel, _depth));
-    }
-
-    private static Vector2 CalculateCentroid (List<Vector2> vertices)
-    {
-        Vector2 centroid = Vector2.Zero;
-        float area = 0f;
-
-        for (int i = 0; i < vertices.Count; i++)
-        {
-            Vector2 p0 = vertices[i];
-            Vector2 p1 = vertices[(i + 1) % vertices.Count];
-
-            float cross = p0.X * p1.Y - p1.X * p0.Y;
-
-            area += cross;
-
-            centroid.X += (p0.X + p1.X) * cross;
-            centroid.Y += (p0.Y + p1.Y) * cross;
-        }
-
-        area *= 0.5f;
-
-        if (float.Abs (area) < float.Epsilon)
-        {
-            return Vector2.Zero;
-        }
-
-        centroid /= 6f * area;
-
-        return centroid;
     }
 
     private void CalculateIndices ()
@@ -208,7 +176,7 @@ public class PolygonShape : Shape
 
         foreach (Vector2 vertex in _vertices)
         {
-            vertices.Add (new Vector3 (_centroid + Vector2.Rotate (vertex, _rotation), _depth));
+            vertices.Add (new Vector3 (_position + Vector2.Rotate (vertex, _rotation), _depth));
         }
 
         _mesh.SetVertices ([.. vertices]);

@@ -23,15 +23,10 @@ public class BoxCollider : Collider
 
     protected override BoundingBox2D CalculateBounds ()
     {
-        return CalculateBounds (Position, Rotation);
-    }
-
-    protected override BoundingBox2D CalculateBounds (Vector2 position, float rotation)
-    {
         Vector2 halfSize = Size / 2f;
 
-        float cos = float.Abs (float.Cos (rotation));
-        float sin = float.Abs (float.Sin (rotation));
+        float cos = float.Abs (float.Cos (Rotation));
+        float sin = float.Abs (float.Sin (Rotation));
 
         float halfWidth = cos * halfSize.X + sin * halfSize.Y;
         float halfHeight = sin * halfSize.X + cos * halfSize.Y;
@@ -42,28 +37,23 @@ public class BoxCollider : Collider
         return new BoundingBox2D (center - extents, center + extents);
     }
 
-    protected override List<Vector2> CalculatePoints ()
+    protected override void CalculatePoints (List<Vector2> points)
     {
-        return CalculatePoints (Position, Rotation);
-    }
+        points.Clear ();
 
-    protected override List<Vector2> CalculatePoints (Vector2 position, float rotation)
-    {
         Vector2 halfSize = Size / 2f;
 
-        List<Vector2> points = [
+        points.AddRange ([
             new (-halfSize.X, -halfSize.Y),
             new (halfSize.X, -halfSize.Y),
             new (halfSize.X, halfSize.Y),
             new (-halfSize.X, halfSize.Y)
-            ];
+            ]);
 
         for (int i = 0; i < 4; i++)
         {
             points[i] = Position + Vector2.Rotate (points[i], Rotation) + Offset;
         }
-
-        return points;
     }
 
     public override bool Intersects (Collider other)

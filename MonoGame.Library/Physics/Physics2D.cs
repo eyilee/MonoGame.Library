@@ -5,11 +5,13 @@ namespace MonoGame.Library.Physics;
 
 public class Physics2D
 {
+    public const float Epsilon = 1e-6f;
+
     public static bool Intersects (List<Vector2> self, List<Vector2> other)
     {
         Vector2 direction = self[0] - other[0];
 
-        if (direction.LengthSquared () < float.Epsilon)
+        if (direction.LengthSquared () < Epsilon)
         {
             direction = Vector2.UnitX;
         }
@@ -20,7 +22,7 @@ public class Physics2D
 
         while (true)
         {
-            if (direction.LengthSquared () < float.Epsilon)
+            if (direction.LengthSquared () < Epsilon)
             {
                 return true;
             }
@@ -114,8 +116,101 @@ public class Physics2D
 
     public static bool TryGetContact (List<Vector2> self, List<Vector2> other, out Contact contact)
     {
-        contact = default;
+        Vector2 direction = self[0] - other[0];
 
-        return false;
+        if (direction.LengthSquared () < Epsilon)
+        {
+            direction = Vector2.UnitX;
+        }
+
+        List<Vector2> simplex = [Support (self, other, direction)];
+
+        direction = -simplex[0];
+
+        while (true)
+        {
+            if (direction.LengthSquared () < Epsilon)
+            {
+                return TryGetContact (self, other, simplex, out contact);
+            }
+
+            Vector2 point = Support (self, other, direction);
+
+            if (Vector2.Dot (point, direction) <= 0)
+            {
+                contact = default;
+
+                return false;
+            }
+
+            simplex.Add (point);
+
+            if (HandleSimplex (simplex, ref direction))
+            {
+                return TryGetContact (self, other, simplex, out contact);
+            }
+        }
+    }
+
+    private static bool TryGetContact (List<Vector2> self, List<Vector2> other, List<Vector2> simplex, out Contact contact)
+    {
+        while (true)
+        {
+            int cloestEdgeIndex = -1;
+            Vector2 closestNormal = Vector2.Zero;
+            float closestDistance = float.MaxValue;
+
+            for (int i = 0; i < simplex.Count; i++)
+            {
+                Vector2 a = simplex[i];
+                Vector2 b = simplex[(i + 1) % simplex.Count];
+                Vector2 edge = b - a;
+
+                if (edge.LengthSquared () < Epsilon)
+                {
+                    continue;
+                }
+
+                Vector2 normal = new (-edge.Y, edge.X);
+                normal.Normalize ();
+
+                float distance = Vector2.Dot (normal, a);
+
+                if (distance < 0)
+                {
+                    normal = -normal;
+                    distance = -distance;
+                }
+
+                if (distance < closestDistance)
+                {
+                    cloestEdgeIndex = i;
+                    closestNormal = normal;
+                    closestDistance = distance;
+                }
+            }
+
+            if (cloestEdgeIndex == -1)
+            {
+                contact = default;
+
+                return false;
+            }
+
+            Vector2 point = Support (self, other, closestNormal);
+
+            if (simplex.Contains (point))
+            {
+                contact = new Contact
+                {
+                    Normal = closestNormal,
+                    Penetration = closestDistance
+                };
+
+                return true;
+            }
+
+            simplex.Insert (cloestEdgeIndex + 1, point);
+        }
     }
 }

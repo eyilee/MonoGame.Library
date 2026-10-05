@@ -22,25 +22,16 @@ public class CircleCollider : Collider
 
     protected override BoundingBox2D CalculateBounds ()
     {
-        return CalculateBounds (Position, Rotation);
-    }
-
-    protected override BoundingBox2D CalculateBounds (Vector2 position, float rotation)
-    {
         Vector2 center = Position + Offset;
         Vector2 extents = new (Radius, Radius);
 
         return new BoundingBox2D (center - extents, center + extents);
     }
 
-    protected override List<Vector2> CalculatePoints ()
+    protected override void CalculatePoints (List<Vector2> points)
     {
-        return CalculatePoints (Position, Rotation);
-    }
-
-    protected override List<Vector2> CalculatePoints (Vector2 position, float rotation)
-    {
-        return [position + Offset];
+        points.Clear ();
+        points.Add (Position + Offset);
     }
 
     public override bool Intersects (Collider other)

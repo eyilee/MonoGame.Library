@@ -74,7 +74,7 @@ public abstract class Collider
         {
             if (IsDirty (DirtyFlag.Points))
             {
-                _points = CalculatePoints ();
+                CalculatePoints (_points);
                 ClearDirty (DirtyFlag.Points);
             }
 
@@ -90,17 +90,13 @@ public abstract class Collider
 
     private BoundingBox2D _bounds;
 
-    private List<Vector2> _points = [];
+    private readonly List<Vector2> _points = [];
 
     private DirtyFlag _dirtyFlags = DirtyFlag.All;
 
     protected abstract BoundingBox2D CalculateBounds ();
 
-    protected abstract List<Vector2> CalculatePoints ();
-
-    protected abstract BoundingBox2D CalculateBounds (Vector2 position, float rotation);
-
-    protected abstract List<Vector2> CalculatePoints (Vector2 position, float rotation);
+    protected abstract void CalculatePoints (List<Vector2> points);
 
     protected bool IsDirty (DirtyFlag dirtyFlag) => _dirtyFlags.HasFlag (dirtyFlag);
 

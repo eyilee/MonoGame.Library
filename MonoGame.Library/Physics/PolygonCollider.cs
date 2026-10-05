@@ -12,29 +12,22 @@ public class PolygonCollider : Collider
     public void SetVertices (List<Vector2> vertices)
     {
         _vertices.Clear ();
-        _vertices.Capacity = vertices.Count;
-
-        foreach (Vector2 vertex in vertices)
-        {
-            _vertices.Add (vertex);
-        }
+        _vertices.AddRange (vertices);
 
         SetDirty (DirtyFlag.All);
     }
 
     protected override BoundingBox2D CalculateBounds ()
     {
-        return CalculateBounds (Position, Rotation);
-    }
+        if (Points.Count == 0)
+        {
+            return new BoundingBox2D (Vector2.Zero, Vector2.Zero);
+        }
 
-    protected override BoundingBox2D CalculateBounds (Vector2 position, float rotation)
-    {
-        List<Vector2> points = CalculatePoints (position, rotation);
-
-        Vector2 min = points[0];
+        Vector2 min = Points[0];
         Vector2 max = min;
 
-        foreach (Vector2 point in points)
+        foreach (Vector2 point in Points)
         {
             min.X = float.Min (min.X, point.X);
             min.Y = float.Min (min.Y, point.Y);
@@ -45,21 +38,14 @@ public class PolygonCollider : Collider
         return new BoundingBox2D (min, max);
     }
 
-    protected override List<Vector2> CalculatePoints ()
+    protected override void CalculatePoints (List<Vector2> points)
     {
-        return CalculatePoints (Position, Rotation);
-    }
-
-    protected override List<Vector2> CalculatePoints (Vector2 position, float rotation)
-    {
-        List<Vector2> points = new (_vertices.Count);
+        points.Clear ();
 
         foreach (Vector2 vertex in _vertices)
         {
             points.Add (Position + Vector2.Rotate (vertex, Rotation) + Offset);
         }
-
-        return points;
     }
 
     public override bool Intersects (Collider other)
@@ -79,12 +65,12 @@ public class PolygonCollider : Collider
 
     public override bool Intersects (PolygonCollider other)
     {
-        throw new System.NotImplementedException ();
+        return Physics2D.Intersects (Points, other.Points);
     }
 
     public override bool TryGetContact (Collider other, out Contact contact)
     {
-        throw new System.NotImplementedException ();
+        return other.TryGetContact (this, out contact);
     }
 
     public override bool TryGetContact (BoxCollider other, out Contact contact)
@@ -99,6 +85,6 @@ public class PolygonCollider : Collider
 
     public override bool TryGetContact (PolygonCollider other, out Contact contact)
     {
-        throw new System.NotImplementedException ();
+        return Physics2D.TryGetContact (Points, other.Points, out contact);
     }
 }

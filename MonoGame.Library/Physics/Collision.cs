@@ -11,11 +11,14 @@ public class Collision (PhysicsBody self, PhysicsBody other) : IEquatable<Collis
 
     public Collision Reverse () => new (Other, Self);
 
+    public bool Intersects => Self.Collider != null && Other.Collider != null && Self.Collider.Intersects (Other.Collider);
+
     public bool TryGetContact (out Contact contact)
     {
         if (Self.Collider == null || Other.Collider == null)
         {
             contact = default;
+
             return false;
         }
 
