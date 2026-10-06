@@ -17,17 +17,7 @@ public class Physics2D
 
     public static bool Intersects (BoxCollider self, CircleCollider other)
     {
-        Vector2 center = other.Position + other.Offset;
-
-        foreach (Vector2 point in self.Points)
-        {
-            if (Vector2.DistanceSquared (point, center) <= other.Radius * other.Radius)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return Intersects (new Polygon (self.Points), new Circle (other.Points[0], other.Radius));
     }
 
     public static bool Intersects (BoxCollider self, PolygonCollider other)

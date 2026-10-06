@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
@@ -33,7 +34,7 @@ public class PhysicsResolver
             return;
         }
 
-        Vector2 correction = contact.Normal * contact.Penetration;
+        Vector2 correction = contact.Normal * contact.Penetration * 0.5f;
 
         if (bodySelf.IsStatic)
         {
