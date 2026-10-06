@@ -4,7 +4,7 @@ namespace MonoGame.Library.Physics;
 
 public interface ISupportable
 {
-    public Vector2 Center { get; }
+    public Vector2 Position { get; }
 
     public Vector2 Support (Vector2 direction);
 }

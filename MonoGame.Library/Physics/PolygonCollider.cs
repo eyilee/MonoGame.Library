@@ -48,43 +48,29 @@ public class PolygonCollider : Collider
         }
     }
 
-    public override bool Intersects (Collider other)
-    {
-        return other.Intersects (this);
-    }
+    public override bool Intersects (Collider other) => other.Intersects (this);
 
-    public override bool Intersects (BoxCollider other)
-    {
-        throw new System.NotImplementedException ();
-    }
+    public override bool Intersects (BoxCollider other) => Physics2D.Intersects (this, other);
 
-    public override bool Intersects (CircleCollider other)
-    {
-        throw new System.NotImplementedException ();
-    }
+    public override bool Intersects (CircleCollider other) => Physics2D.Intersects (this, other);
 
-    public override bool Intersects (PolygonCollider other)
-    {
-        return Physics2D.Intersects (new Polygon (Points), new Polygon (other.Points));
-    }
+    public override bool Intersects (PolygonCollider other) => Physics2D.Intersects (this, other);
 
     public override bool TryGetContact (Collider other, out Contact contact)
     {
-        return other.TryGetContact (this, out contact);
+        if (!other.TryGetContact (this, out contact))
+        {
+            return false;
+        }
+
+        contact.Normal *= -1f;
+
+        return true;
     }
 
-    public override bool TryGetContact (BoxCollider other, out Contact contact)
-    {
-        throw new System.NotImplementedException ();
-    }
+    public override bool TryGetContact (BoxCollider other, out Contact contact) => Physics2D.TryGetContact (this, other, out contact);
 
-    public override bool TryGetContact (CircleCollider other, out Contact contact)
-    {
-        throw new System.NotImplementedException ();
-    }
+    public override bool TryGetContact (CircleCollider other, out Contact contact) => Physics2D.TryGetContact (this, other, out contact);
 
-    public override bool TryGetContact (PolygonCollider other, out Contact contact)
-    {
-        return Physics2D.TryGetContact (new Polygon (Points), new Polygon (other.Points), out contact);
-    }
+    public override bool TryGetContact (PolygonCollider other, out Contact contact) => Physics2D.TryGetContact (this, other, out contact);
 }

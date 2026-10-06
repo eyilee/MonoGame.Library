@@ -34,50 +34,15 @@ public class CircleCollider : Collider
         points.Add (Position + Offset);
     }
 
-    public override bool Intersects (Collider other)
-    {
-        return other.Intersects (this);
-    }
+    public override bool Intersects (Collider other) => other.Intersects (this);
 
-    public override bool Intersects (BoxCollider other)
-    {
-        Vector2 center = Position + Offset;
+    public override bool Intersects (BoxCollider other) => Physics2D.Intersects (this, other);
 
-        foreach (Vector2 point in other.Points)
-        {
-            if (Vector2.DistanceSquared (point, center) <= Radius * Radius)
-            {
-                return true;
-            }
-        }
+    public override bool Intersects (CircleCollider other) => Physics2D.Intersects (this, other);
 
-        return false;
-    }
-
-    public override bool Intersects (CircleCollider other)
-    {
-        Vector2 p1 = Position + Offset;
-        Vector2 p2 = other.Position + other.Offset;
-
-        if (Vector2.DistanceSquared (p1, p2) <= (Radius + other.Radius) * (Radius + other.Radius))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public override bool Intersects (PolygonCollider other)
-    {
-        return Physics2D.Intersects (new Circle (Points[0], Radius), new Polygon (other.Points));
-    }
+    public override bool Intersects (PolygonCollider other) => Physics2D.Intersects (this, other);
 
     public override bool TryGetContact (Collider other, out Contact contact)
-    {
-        return other.TryGetContact (this, out contact);
-    }
-
-    public override bool TryGetContact (BoxCollider other, out Contact contact)
     {
         if (!other.TryGetContact (this, out contact))
         {
@@ -89,33 +54,9 @@ public class CircleCollider : Collider
         return true;
     }
 
-    public override bool TryGetContact (CircleCollider other, out Contact contact)
-    {
-        contact = default;
+    public override bool TryGetContact (BoxCollider other, out Contact contact) => Physics2D.TryGetContact (this, other, out contact);
 
-        Vector2 centerA = Position + Offset;
-        Vector2 centerB = other.Position + other.Offset;
-        float distance = Vector2.Distance (centerA, centerB);
-        float minDistance = Radius + other.Radius;
+    public override bool TryGetContact (CircleCollider other, out Contact contact) => Physics2D.TryGetContact (this, other, out contact);
 
-        if (distance >= minDistance)
-        {
-            return false;
-        }
-
-        Vector2 normal = distance > float.Epsilon ? (centerB - centerA) / distance : Vector2.UnitX;
-
-        contact = new Contact
-        {
-            Normal = normal,
-            Penetration = minDistance - distance
-        };
-
-        return true;
-    }
-
-    public override bool TryGetContact (PolygonCollider other, out Contact contact)
-    {
-        throw new System.NotImplementedException ();
-    }
+    public override bool TryGetContact (PolygonCollider other, out Contact contact) => Physics2D.TryGetContact (this, other, out contact);
 }

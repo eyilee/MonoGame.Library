@@ -8,7 +8,7 @@ public struct Circle (Vector2 point, float radius) : ISupportable
 
     public float Radius = radius;
 
-    public readonly Vector2 Center => Point;
+    public readonly Vector2 Position => Point;
 
     public readonly Vector2 Support (Vector2 direction)
     {

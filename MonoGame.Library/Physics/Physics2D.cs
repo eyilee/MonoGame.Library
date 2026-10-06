@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
+using MonoGame.Library.Utilities;
 using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
@@ -10,14 +10,77 @@ public class Physics2D
 
     public const float EpsilonSquared = Epsilon * Epsilon;
 
+    public static bool Intersects (BoxCollider self, BoxCollider other)
+    {
+        return Intersects (new Polygon (self.Points), new Polygon (other.Points));
+    }
+
+    public static bool Intersects (BoxCollider self, CircleCollider other)
+    {
+        Vector2 center = other.Position + other.Offset;
+
+        foreach (Vector2 point in self.Points)
+        {
+            if (Vector2.DistanceSquared (point, center) <= other.Radius * other.Radius)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static bool Intersects (BoxCollider self, PolygonCollider other)
+    {
+        return Intersects (new Polygon (self.Points), new Polygon (other.Points));
+    }
+
+    public static bool Intersects (CircleCollider self, BoxCollider other)
+    {
+        return Intersects (new Circle (self.Points[0], self.Radius), new Polygon (other.Points));
+    }
+
+    public static bool Intersects (CircleCollider self, CircleCollider other)
+    {
+        Vector2 p1 = self.Position + self.Offset;
+        Vector2 p2 = other.Position + other.Offset;
+
+        if (Vector2.DistanceSquared (p1, p2) <= (self.Radius + other.Radius) * (self.Radius + other.Radius))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool Intersects (CircleCollider self, PolygonCollider other)
+    {
+        return Intersects (new Circle (self.Points[0], self.Radius), new Polygon (other.Points));
+    }
+
+    public static bool Intersects (PolygonCollider self, BoxCollider other)
+    {
+        return Intersects (new Polygon (self.Points), new Polygon (other.Points));
+    }
+
+    public static bool Intersects (PolygonCollider self, CircleCollider other)
+    {
+        return Intersects (new Polygon (self.Points), new Circle (other.Points[0], other.Radius));
+    }
+
+    public static bool Intersects (PolygonCollider self, PolygonCollider other)
+    {
+        return Intersects (new Polygon (self.Points), new Polygon (other.Points));
+    }
+
     public static bool Intersects (in ISupportable self, in ISupportable other)
     {
         return Intersects (self, other, out _);
     }
 
-    public static bool Intersects (in ISupportable self, in ISupportable other, out List<Vector2> simplex)
+    private static bool Intersects (in ISupportable self, in ISupportable other, out List<Vector2> simplex)
     {
-        Vector2 direction = self.Center - other.Center;
+        Vector2 direction = self.Position - other.Position;
 
         if (direction.LengthSquared () < EpsilonSquared)
         {
@@ -83,7 +146,72 @@ public class Physics2D
         return new Vector2 (-cross * v3.Y, cross * v3.X);
     }
 
-    public static bool TryGetContact (in ISupportable self, in ISupportable other, out Contact contact)
+    public static bool TryGetContact (BoxCollider self, BoxCollider other, out Contact contact)
+    {
+        return TryGetContact (new Polygon (self.Points), new Polygon (other.Points), out contact);
+    }
+
+    public static bool TryGetContact (BoxCollider self, CircleCollider other, out Contact contact)
+    {
+        return TryGetContact (new Polygon (self.Points), new Circle (other.Points[0], other.Radius), out contact);
+    }
+
+    public static bool TryGetContact (BoxCollider self, PolygonCollider other, out Contact contact)
+    {
+        return TryGetContact (new Polygon (self.Points), new Polygon (other.Points), out contact);
+    }
+
+    public static bool TryGetContact (CircleCollider self, BoxCollider other, out Contact contact)
+    {
+        return TryGetContact (new Circle (self.Points[0], self.Radius), new Polygon (other.Points), out contact);
+    }
+
+    public static bool TryGetContact (CircleCollider self, CircleCollider other, out Contact contact)
+    {
+        contact = default;
+
+        Vector2 p1 = self.Position + self.Offset;
+        Vector2 p2 = other.Position + other.Offset;
+        float distance = Vector2.Distance (p1, p2);
+        float minDistance = self.Radius + other.Radius;
+
+        if (distance >= minDistance)
+        {
+            return false;
+        }
+
+        Vector2 normal = distance > Epsilon ? (p2 - p1) / distance : Vector2.UnitX;
+
+        contact = new Contact
+        {
+            Normal = normal,
+            Penetration = minDistance - distance
+        };
+
+        return true;
+    }
+
+    public static bool TryGetContact (CircleCollider self, PolygonCollider other, out Contact contact)
+    {
+        return TryGetContact (new Circle (self.Points[0], self.Radius), new Polygon (other.Points), out contact);
+    }
+
+    public static bool TryGetContact (PolygonCollider self, BoxCollider other, out Contact contact)
+    {
+        return TryGetContact (new Polygon (self.Points), new Polygon (other.Points), out contact);
+    }
+
+    public static bool TryGetContact (PolygonCollider self, CircleCollider other, out Contact contact)
+    {
+        return TryGetContact (new Polygon (self.Points), new Circle (other.Points[0], other.Radius), out contact);
+    }
+
+    public static bool TryGetContact (PolygonCollider self, PolygonCollider other, out Contact contact)
+    {
+        return TryGetContact (new Polygon (self.Points), new Polygon (other.Points), out contact);
+    }
+
+    private static bool TryGetContact (in ISupportable self, in ISupportable other, out Contact contact)
     {
         if (!Intersects (self, other, out List<Vector2> simplex))
         {
@@ -92,30 +220,28 @@ public class Physics2D
             return false;
         }
 
-        var result = TryGetContact (self, other, simplex, out contact);
-        Console.WriteLine (result);
-        Console.WriteLine (contact.Penetration);
-        Console.WriteLine (contact.Normal);
-        return result;
+        return TryGetContact (self, other, simplex, out contact);
     }
 
-    public static bool TryGetContact (in ISupportable self, in ISupportable other, List<Vector2> simplex, out Contact contact)
+    private static bool TryGetContact (in ISupportable self, in ISupportable other, List<Vector2> simplex, out Contact contact)
     {
         if (simplex.Count != 3)
         {
             contact = default;
+
             return false;
         }
 
-        List<float> distances = [];
+        if ((simplex[1] - simplex[0]).Cross (simplex[2] - simplex[0]) < 0)
+        {
+            simplex.Reverse ();
+        }
 
         for (int iteration = 0; iteration < 32; iteration++)
         {
             int cloestEdgeIndex = -1;
             Vector2 closestNormal = Vector2.Zero;
             float closestDistance = float.MaxValue;
-
-            distances.Clear ();
 
             for (int i = 0; i < simplex.Count; i++)
             {
@@ -128,7 +254,7 @@ public class Physics2D
                     continue;
                 }
 
-                Vector2 normal = new (-edge.Y, edge.X);
+                Vector2 normal = new (edge.Y, -edge.X);
                 normal.Normalize ();
 
                 float distance = Vector2.Dot (normal, a);
@@ -138,8 +264,6 @@ public class Physics2D
                     normal = -normal;
                     distance = -distance;
                 }
-
-                distances.Add (distance);
 
                 if (distance <= closestDistance)
                 {
@@ -157,20 +281,9 @@ public class Physics2D
             }
 
             Vector2 point = self.Support (closestNormal) - other.Support (-closestNormal);
-
-            bool duplicate = false;
-
-            for (int i = 0; i < simplex.Count; i++)
-            {
-                if (Vector2.DistanceSquared (point, simplex[i]) <= Epsilon)
-                {
-                    duplicate = true;
-                }
-            }
-
             float pointDistance = Vector2.Dot (closestNormal, point);
 
-            if (pointDistance - closestDistance < Epsilon || duplicate)
+            if (pointDistance - closestDistance < Epsilon)
             {
                 contact = new Contact
                 {
@@ -179,11 +292,6 @@ public class Physics2D
                 };
 
                 return true;
-            }
-
-            if (simplex.Contains (point))
-            {
-                Console.WriteLine ("");
             }
 
             simplex.Insert (cloestEdgeIndex + 1, point);
