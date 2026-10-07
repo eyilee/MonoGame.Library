@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoGame.Library.Attributes;
 using System;
 
 namespace MonoGame.Library;
 
-public class Transform (Entity owner) : EntityComponent (owner)
+[DisallowMultipleComponent]
+[RequiredComponent]
+public class Transform : EntityComponent
 {
     public Vector2 Position
     {

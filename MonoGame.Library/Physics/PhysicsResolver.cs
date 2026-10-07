@@ -38,18 +38,18 @@ public class PhysicsResolver
 
         if (bodySelf.IsStatic)
         {
-            bodyOther.Owner.Position += correction;
+            bodyOther.Transform.Position += correction;
         }
         else if (bodyOther.IsStatic)
         {
-            bodySelf.Owner.Position -= correction;
+            bodySelf.Transform.Position -= correction;
         }
         else
         {
             Vector2 halfCorrection = correction / 2f;
 
-            bodySelf.Owner.Position -= halfCorrection;
-            bodyOther.Owner.Position += halfCorrection;
+            bodySelf.Transform.Position -= halfCorrection;
+            bodyOther.Transform.Position += halfCorrection;
         }
     }
 }

@@ -6,22 +6,22 @@ public class PhysicsBody : EntityComponent
 
     public bool IsStatic { get; set; }
 
-    public PhysicsBody (Entity owner) : base (owner)
+    public override void Awake ()
     {
-        Owner.Transform.OnTransformChanged += OnTransformChanged;
+        Transform.OnTransformChanged += OnTransformChanged;
     }
 
     public override void Destroy ()
     {
-        Owner.Transform.OnTransformChanged -= OnTransformChanged;
+        Transform.OnTransformChanged -= OnTransformChanged;
     }
 
-    public virtual void OnTransformChanged ()
+    private void OnTransformChanged ()
     {
         if (Collider != null)
         {
-            Collider.Position = Owner.Position;
-            Collider.Rotation = Owner.Rotation;
+            Collider.Position = Transform.Position;
+            Collider.Rotation = Transform.Rotation;
         }
     }
 

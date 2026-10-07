@@ -42,13 +42,13 @@ public class PhysicsWorld
         {
             if (_previousCollisions.Contains (collision))
             {
-                collision.Self.Owner.OnCollisionStay (collision);
-                collision.Other.Owner.OnCollisionStay (collision.Reverse ());
+                collision.Self.Entity.OnCollisionStay (collision);
+                collision.Other.Entity.OnCollisionStay (collision.Reverse ());
             }
             else
             {
-                collision.Self.Owner.OnCollisionEnter (collision);
-                collision.Other.Owner.OnCollisionEnter (collision.Reverse ());
+                collision.Self.Entity.OnCollisionEnter (collision);
+                collision.Other.Entity.OnCollisionEnter (collision.Reverse ());
             }
         }
 
@@ -56,8 +56,8 @@ public class PhysicsWorld
         {
             if (!_collisions.Contains (collision))
             {
-                collision.Self.Owner.OnCollisionExit (collision);
-                collision.Other.Owner.OnCollisionExit (collision.Reverse ());
+                collision.Self.Entity.OnCollisionExit (collision);
+                collision.Other.Entity.OnCollisionExit (collision.Reverse ());
             }
         }
 
