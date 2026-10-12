@@ -13,7 +13,7 @@ public class BoxCollider : Collider
             if (_size != value)
             {
                 _size = value;
-                SetDirty (DirtyFlag.All);
+                SetDirty (DirtyFlags.All);
             }
         }
     }
@@ -30,7 +30,7 @@ public class BoxCollider : Collider
         float halfWidth = cos * halfSize.X + sin * halfSize.Y;
         float halfHeight = sin * halfSize.X + cos * halfSize.Y;
 
-        Vector2 center = Position + Offset;
+        Vector2 center = Position + Vector2.Rotate (Offset, Rotation);
         Vector2 extents = new (halfWidth, halfHeight);
 
         return new BoundingBox2D (center - extents, center + extents);
@@ -51,7 +51,7 @@ public class BoxCollider : Collider
 
         for (int i = 0; i < 4; i++)
         {
-            points[i] = Position + Vector2.Rotate (points[i], Rotation) + Offset;
+            points[i] = Position + Vector2.Rotate (points[i], Rotation) + Vector2.Rotate (Offset, Rotation);
         }
     }
 

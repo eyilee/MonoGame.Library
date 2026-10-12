@@ -70,7 +70,7 @@ public sealed class EntityComponentContainer (Entity owner)
         return component;
     }
 
-    public T AddComponent<T> () where T : EntityComponent, new()
+    public T AddComponent<T> () where T : EntityComponent
     {
         return (T)AddComponent (typeof (T));
     }

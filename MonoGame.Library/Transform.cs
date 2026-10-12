@@ -8,6 +8,15 @@ namespace MonoGame.Library;
 [RequiredComponent]
 public class Transform : EntityComponent
 {
+    [Flags]
+    public enum ChangedFlags
+    {
+        None = 0,
+        Position = 1,
+        Rotation = 2,
+        All = Position | Rotation
+    }
+
     public Vector2 Position
     {
         get => _position;
@@ -16,7 +25,7 @@ public class Transform : EntityComponent
             if (_position != value)
             {
                 _position = value;
-                OnTransformChanged?.Invoke ();
+                OnTransformChanged?.Invoke (ChangedFlags.Position);
             }
         }
     }
@@ -29,12 +38,12 @@ public class Transform : EntityComponent
             if (_rotation != value)
             {
                 _rotation = value;
-                OnTransformChanged?.Invoke ();
+                OnTransformChanged?.Invoke (ChangedFlags.Rotation);
             }
         }
     }
 
-    public event Action? OnTransformChanged;
+    public event Action<ChangedFlags>? OnTransformChanged;
 
     private Vector2 _position;
 

@@ -13,7 +13,7 @@ public class CircleCollider : Collider
             if (_radius != value)
             {
                 _radius = value;
-                SetDirty (DirtyFlag.All);
+                SetDirty (DirtyFlags.All);
             }
         }
     }

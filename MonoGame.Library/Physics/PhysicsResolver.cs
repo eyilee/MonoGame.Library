@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
@@ -8,23 +7,23 @@ public class PhysicsResolver
 {
     public int Iterations { get; set; } = 4;
 
-    public void Resolve (HashSet<Collision> collisions)
+    public void Resolve (HashSet<ColliderCollision> collisions)
     {
         for (int i = 0; i < Iterations; i++)
         {
-            foreach (Collision collision in collisions)
+            foreach (ColliderCollision collision in collisions)
             {
                 Resolve (collision);
             }
         }
     }
 
-    private static void Resolve (Collision collision)
+    private static void Resolve (ColliderCollision collision)
     {
-        PhysicsBody bodySelf = collision.Self;
-        PhysicsBody bodyOther = collision.Other;
+        Collider self = collision.Self;
+        Collider other = collision.Other;
 
-        if (bodySelf.IsStatic && bodyOther.IsStatic)
+        if (!self.PhysicsBody.IsDynamic && !other.PhysicsBody.IsDynamic)
         {
             return;
         }
@@ -36,20 +35,20 @@ public class PhysicsResolver
 
         Vector2 correction = contact.Normal * contact.Penetration * 0.5f;
 
-        if (bodySelf.IsStatic)
+        if (!self.PhysicsBody.IsDynamic)
         {
-            bodyOther.Transform.Position += correction;
+            other.Transform.Position += correction;
         }
-        else if (bodyOther.IsStatic)
+        else if (!other.PhysicsBody.IsDynamic)
         {
-            bodySelf.Transform.Position -= correction;
+            self.Transform.Position -= correction;
         }
         else
         {
             Vector2 halfCorrection = correction / 2f;
 
-            bodySelf.Transform.Position -= halfCorrection;
-            bodyOther.Transform.Position += halfCorrection;
+            self.Transform.Position -= halfCorrection;
+            other.Transform.Position += halfCorrection;
         }
     }
 }

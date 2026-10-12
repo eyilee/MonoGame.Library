@@ -14,7 +14,7 @@ public class PolygonCollider : Collider
         _vertices.Clear ();
         _vertices.AddRange (vertices);
 
-        SetDirty (DirtyFlag.All);
+        SetDirty (DirtyFlags.All);
     }
 
     protected override BoundingBox2D CalculateBounds ()
@@ -44,7 +44,7 @@ public class PolygonCollider : Collider
 
         foreach (Vector2 vertex in _vertices)
         {
-            points.Add (Position + Vector2.Rotate (vertex, Rotation) + Offset);
+            points.Add (Position + Vector2.Rotate (vertex, Rotation) + Vector2.Rotate (Offset, Rotation));
         }
     }
 

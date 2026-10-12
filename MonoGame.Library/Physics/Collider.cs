@@ -7,7 +7,7 @@ namespace MonoGame.Library.Physics;
 public abstract class Collider
 {
     [Flags]
-    protected enum DirtyFlag
+    protected enum DirtyFlags
     {
         None = 0,
         Bounds = 1,
@@ -15,31 +15,13 @@ public abstract class Collider
         All = Bounds | Points
     }
 
-    public Vector2 Position
-    {
-        get => _position;
-        set
-        {
-            if (_position != value)
-            {
-                _position = value;
-                SetDirty (DirtyFlag.All);
-            }
-        }
-    }
+    public PhysicsBody PhysicsBody { get; internal set; } = null!;
 
-    public float Rotation
-    {
-        get => _rotation;
-        set
-        {
-            if (_rotation != value)
-            {
-                _rotation = value;
-                SetDirty (DirtyFlag.All);
-            }
-        }
-    }
+    public Transform Transform => PhysicsBody.Transform;
+
+    public Vector2 Position => Transform.Position;
+
+    public float Rotation => Transform.Rotation;
 
     public Vector2 Offset
     {
@@ -49,7 +31,7 @@ public abstract class Collider
             if (_offset != value)
             {
                 _offset = value;
-                SetDirty (DirtyFlag.All);
+                SetDirty (DirtyFlags.All);
             }
         }
     }
@@ -58,10 +40,10 @@ public abstract class Collider
     {
         get
         {
-            if (IsDirty (DirtyFlag.Bounds))
+            if (IsDirty (DirtyFlags.Bounds))
             {
                 _bounds = CalculateBounds ();
-                ClearDirty (DirtyFlag.Bounds);
+                ClearDirty (DirtyFlags.Bounds);
             }
 
             return _bounds;
@@ -72,19 +54,15 @@ public abstract class Collider
     {
         get
         {
-            if (IsDirty (DirtyFlag.Points))
+            if (IsDirty (DirtyFlags.Points))
             {
                 CalculatePoints (_points);
-                ClearDirty (DirtyFlag.Points);
+                ClearDirty (DirtyFlags.Points);
             }
 
             return _points;
         }
     }
-
-    private Vector2 _position;
-
-    private float _rotation;
 
     private Vector2 _offset;
 
@@ -92,17 +70,25 @@ public abstract class Collider
 
     private readonly List<Vector2> _points = [];
 
-    private DirtyFlag _dirtyFlags = DirtyFlag.All;
+    private DirtyFlags _dirtyFlags = DirtyFlags.All;
 
     protected abstract BoundingBox2D CalculateBounds ();
 
     protected abstract void CalculatePoints (List<Vector2> points);
 
-    protected bool IsDirty (DirtyFlag dirtyFlag) => _dirtyFlags.HasFlag (dirtyFlag);
+    protected bool IsDirty (DirtyFlags dirtyFlag) => _dirtyFlags.HasFlag (dirtyFlag);
 
-    protected void SetDirty (DirtyFlag dirtyFlag) => _dirtyFlags |= dirtyFlag;
+    protected void SetDirty (DirtyFlags dirtyFlag) => _dirtyFlags |= dirtyFlag;
 
-    protected void ClearDirty (DirtyFlag dirtyFlag) => _dirtyFlags &= ~dirtyFlag;
+    protected void ClearDirty (DirtyFlags dirtyFlag) => _dirtyFlags &= ~dirtyFlag;
+
+    public virtual void OnTransformChanged (Transform.ChangedFlags changedFlags)
+    {
+        if (changedFlags.HasFlag (Transform.ChangedFlags.Position) || changedFlags.HasFlag (Transform.ChangedFlags.Rotation))
+        {
+            SetDirty (DirtyFlags.All);
+        }
+    }
 
     public abstract bool Intersects (Collider other);
 

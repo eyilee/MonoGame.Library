@@ -3,29 +3,21 @@ using System.Runtime.CompilerServices;
 
 namespace MonoGame.Library.Physics;
 
-public class Collision (PhysicsBody self, PhysicsBody other) : IEquatable<Collision>
+public class PhysicsBodyCollision (PhysicsBody self, PhysicsBody other) : IEquatable<PhysicsBodyCollision>
 {
     public PhysicsBody Self { get; } = self;
 
     public PhysicsBody Other { get; } = other;
 
-    public Collision Reverse () => new (Other, Self);
-
-    public bool Intersects => Self.Collider != null && Other.Collider != null && Self.Collider.Intersects (Other.Collider);
-
-    public bool TryGetContact (out Contact contact)
+    public PhysicsBodyCollision Reverse
     {
-        if (Self.Collider == null || Other.Collider == null)
-        {
-            contact = default;
-
-            return false;
-        }
-
-        return Self.Collider.TryGetContact (Other.Collider, out contact);
+        get => _reverse ??= new (Other, Self);
+        set => _reverse = value;
     }
 
-    public bool Equals (Collision? other)
+    private PhysicsBodyCollision _reverse = null!;
+
+    public bool Equals (PhysicsBodyCollision? other)
     {
         return other != null
             && ((ReferenceEquals (Self, other.Self) && ReferenceEquals (Other, other.Other))
@@ -34,7 +26,7 @@ public class Collision (PhysicsBody self, PhysicsBody other) : IEquatable<Collis
 
     public override bool Equals (object? obj)
     {
-        return Equals (obj as Collision);
+        return Equals (obj as PhysicsBodyCollision);
     }
 
     public override int GetHashCode ()

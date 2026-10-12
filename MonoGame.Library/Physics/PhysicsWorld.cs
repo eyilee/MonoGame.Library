@@ -7,9 +7,11 @@ public class PhysicsWorld
 {
     private readonly HashSet<PhysicsBody> _bodies = [];
 
-    private HashSet<Collision> _previousCollisions = [];
+    private readonly HashSet<ColliderCollision> _colliderCollisions = [];
 
-    private HashSet<Collision> _collisions = [];
+    private HashSet<PhysicsBodyCollision> _previousBodyCollisions = [];
+
+    private HashSet<PhysicsBodyCollision> _currentBodyCollisions = [];
 
     private readonly QuadTree _quadTree = new (4, 4, new BoundingBox2D (new Vector2 (-1000f, -1000f), new Vector2 (1000f, 1000f)));
 
@@ -25,42 +27,51 @@ public class PhysicsWorld
 
         foreach (PhysicsBody body in _bodies)
         {
-            if (!_quadTree.TryInsert (body))
+            foreach (Collider collider in body.Colliders)
             {
-                _quadTree.Insert (body);
+                if (!_quadTree.TryInsert (collider))
+                {
+                    _quadTree.Insert (collider);
+                }
             }
         }
 
-        _collisions.Clear ();
-        _quadTree.GetCollisions (_collisions);
+        _colliderCollisions.Clear ();
+        _quadTree.GetCollisions (_colliderCollisions);
+        _colliderCollisions.RemoveWhere (x => !x.Intersects);
 
-        _collisions.RemoveWhere (x => !x.Intersects);
+        Resolver.Resolve (_colliderCollisions);
 
-        Resolver.Resolve (_collisions);
+        _currentBodyCollisions.Clear ();
 
-        foreach (Collision collision in _collisions)
+        foreach (ColliderCollision collision in _colliderCollisions)
         {
-            if (_previousCollisions.Contains (collision))
+            _currentBodyCollisions.Add (new PhysicsBodyCollision (collision.Self.PhysicsBody, collision.Other.PhysicsBody));
+        }
+
+        foreach (PhysicsBodyCollision collision in _currentBodyCollisions)
+        {
+            if (_previousBodyCollisions.Contains (collision))
             {
-                collision.Self.Entity.OnCollisionStay (collision);
-                collision.Other.Entity.OnCollisionStay (collision.Reverse ());
+                collision.Self.InvokeCollisionStay (collision);
+                collision.Other.InvokeCollisionStay (collision.Reverse);
             }
             else
             {
-                collision.Self.Entity.OnCollisionEnter (collision);
-                collision.Other.Entity.OnCollisionEnter (collision.Reverse ());
+                collision.Self.InvokeCollisionEnter (collision);
+                collision.Other.InvokeCollisionEnter (collision.Reverse);
             }
         }
 
-        foreach (Collision collision in _previousCollisions)
+        foreach (PhysicsBodyCollision collision in _previousBodyCollisions)
         {
-            if (!_collisions.Contains (collision))
+            if (!_currentBodyCollisions.Contains (collision))
             {
-                collision.Self.Entity.OnCollisionExit (collision);
-                collision.Other.Entity.OnCollisionExit (collision.Reverse ());
+                collision.Self.InvokeCollisionExit (collision);
+                collision.Other.InvokeCollisionExit (collision.Reverse);
             }
         }
 
-        (_collisions, _previousCollisions) = (_previousCollisions, _collisions);
+        (_currentBodyCollisions, _previousBodyCollisions) = (_previousBodyCollisions, _currentBodyCollisions);
     }
 }

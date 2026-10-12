@@ -11,7 +11,7 @@ public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Quad
 
     public BoundingBox2D Bounds { get; set; } = bounds;
 
-    private readonly List<PhysicsBody> _bodies = [];
+    private readonly List<Collider> _colliders = [];
 
     private readonly List<QuadTree> _nodes = [];
 
@@ -19,7 +19,7 @@ public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Quad
 
     public void Reset ()
     {
-        _bodies.Clear ();
+        _colliders.Clear ();
 
         foreach (QuadTree quadTree in _nodes)
         {
@@ -30,31 +30,18 @@ public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Quad
         _nodes.Clear ();
     }
 
-    public void Insert (PhysicsBody body)
-    {
-        if (body.Collider == null)
-        {
-            return;
-        }
+    public void Insert (Collider collider) => _colliders.Add (collider);
 
-        _bodies.Add (body);
-    }
-
-    public bool TryInsert (PhysicsBody body)
+    public bool TryInsert (Collider collider)
     {
-        if (body.Collider == null)
+        if (!Bounds.Contains (collider.Bounds))
         {
             return false;
         }
 
-        if (!Bounds.Contains (body.Collider.Bounds))
+        if (Depth == 0 || _colliders.Count < Capacity)
         {
-            return false;
-        }
-
-        if (Depth == 0 || _bodies.Count < Capacity)
-        {
-            _bodies.Add (body);
+            _colliders.Add (collider);
 
             return true;
         }
@@ -66,13 +53,13 @@ public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Quad
 
         foreach (QuadTree quadTree in _nodes)
         {
-            if (quadTree.TryInsert (body))
+            if (quadTree.TryInsert (collider))
             {
                 return true;
             }
         }
 
-        _bodies.Add (body);
+        _colliders.Add (collider);
 
         return true;
     }
@@ -106,43 +93,33 @@ public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Quad
         return new QuadTree (depth, capacity, bounds, _pool);
     }
 
-    public void GetCollisions (HashSet<Collision> collisions, List<PhysicsBody>? ancestorBodies = null)
+    public void GetCollisions (HashSet<ColliderCollision> collisions, List<Collider>? ancestorColliders = null)
     {
-        if (ancestorBodies != null)
+        if (ancestorColliders != null)
         {
-            foreach (PhysicsBody body in _bodies)
+            foreach (Collider collider in _colliders)
             {
-                foreach (PhysicsBody ancestorBody in ancestorBodies)
+                foreach (Collider ancestorCollider in ancestorColliders)
                 {
-                    if (body.Collider == null || ancestorBody.Collider == null)
+                    if (collider.Bounds.Intersects (ancestorCollider.Bounds))
                     {
-                        continue;
-                    }
-
-                    if (body.Collider.Bounds.Intersects (ancestorBody.Collider.Bounds))
-                    {
-                        collisions.Add (new Collision (body, ancestorBody));
+                        collisions.Add (new ColliderCollision (collider, ancestorCollider));
                     }
                 }
             }
         }
 
-        for (int i = 0; i < _bodies.Count; i++)
+        for (int i = 0; i < _colliders.Count; i++)
         {
-            PhysicsBody bodyA = _bodies[i];
+            Collider collider1 = _colliders[i];
 
-            for (int j = i + 1; j < _bodies.Count; j++)
+            for (int j = i + 1; j < _colliders.Count; j++)
             {
-                PhysicsBody bodyB = _bodies[j];
+                Collider collider2 = _colliders[j];
 
-                if (bodyA.Collider == null || bodyB.Collider == null)
+                if (collider1.Bounds.Intersects (collider2.Bounds))
                 {
-                    continue;
-                }
-
-                if (bodyA.Collider.Bounds.Intersects (bodyB.Collider.Bounds))
-                {
-                    collisions.Add (new Collision (bodyA, bodyB));
+                    collisions.Add (new ColliderCollision (collider1, collider2));
                 }
             }
         }
@@ -152,11 +129,11 @@ public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Quad
             return;
         }
 
-        List<PhysicsBody> nextAncestorBodies = [.. ancestorBodies ?? [], .. _bodies];
+        List<Collider> nextAncestorColliders = [.. ancestorColliders ?? [], .. _colliders];
 
         foreach (QuadTree quadTree in _nodes)
         {
-            quadTree.GetCollisions (collisions, nextAncestorBodies);
+            quadTree.GetCollisions (collisions, nextAncestorColliders);
         }
     }
 
