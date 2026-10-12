@@ -4,6 +4,8 @@ namespace MonoGame.Library.Graphics.Shapes;
 
 public class SdfLine : SdfShape
 {
+    protected Vector2 _start = Vector2.Zero;
+
     public Vector2 Start
     {
         get { return _start; }
@@ -17,6 +19,8 @@ public class SdfLine : SdfShape
         }
     }
 
+    protected Vector2 _end = Vector2.Zero;
+
     public Vector2 End
     {
         get { return _end; }
@@ -29,10 +33,6 @@ public class SdfLine : SdfShape
             }
         }
     }
-
-    protected Vector2 _start = Vector2.Zero;
-
-    protected Vector2 _end = Vector2.Zero;
 
     protected override void PopulateMesh ()
     {

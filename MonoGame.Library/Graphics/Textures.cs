@@ -5,6 +5,8 @@ namespace MonoGame.Library.Graphics;
 
 public static class Textures
 {
+    private static Texture2DResource? _pixel;
+
     public static Texture2DResource Pixel
     {
         get
@@ -18,6 +20,4 @@ public static class Textures
             return _pixel;
         }
     }
-
-    private static Texture2DResource? _pixel;
 }

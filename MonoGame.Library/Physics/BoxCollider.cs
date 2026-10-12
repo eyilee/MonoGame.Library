@@ -5,6 +5,8 @@ namespace MonoGame.Library.Physics;
 
 public class BoxCollider : Collider
 {
+    protected Vector2 _size = Vector2.Zero;
+
     public Vector2 Size
     {
         get => _size;
@@ -17,8 +19,6 @@ public class BoxCollider : Collider
             }
         }
     }
-
-    protected Vector2 _size = Vector2.Zero;
 
     protected override BoundingBox2D CalculateBounds ()
     {

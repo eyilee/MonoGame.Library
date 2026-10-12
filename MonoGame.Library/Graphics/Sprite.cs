@@ -5,6 +5,10 @@ namespace MonoGame.Library.Graphics;
 
 public class Sprite (TextureRegion region)
 {
+    private readonly Mesh _mesh = new ();
+
+    private Material? _material;
+
     public Material? Material
     {
         get { return _material; }
@@ -17,6 +21,8 @@ public class Sprite (TextureRegion region)
             }
         }
     }
+
+    private TextureRegion _region = region;
 
     public TextureRegion Region
     {
@@ -31,6 +37,8 @@ public class Sprite (TextureRegion region)
         }
     }
 
+    private Vector2 _size = new (region.Width, region.Height);
+
     public Vector2 Size
     {
         get { return _size; }
@@ -43,6 +51,8 @@ public class Sprite (TextureRegion region)
             }
         }
     }
+
+    private Vector2 _position = Vector2.Zero;
 
     public Vector2 Position
     {
@@ -57,6 +67,8 @@ public class Sprite (TextureRegion region)
         }
     }
 
+    private Color _color = Color.White;
+
     public Color Color
     {
         get { return _color; }
@@ -69,6 +81,8 @@ public class Sprite (TextureRegion region)
             }
         }
     }
+
+    private float _rotation = 0f;
 
     public float Rotation
     {
@@ -83,6 +97,8 @@ public class Sprite (TextureRegion region)
         }
     }
 
+    private Vector2 _origin = new (region.Width / 2f, region.Height / 2f);
+
     public Vector2 Origin
     {
         get { return _origin; }
@@ -95,6 +111,8 @@ public class Sprite (TextureRegion region)
             }
         }
     }
+
+    private SpriteEffects _spriteEffects = SpriteEffects.None;
 
     public SpriteEffects SpriteEffects
     {
@@ -109,6 +127,8 @@ public class Sprite (TextureRegion region)
         }
     }
 
+    private float _depth = 0f;
+
     public float Depth
     {
         get { return _depth; }
@@ -121,26 +141,6 @@ public class Sprite (TextureRegion region)
             }
         }
     }
-
-    private Material? _material;
-
-    private readonly Mesh _mesh = new ();
-
-    private TextureRegion _region = region;
-
-    private Vector2 _size = new (region.Width, region.Height);
-
-    private Vector2 _position = Vector2.Zero;
-
-    private Color _color = Color.White;
-
-    private float _rotation = 0f;
-
-    private Vector2 _origin = new (region.Width / 2f, region.Height / 2f);
-
-    private SpriteEffects _spriteEffects = SpriteEffects.None;
-
-    private float _depth = 0f;
 
     private bool _dirty = true;
 

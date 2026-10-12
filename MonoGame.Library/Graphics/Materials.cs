@@ -5,6 +5,8 @@ namespace MonoGame.Library.Graphics;
 
 public static class Materials
 {
+    private static Material? _standard;
+
     public static Material Standard
     {
         get
@@ -14,6 +16,8 @@ public static class Materials
             return _standard;
         }
     }
+
+    private static Material? _sprite;
 
     public static Material Sprite
     {
@@ -25,6 +29,8 @@ public static class Materials
         }
     }
 
+    private static Material? _canvas;
+
     public static Material Canvas
     {
         get
@@ -34,6 +40,8 @@ public static class Materials
             return _canvas;
         }
     }
+
+    private static SdfMaterial? _sdfCircle;
 
     public static SdfMaterial SdfCircle
     {
@@ -45,6 +53,8 @@ public static class Materials
         }
     }
 
+    private static SdfMaterial? _sdfFilledCircle;
+
     public static SdfMaterial SdfFilledCircle
     {
         get
@@ -54,6 +64,8 @@ public static class Materials
             return _sdfFilledCircle;
         }
     }
+
+    private static SdfMaterial? _sdfLine;
 
     public static SdfMaterial SdfLine
     {
@@ -65,6 +77,8 @@ public static class Materials
         }
     }
 
+    private static SdfMaterial? _sdfParabola;
+
     public static SdfMaterial SdfParabola
     {
         get
@@ -74,6 +88,8 @@ public static class Materials
             return _sdfParabola;
         }
     }
+
+    private static SdfMaterial? _sdfRectangle;
 
     public static SdfMaterial SdfRectangle
     {
@@ -85,6 +101,8 @@ public static class Materials
         }
     }
 
+    private static SdfMaterial? _sdfFilledRectangle;
+
     public static SdfMaterial SdfFilledRectangle
     {
         get
@@ -94,22 +112,4 @@ public static class Materials
             return _sdfFilledRectangle;
         }
     }
-
-    private static Material? _standard;
-
-    private static Material? _sprite;
-
-    private static Material? _canvas;
-
-    private static SdfMaterial? _sdfCircle;
-
-    private static SdfMaterial? _sdfFilledCircle;
-
-    private static SdfMaterial? _sdfLine;
-
-    private static SdfMaterial? _sdfParabola;
-
-    private static SdfMaterial? _sdfRectangle;
-
-    private static SdfMaterial? _sdfFilledRectangle;
 }

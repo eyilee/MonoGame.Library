@@ -4,6 +4,10 @@ namespace MonoGame.Library.Graphics.Shapes;
 
 public abstract class Shape
 {
+    protected readonly Mesh _mesh = new ();
+
+    protected Color _color = Color.White;
+
     public Color Color
     {
         get => _color;
@@ -17,6 +21,8 @@ public abstract class Shape
         }
     }
 
+    protected float _depth = 0f;
+
     public float Depth
     {
         get => _depth;
@@ -29,12 +35,6 @@ public abstract class Shape
             }
         }
     }
-
-    protected readonly Mesh _mesh = new ();
-
-    protected Color _color = Color.White;
-
-    protected float _depth = 0f;
 
     protected bool _dirty = true;
 

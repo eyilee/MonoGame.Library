@@ -5,6 +5,8 @@ namespace MonoGame.Library.Physics;
 
 public class CircleCollider : Collider
 {
+    protected float _radius = 0f;
+
     public float Radius
     {
         get => _radius;
@@ -17,8 +19,6 @@ public class CircleCollider : Collider
             }
         }
     }
-
-    protected float _radius = 0f;
 
     protected override BoundingBox2D CalculateBounds ()
     {

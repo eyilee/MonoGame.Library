@@ -4,6 +4,8 @@ namespace MonoGame.Library.Graphics.Shapes;
 
 public class SdfRectangle : SdfShape
 {
+    protected Vector2 _position = Vector2.Zero;
+
     public Vector2 Position
     {
         get => _position;
@@ -16,6 +18,8 @@ public class SdfRectangle : SdfShape
             }
         }
     }
+
+    protected Vector2 _size = Vector2.Zero;
 
     public Vector2 Size
     {
@@ -30,6 +34,8 @@ public class SdfRectangle : SdfShape
         }
     }
 
+    protected bool _filled = false;
+
     public bool Filled
     {
         get => _filled;
@@ -41,12 +47,6 @@ public class SdfRectangle : SdfShape
             }
         }
     }
-
-    protected Vector2 _position = Vector2.Zero;
-
-    protected Vector2 _size = Vector2.Zero;
-
-    protected bool _filled = false;
 
     protected override void PopulateMesh ()
     {

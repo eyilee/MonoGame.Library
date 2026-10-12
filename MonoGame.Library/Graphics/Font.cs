@@ -22,10 +22,6 @@ public class Font : ResourceRegistry<Font>, IResource, IDisposable
 
     public Texture2DResource Texture { get; }
 
-    public Vector2 MeasureString (string text) => SpriteFont.MeasureString (text);
-
-    public Vector2 MeasureString (StringBuilder text) => SpriteFont.MeasureString (text);
-
     private bool _disposed;
 
     public Font (string name, SpriteFont spriteFont)
@@ -38,6 +34,10 @@ public class Font : ResourceRegistry<Font>, IResource, IDisposable
     }
 
     ~Font () => Dispose (false);
+
+    public Vector2 MeasureString (string text) => SpriteFont.MeasureString (text);
+
+    public Vector2 MeasureString (StringBuilder text) => SpriteFont.MeasureString (text);
 
     public void Dispose ()
     {

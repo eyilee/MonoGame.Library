@@ -17,6 +17,8 @@ public class Transform : EntityComponent
         All = Position | Rotation
     }
 
+    private Vector2 _position;
+
     public Vector2 Position
     {
         get => _position;
@@ -29,6 +31,8 @@ public class Transform : EntityComponent
             }
         }
     }
+
+    private float _rotation;
 
     public float Rotation
     {
@@ -44,8 +48,4 @@ public class Transform : EntityComponent
     }
 
     public event Action<ChangedFlags>? OnTransformChanged;
-
-    private Vector2 _position;
-
-    private float _rotation;
 }

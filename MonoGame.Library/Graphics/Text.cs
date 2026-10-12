@@ -6,6 +6,10 @@ namespace MonoGame.Library.Graphics;
 
 public class Text (Font font)
 {
+    private readonly List<Mesh> _meshes = [];
+
+    private Material? _material;
+
     public Material? Material
     {
         get { return _material; }
@@ -18,6 +22,8 @@ public class Text (Font font)
             }
         }
     }
+
+    private Font _font = font;
 
     public Font Font
     {
@@ -33,6 +39,8 @@ public class Text (Font font)
         }
     }
 
+    private string _value = string.Empty;
+
     public string Value
     {
         get { return _value; }
@@ -46,6 +54,8 @@ public class Text (Font font)
             }
         }
     }
+
+    private Vector2 _size = Vector2.Zero;
 
     public Vector2 Size
     {
@@ -61,6 +71,8 @@ public class Text (Font font)
         }
     }
 
+    private Vector2 _position = Vector2.Zero;
+
     public Vector2 Position
     {
         get { return _position; }
@@ -73,6 +85,8 @@ public class Text (Font font)
             }
         }
     }
+
+    private Color _color = Color.White;
 
     public Color Color
     {
@@ -87,6 +101,8 @@ public class Text (Font font)
         }
     }
 
+    private float _rotation = 0f;
+
     public float Rotation
     {
         get { return _rotation; }
@@ -99,6 +115,8 @@ public class Text (Font font)
             }
         }
     }
+
+    private Vector2? _origin;
 
     public Vector2? Origin
     {
@@ -113,6 +131,8 @@ public class Text (Font font)
         }
     }
 
+    private SpriteEffects _spriteEffects = SpriteEffects.None;
+
     public SpriteEffects SpriteEffects
     {
         get { return _spriteEffects; }
@@ -126,6 +146,8 @@ public class Text (Font font)
         }
     }
 
+    private float _depth = 0f;
+
     public float Depth
     {
         get { return _depth; }
@@ -138,28 +160,6 @@ public class Text (Font font)
             }
         }
     }
-
-    private Material? _material;
-
-    private readonly List<Mesh> _meshes = [];
-
-    private Font _font = font;
-
-    private string _value = string.Empty;
-
-    private Vector2 _size = Vector2.Zero;
-
-    private Vector2 _position = Vector2.Zero;
-
-    private Color _color = Color.White;
-
-    private float _rotation = 0f;
-
-    private Vector2? _origin;
-
-    private SpriteEffects _spriteEffects = SpriteEffects.None;
-
-    private float _depth = 0f;
 
     private bool _dirty = true;
 

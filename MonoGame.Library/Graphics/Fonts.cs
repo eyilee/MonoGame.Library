@@ -4,6 +4,8 @@ namespace MonoGame.Library.Graphics;
 
 public static class Fonts
 {
+    private static Font? _default;
+
     public static Font Default
     {
         get
@@ -14,6 +16,8 @@ public static class Fonts
         }
     }
 
+    private static Font? _arial12;
+
     public static Font Arial12
     {
         get
@@ -23,8 +27,4 @@ public static class Fonts
             return _arial12;
         }
     }
-
-    private static Font? _default;
-
-    private static Font? _arial12;
 }

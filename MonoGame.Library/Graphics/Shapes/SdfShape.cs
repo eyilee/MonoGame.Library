@@ -2,6 +2,8 @@
 
 public abstract class SdfShape : Shape
 {
+    protected float _rotation = 0f;
+
     public float Rotation
     {
         get => _rotation;
@@ -15,6 +17,8 @@ public abstract class SdfShape : Shape
         }
     }
 
+    protected float _thickness = 1f;
+
     public float Thickness
     {
         get => _thickness;
@@ -27,8 +31,4 @@ public abstract class SdfShape : Shape
             }
         }
     }
-
-    protected float _rotation = 0f;
-
-    protected float _thickness = 1f;
 }

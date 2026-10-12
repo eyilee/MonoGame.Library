@@ -4,6 +4,8 @@ namespace MonoGame.Library.Graphics.Shapes;
 
 public class SdfParabola : SdfShape
 {
+    protected Vector2 _position = Vector2.Zero;
+
     public Vector2 Position
     {
         get => _position;
@@ -16,6 +18,8 @@ public class SdfParabola : SdfShape
             }
         }
     }
+
+    protected Vector2 _scale = Vector2.Zero;
 
     public Vector2 Scale
     {
@@ -30,6 +34,8 @@ public class SdfParabola : SdfShape
         }
     }
 
+    protected Vector2 _focus = Vector2.Zero;
+
     public Vector2 Focus
     {
         get { return _focus; }
@@ -43,6 +49,8 @@ public class SdfParabola : SdfShape
         }
     }
 
+    protected Vector2 _vertex = Vector2.Zero;
+
     public Vector2 Vertex
     {
         get { return _vertex; }
@@ -55,14 +63,6 @@ public class SdfParabola : SdfShape
             }
         }
     }
-
-    protected Vector2 _position = Vector2.Zero;
-
-    protected Vector2 _scale = Vector2.Zero;
-
-    protected Vector2 _focus = Vector2.Zero;
-
-    protected Vector2 _vertex = Vector2.Zero;
 
     protected override void PopulateMesh ()
     {

@@ -6,6 +6,8 @@ namespace MonoGame.Library.Graphics.Shapes;
 
 public class PolygonShape : Shape
 {
+    protected Vector2 _position = Vector2.Zero;
+
     public Vector2 Position
     {
         get => _position;
@@ -18,6 +20,8 @@ public class PolygonShape : Shape
             }
         }
     }
+
+    protected float _rotation = 0f;
 
     public float Rotation
     {
@@ -32,13 +36,9 @@ public class PolygonShape : Shape
         }
     }
 
-    public List<Vector2> Vertices => _vertices;
-
-    protected Vector2 _position = Vector2.Zero;
-
-    protected float _rotation = 0f;
-
     protected readonly List<Vector2> _vertices = [];
+
+    public List<Vector2> Vertices => _vertices;
 
     public void SetVertices (List<Vector2> vertices)
     {

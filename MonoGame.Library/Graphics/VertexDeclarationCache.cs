@@ -4,6 +4,8 @@ namespace MonoGame.Library.Graphics;
 
 public class VertexDeclarationCache<T> where T : struct, IVertexType
 {
+    private static VertexDeclaration? _cache;
+
     public static VertexDeclaration VertexDeclaration
     {
         get
@@ -16,6 +18,4 @@ public class VertexDeclarationCache<T> where T : struct, IVertexType
             return _cache;
         }
     }
-
-    private static VertexDeclaration? _cache;
 }
