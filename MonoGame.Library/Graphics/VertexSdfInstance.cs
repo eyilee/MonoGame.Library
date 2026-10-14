@@ -5,15 +5,15 @@ namespace MonoGame.Library.Graphics;
 
 public struct VertexSdfInstance : IVertexType
 {
-    public Vector3 Position;
+    public Vector3 Position { get; set; }
 
-    public Vector4 RotationScaleThickness;
+    public Vector4 RotationScaleThickness { get; set; }
 
-    public Vector4 ShapeData0;
+    public Vector4 ShapeData0 { get; set; }
 
-    public Vector4 ShapeData1;
+    public Vector4 ShapeData1 { get; set; }
 
-    public Color Color;
+    public Color Color { get; set; }
 
     public static readonly VertexDeclaration VertexDeclaration = new (
         new VertexElement (0, VertexElementFormat.Vector3, VertexElementUsage.TextureCoordinate, 0),

@@ -4,9 +4,9 @@ namespace MonoGame.Library.Physics;
 
 public struct Circle (Vector2 point, float radius) : ISupportable
 {
-    public Vector2 Point = point;
+    public Vector2 Point { get; set; } = point;
 
-    public float Radius = radius;
+    public float Radius { get; set; } = radius;
 
     public readonly Vector2 Position => Point;
 

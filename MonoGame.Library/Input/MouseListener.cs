@@ -6,99 +6,6 @@ using System.Linq;
 
 namespace MonoGame.Library.Input;
 
-public enum MouseButtons
-{
-    None,
-    Left,
-    Middle,
-    Right,
-    XButton1,
-    XButton2,
-}
-
-public class MouseEventArgs (MouseButtons button, MouseState currentState, MouseState previousState) : EventArgs
-{
-    public MouseButtons Button { get; init; } = button;
-
-    public Point Position { get; init; } = new Point (currentState.X, currentState.Y);
-
-    public Point PositionDelta { get; init; } = new Point (currentState.X - previousState.X, currentState.Y - previousState.Y);
-
-    public int ScrollWheelDelta { get; init; } = currentState.ScrollWheelValue - previousState.ScrollWheelValue;
-}
-
-internal class MouseObserver
-{
-    public event EventHandler<MouseEventArgs>? Observers;
-
-    public bool HasObservers => Observers != null && Observers.GetInvocationList ().Length > 0;
-
-    public void Notify (object? sender, MouseEventArgs eventArgs) => Observers?.Invoke (sender, eventArgs);
-}
-
-internal class ExtendedButtonState
-{
-    public Point PressedPosition { get; private set; } = Point.Zero;
-
-    public TimeSpan ReleasedTime { get; private set; } = TimeSpan.Zero;
-
-    public bool IsDoubleClick { get; private set; }
-
-    public bool IsDragBegin { get; private set; }
-
-    public bool IsDrag { get; private set; }
-
-    public bool IsDragEnd { get; private set; }
-
-    public void Pressed (Point poition)
-    {
-        PressedPosition = poition;
-
-        IsDragBegin = false;
-
-        IsDrag = false;
-
-        IsDragEnd = false;
-    }
-
-    public void Released (TimeSpan gameTime, int doubleClickedMilliseconds)
-    {
-        TimeSpan previousReleasedTime = ReleasedTime;
-
-        ReleasedTime = gameTime;
-
-        IsDoubleClick = (ReleasedTime - previousReleasedTime).TotalMilliseconds <= doubleClickedMilliseconds;
-
-        if (IsDragBegin || IsDrag)
-        {
-            IsDragBegin = false;
-
-            IsDrag = false;
-
-            IsDragEnd = true;
-        }
-    }
-
-    public void Moved (Point position, int dragThreshold)
-    {
-        if (!IsDrag)
-        {
-            if (!IsDragBegin)
-            {
-                int deltaPosition = Math.Abs (position.X - PressedPosition.X) + Math.Abs (position.Y - PressedPosition.Y);
-                if (deltaPosition >= dragThreshold)
-                {
-                    IsDragBegin = true;
-                }
-            }
-            else
-            {
-                IsDrag = true;
-            }
-        }
-    }
-}
-
 public class MouseListener
 {
     private readonly IEnumerable<MouseButtons> _buttons = Enum.GetValues (typeof (MouseButtons)).Cast<MouseButtons> ();
@@ -296,6 +203,7 @@ public class MouseListener
             _movedObserver.Notify (this, new MouseEventArgs (MouseButtons.None, _currentState, _previousState));
 
             IEnumerable<MouseButtons> draggedButtons = _buttons.Where (button => GetButtonState (_currentState, button) == ButtonState.Pressed);
+
             foreach (MouseButtons button in draggedButtons)
             {
                 ExtendedButtonState buttonState = GetExtendedButtonState (button);

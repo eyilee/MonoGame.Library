@@ -5,7 +5,7 @@ namespace MonoGame.Library.Physics;
 
 public struct Polygon (List<Vector2> points) : ISupportable
 {
-    public List<Vector2> Points = points;
+    public List<Vector2> Points { get; set; } = points;
 
     public readonly Vector2 Position => Points[0];
 

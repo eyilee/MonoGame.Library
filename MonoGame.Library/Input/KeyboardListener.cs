@@ -6,53 +6,6 @@ using System.Linq;
 
 namespace MonoGame.Library.Input;
 
-[Flags]
-public enum KeyboardModifiers
-{
-    None = 0,
-    Control = 1,
-    Shift = 2,
-    Alt = 4,
-}
-
-public class KeyboardEventArgs : EventArgs
-{
-    public Keys Key { get; }
-
-    public KeyboardModifiers Modifiers { get; }
-
-    public KeyboardEventArgs (Keys key, KeyboardState keyboardState)
-    {
-        Key = key;
-
-        Modifiers = KeyboardModifiers.None;
-
-        if (keyboardState.IsKeyDown (Keys.LeftControl) || keyboardState.IsKeyDown (Keys.RightControl))
-        {
-            Modifiers |= KeyboardModifiers.Control;
-        }
-
-        if (keyboardState.IsKeyDown (Keys.LeftShift) || keyboardState.IsKeyDown (Keys.RightShift))
-        {
-            Modifiers |= KeyboardModifiers.Shift;
-        }
-
-        if (keyboardState.IsKeyDown (Keys.LeftAlt) || keyboardState.IsKeyDown (Keys.RightAlt))
-        {
-            Modifiers |= KeyboardModifiers.Alt;
-        }
-    }
-}
-
-internal class KeyboardObserver
-{
-    public event EventHandler<KeyboardEventArgs>? Observers;
-
-    public bool HasObservers => Observers != null && Observers.GetInvocationList ().Length > 0;
-
-    public void Notify (object? sender, KeyboardEventArgs eventArgs) => Observers?.Invoke (sender, eventArgs);
-}
-
 public class KeyboardListener
 {
     private readonly IEnumerable<Keys> _keys = Enum.GetValues (typeof (Keys)).Cast<Keys> ();
