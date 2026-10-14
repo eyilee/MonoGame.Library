@@ -19,7 +19,7 @@ public class ColliderCollision (Collider self, Collider other) : IEquatable<Coll
 
     public bool Intersects => Self.Intersects (Other);
 
-    public bool TryGetContact (out Contact contact) => Self.TryGetContact (Other, out contact);
+    public bool TryGetContacts (out Contact selfContact, out Contact otherContact) => Self.TryGetContacts (Other, out selfContact, out otherContact);
 
     public bool Equals (ColliderCollision? other)
     {

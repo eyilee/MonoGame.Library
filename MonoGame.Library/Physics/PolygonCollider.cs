@@ -56,21 +56,11 @@ public class PolygonCollider : Collider
 
     public override bool Intersects (PolygonCollider other) => Physics2D.Intersects (this, other);
 
-    public override bool TryGetContact (Collider other, out Contact contact)
-    {
-        if (!other.TryGetContact (this, out contact))
-        {
-            return false;
-        }
+    public override bool TryGetContacts (Collider other, out Contact selfContact, out Contact otherContact) => other.TryGetContacts (this, out otherContact, out selfContact);
 
-        contact.Normal *= -1f;
+    public override bool TryGetContacts (BoxCollider other, out Contact selfContact, out Contact otherContact) => Physics2D.TryGetContacts (this, other, out selfContact, out otherContact);
 
-        return true;
-    }
+    public override bool TryGetContacts (CircleCollider other, out Contact selfContact, out Contact otherContact) => Physics2D.TryGetContacts (this, other, out selfContact, out otherContact);
 
-    public override bool TryGetContact (BoxCollider other, out Contact contact) => Physics2D.TryGetContact (this, other, out contact);
-
-    public override bool TryGetContact (CircleCollider other, out Contact contact) => Physics2D.TryGetContact (this, other, out contact);
-
-    public override bool TryGetContact (PolygonCollider other, out Contact contact) => Physics2D.TryGetContact (this, other, out contact);
+    public override bool TryGetContacts (PolygonCollider other, out Contact selfContact, out Contact otherContact) => Physics2D.TryGetContacts (this, other, out selfContact, out otherContact);
 }

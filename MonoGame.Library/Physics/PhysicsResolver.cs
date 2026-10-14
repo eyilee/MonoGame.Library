@@ -28,27 +28,26 @@ public class PhysicsResolver
             return;
         }
 
-        if (!collision.TryGetContact (out Contact contact))
+        if (!collision.TryGetContacts (out Contact selfContact, out Contact otherContact))
         {
             return;
         }
 
-        Vector2 correction = contact.Normal * contact.Penetration * 0.5f;
+        Vector2 selfCorrection = selfContact.Normal * selfContact.Penetration * 0.5f;
+        Vector2 otherCorrection = otherContact.Normal * otherContact.Penetration * 0.5f;
 
         if (!self.PhysicsBody.IsDynamic)
         {
-            other.Transform.Position += correction;
+            other.Transform.Position -= otherCorrection;
         }
         else if (!other.PhysicsBody.IsDynamic)
         {
-            self.Transform.Position -= correction;
+            self.Transform.Position -= selfCorrection;
         }
         else
         {
-            Vector2 halfCorrection = correction / 2f;
-
-            self.Transform.Position -= halfCorrection;
-            other.Transform.Position += halfCorrection;
+            self.Transform.Position -= selfCorrection / 2f;
+            other.Transform.Position -= otherCorrection / 2f;
         }
     }
 }

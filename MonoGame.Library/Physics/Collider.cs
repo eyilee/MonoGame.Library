@@ -98,11 +98,11 @@ public abstract class Collider
 
     public abstract bool Intersects (PolygonCollider other);
 
-    public abstract bool TryGetContact (Collider other, out Contact contact);
+    public abstract bool TryGetContacts (Collider other, out Contact selfContact, out Contact otherContact);
 
-    public abstract bool TryGetContact (BoxCollider other, out Contact contact);
+    public abstract bool TryGetContacts (BoxCollider other, out Contact selfContact, out Contact otherContact);
 
-    public abstract bool TryGetContact (CircleCollider other, out Contact contact);
+    public abstract bool TryGetContacts (CircleCollider other, out Contact selfContact, out Contact otherContact);
 
-    public abstract bool TryGetContact (PolygonCollider other, out Contact contact);
+    public abstract bool TryGetContacts (PolygonCollider other, out Contact selfContact, out Contact otherContact);
 }
