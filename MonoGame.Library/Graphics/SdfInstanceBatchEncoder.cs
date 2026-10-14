@@ -16,8 +16,7 @@ public class SdfInstanceBatchEncoder : IBatchEncoder<VertexSdfInstance>
 
         if (uvs != null)
         {
-            vertex.Position.X = uvs[0].X;
-            vertex.Position.Y = uvs[0].Y;
+            vertex.Position = new Vector3 (uvs[0].X, uvs[0].Y, 0f);
         }
 
         if (uv1s != null)
