@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoGame.Library.Utilities;
-using System;
 using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
@@ -63,7 +62,7 @@ public class Physics2D
         simplex = [self.Support (direction) - other.Support (-direction)];
         direction = -simplex[0];
 
-        while (true)
+        for (int iteration = 0; iteration < 32; iteration++)
         {
             Vector2 point = self.Support (direction) - other.Support (-direction);
 
@@ -82,6 +81,11 @@ public class Physics2D
                 Vector2 ao = -a;
 
                 direction = TripleProduct (ab, ao, ab);
+
+                if (direction.LengthSquared () < EpsilonSquared)
+                {
+                    direction = new Vector2 (-ab.Y, ab.X);
+                }
             }
             else if (simplex.Count == 3)
             {
@@ -110,6 +114,8 @@ public class Physics2D
                 }
             }
         }
+
+        return false;
     }
 
     private static Vector2 TripleProduct (Vector2 v1, Vector2 v2, Vector2 v3)
