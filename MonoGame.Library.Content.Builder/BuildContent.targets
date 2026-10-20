@@ -3,12 +3,11 @@
     <PropertyGroup>
       <ContentOutput>$(ProjectDir)$(OutputPath)</ContentOutput>
       <ContentTemp>$(ProjectDir)$(IntermediateOutputPath)</ContentTemp>
-      <ContentArgs>build -p $(MonoGamePlatform) -s MonoGame.Library.Content/Assets -o $(ContentOutput) -i $(ContentTemp)</ContentArgs>
-      <ContentCommand>$(MSBuildThisFileDirectory)bin\Debug\MonoGame.Library.Content</ContentCommand>
+      <ContentArgs>build -p $(MonoGamePlatform) -s MonoGame.Library.Content.Builder/Assets -o $(ContentOutput) -i $(ContentTemp)</ContentArgs>
+      <ContentCommand>$(MSBuildThisFileDirectory)bin\$(Configuration)\MonoGame.Library.Content.Builder</ContentCommand>
     </PropertyGroup>
-    <MSBuild Projects="$(MSBuildThisFileDirectory)MonoGame.Library.Content.csproj" Targets="Build" RemoveProperties="Configuration;TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
     <Exec Command="$(ContentCommand) $(ContentArgs)" WorkingDirectory="$(MSBuildThisFileDirectory)..\" CustomErrorRegularExpression="\[E\] .+" CustomWarningRegularExpression="\[W\] .+" />
-   </Target>
+  </Target>
   <Target Name="AddGeneratedContentAssets" AfterTargets="BuildContent">
     <ItemGroup>
       <Assets Include="$(ProjectDir)$(OutputPath)Content\**\*" />

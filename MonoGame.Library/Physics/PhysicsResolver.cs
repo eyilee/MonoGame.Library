@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
 
-public class PhysicsResolver
+internal class PhysicsResolver
 {
     public int Iterations { get; set; } = 4;
 

@@ -10,5 +10,9 @@
     </PackageReference>
   </ItemGroup>
 
-  <Import Project="..\MonoGame.Library.Content\BuildContent.targets" />
+  <PropertyGroup>
+    <RebuildWithResources Condition="'$(RebuildWithResources)' == ''">false</RebuildWithResources>
+  </PropertyGroup>
+
+  <Import Condition="'$(RebuildWithResources)' == 'true'" Project="..\MonoGame.Library.Content.Builder\BuildContent.targets" />
 </Project>

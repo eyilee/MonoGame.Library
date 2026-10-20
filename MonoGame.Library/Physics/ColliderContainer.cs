@@ -2,7 +2,7 @@
 
 namespace MonoGame.Library.Physics;
 
-public sealed class ColliderContainer (PhysicsBody owner)
+internal sealed class ColliderContainer (PhysicsBody owner)
 {
     public IReadOnlyList<Collider> Colliders => _colliders;
 

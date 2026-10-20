@@ -4,15 +4,6 @@ using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
 
-public struct SupportPoint (Vector2 self, Vector2 other)
-{
-    public Vector2 Self { get; set; } = self;
-
-    public Vector2 Other { get; set; } = other;
-
-    public readonly Vector2 Value => Self - Other;
-}
-
 public class Physics2D
 {
     public const float Epsilon = 1e-6f;

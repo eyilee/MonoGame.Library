@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace MonoGame.Library.Resource;
 
-public class ResourceManager (IServiceProvider servicesProvider) : ContentManager (servicesProvider)
+internal class ResourceManager (IServiceProvider servicesProvider) : ContentManager (servicesProvider)
 {
     private readonly Assembly _assembly = typeof (Core).Assembly;
 

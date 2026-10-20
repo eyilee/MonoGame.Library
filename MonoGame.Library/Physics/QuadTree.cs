@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MonoGame.Library.Physics;
 
-public class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<QuadTree>? pool = null)
+internal class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<QuadTree>? pool = null)
 {
     public int Depth { get; set; } = depth;
 
