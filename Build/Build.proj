@@ -1,27 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
+﻿<Project>
   <PropertyGroup>
     <MonoGameLibrary>../MonoGame.Library/MonoGame.Library.csproj</MonoGameLibrary>
     <MonoGameLibraryContentBuilder>../MonoGame.Library.Content.Builder/MonoGame.Library.Content.Builder.csproj</MonoGameLibraryContentBuilder>
     <MonoGameLibraryContentPipeline>../MonoGame.Library.Content.Pipeline/MonoGame.Library.Content.Pipeline.csproj</MonoGameLibraryContentPipeline>
   </PropertyGroup>
 
-  <Target Name="BuildAll" BeforeTargets="Build" DependsOnTargets="BuildPrerequisite">
-    <MSBuild Projects="$(MonoGameLibrary)" Targets="Build" Properties="Configuration=$(Configuration);RebuildWithResources=true" />
-  </Target>
-
-  <Target Name="BuildPrerequisite">
+  <Target Name="BuildAll">
     <MSBuild Projects="$(MonoGameLibrary)" Targets="Build" Properties="Configuration=$(Configuration)" />
     <MSBuild Projects="$(MonoGameLibraryContentPipeline)" Targets="Build" Properties="Configuration=$(Configuration)" />
     <MSBuild Projects="$(MonoGameLibraryContentBuilder)" Targets="Build" Properties="Configuration=$(Configuration)" />
+    <MSBuild Projects="$(MonoGameLibrary)" Targets="ReBuild" Properties="Configuration=$(Configuration);RebuildWithResources=true" />
   </Target>
 
-  <Target Name="CleanAll" BeforeTargets="Clean">
+  <Target Name="ReBuildAll">
+    <MSBuild Projects="$(MonoGameLibrary)" Targets="ReBuild" Properties="Configuration=$(Configuration)" />
+    <MSBuild Projects="$(MonoGameLibraryContentPipeline)" Targets="ReBuild" Properties="Configuration=$(Configuration)" />
+    <MSBuild Projects="$(MonoGameLibraryContentBuilder)" Targets="ReBuild" Properties="Configuration=$(Configuration)" />
+    <MSBuild Projects="$(MonoGameLibrary)" Targets="ReBuild" Properties="Configuration=$(Configuration);RebuildWithResources=true" />
+  </Target>
+
+  <Target Name="CleanAll">
     <MSBuild Projects="$(MonoGameLibrary)" Targets="Clean" Properties="Configuration=$(Configuration)" />
     <MSBuild Projects="$(MonoGameLibraryContentBuilder)" Targets="Clean" Properties="Configuration=$(Configuration)" />
     <MSBuild Projects="$(MonoGameLibraryContentPipeline)" Targets="Clean" Properties="Configuration=$(Configuration)" />
