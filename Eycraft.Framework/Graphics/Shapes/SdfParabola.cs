@@ -1,0 +1,88 @@
+﻿using Microsoft.Xna.Framework;
+
+namespace Eycraft.Framework.Graphics.Shapes;
+
+public class SdfParabola : SdfShape
+{
+    protected Vector2 _position = Vector2.Zero;
+
+    public Vector2 Position
+    {
+        get => _position;
+        set
+        {
+            if (_position != value)
+            {
+                _position = value;
+                _dirty = true;
+            }
+        }
+    }
+
+    protected Vector2 _scale = Vector2.Zero;
+
+    public Vector2 Scale
+    {
+        get => _scale;
+        set
+        {
+            if (_scale != value)
+            {
+                _scale = value;
+                _dirty = true;
+            }
+        }
+    }
+
+    protected Vector2 _focus = Vector2.Zero;
+
+    public Vector2 Focus
+    {
+        get { return _focus; }
+        set
+        {
+            if (_focus != value)
+            {
+                _focus = value;
+                _dirty = true;
+            }
+        }
+    }
+
+    protected Vector2 _vertex = Vector2.Zero;
+
+    public Vector2 Vertex
+    {
+        get { return _vertex; }
+        set
+        {
+            if (_vertex != value)
+            {
+                _vertex = value;
+                _dirty = true;
+            }
+        }
+    }
+
+    protected override void PopulateMesh ()
+    {
+        float angle = float.Atan2 (_focus.Y - _vertex.Y, _focus.X - _vertex.X) - float.Pi / 2f;
+        Vector2 offset = _vertex - _position;
+
+        _mesh.SetUVs ([new Vector3 (_position, _depth)]);
+        _mesh.SetUV1s ([new Vector4 (_rotation, _scale.X, _scale.Y, _thickness)]);
+        _mesh.SetUV2s ([new Vector4 (-angle, offset.X, offset.Y, 1f / (4f * Vector2.Distance (_focus, _vertex)))]);
+        _mesh.SetColors ([_color]);
+    }
+
+    public override void Draw (RenderManager render)
+    {
+        if (_dirty)
+        {
+            PopulateMesh ();
+            _dirty = false;
+        }
+
+        render.Enqueue (new RenderCommand (Materials.SdfParabola, _mesh, _depth));
+    }
+}

@@ -1,0 +1,141 @@
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
+
+namespace Eycraft.Framework.Graphics;
+
+internal class QuadBatcher<T> : RenderBatcher where T : struct, IVertexType
+{
+    public static VertexDeclaration VertexDeclaration => VertexDeclarationCache<T>.VertexDeclaration;
+
+    private const int IndexCount = 6;
+
+    private const int VertexCount = 4;
+
+    private const int InitialCapacity = 32;
+
+    private readonly IBatchEncoder<T> _batchEncoder;
+
+    private readonly int _batchSize;
+
+    private int _batchCount;
+
+    private T[] _batchVertices;
+
+    private readonly IndexBuffer _indexBuffer;
+
+    private readonly DynamicVertexBuffer _vertexBuffer;
+
+    public QuadBatcher (GraphicsDevice graphicsDevice, string name, IBatchEncoder<T> batchEncoder, int batchSize = ushort.MaxValue / IndexCount)
+        : base (graphicsDevice, name)
+    {
+        ArgumentOutOfRangeException.ThrowIfGreaterThan (batchSize, ushort.MaxValue / IndexCount);
+
+        _batchEncoder = batchEncoder;
+        _batchSize = batchSize;
+
+        _batchCount = 0;
+        _batchVertices = new T[InitialCapacity * VertexCount];
+
+        ushort[] indices = new ushort[_batchSize * IndexCount];
+
+        for (int i = 0; i < indices.Length / IndexCount; i++)
+        {
+            int indexIndex = i * IndexCount;
+            int vertexIndex = i * VertexCount;
+            indices[indexIndex + 0] = (ushort)(vertexIndex + 0);
+            indices[indexIndex + 1] = (ushort)(vertexIndex + 1);
+            indices[indexIndex + 2] = (ushort)(vertexIndex + 2);
+            indices[indexIndex + 3] = (ushort)(vertexIndex + 1);
+            indices[indexIndex + 4] = (ushort)(vertexIndex + 3);
+            indices[indexIndex + 5] = (ushort)(vertexIndex + 2);
+        }
+
+        _indexBuffer = new IndexBuffer (graphicsDevice, IndexElementSize.SixteenBits, _batchSize * IndexCount, BufferUsage.WriteOnly);
+        _indexBuffer.SetData (indices);
+
+        _vertexBuffer = new DynamicVertexBuffer (graphicsDevice, VertexDeclaration, _batchSize * VertexCount, BufferUsage.WriteOnly);
+    }
+
+    public override bool CanBatch (Mesh mesh)
+    {
+        return true;
+    }
+
+    public override void Batch (Mesh mesh)
+    {
+        EnsureVertexArrayCapacity ();
+
+        _batchEncoder.Encode (_batchVertices, _batchCount * VertexCount, mesh);
+
+        _batchCount++;
+    }
+
+    private void EnsureVertexArrayCapacity ()
+    {
+        int size = (_batchCount + 1) * VertexCount;
+
+        if (size >= _batchVertices.Length)
+        {
+            int newSize = int.Max (_batchVertices.Length, InitialCapacity * VertexCount);
+
+            while (newSize < size)
+            {
+                newSize *= 2;
+            }
+
+            Array.Resize (ref _batchVertices, newSize);
+        }
+    }
+
+    public override void DrawBatch (Material material, MaterialPropertyBlock? properties, Texture? texture)
+    {
+        if (_batchCount == 0)
+        {
+            return;
+        }
+
+        material.ApplyStates (_graphicsDevice);
+        material.ApplyProperties (properties);
+
+        int batchIndex = 0;
+        int batchCount = _batchCount;
+
+        while (batchCount > 0)
+        {
+            int batchCountToProcess = batchCount;
+
+            if (batchCountToProcess > _batchSize)
+            {
+                batchCountToProcess = _batchSize;
+            }
+
+            FlushArray (material, texture, batchIndex, batchCountToProcess);
+
+            batchIndex += batchCountToProcess;
+            batchCount -= batchCountToProcess;
+        }
+
+        _batchCount = 0;
+    }
+
+    private void FlushArray (Material material, Texture? texture, int batchIndex, int batchCount)
+    {
+        if (batchCount <= 0)
+        {
+            return;
+        }
+
+        _vertexBuffer.SetData (_batchVertices, batchIndex * VertexCount, batchCount * VertexCount, SetDataOptions.Discard);
+
+        _graphicsDevice.Indices = _indexBuffer;
+        _graphicsDevice.SetVertexBuffer (_vertexBuffer);
+
+        foreach (EffectPass pass in material.Effect.CurrentTechnique.Passes)
+        {
+            pass.Apply ();
+
+            _graphicsDevice.Textures[0] = texture;
+            _graphicsDevice.DrawIndexedPrimitives (PrimitiveType.TriangleList, 0, 0, batchCount * 2);
+        }
+    }
+}
