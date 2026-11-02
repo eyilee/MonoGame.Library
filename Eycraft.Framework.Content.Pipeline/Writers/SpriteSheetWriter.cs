@@ -11,9 +11,9 @@ public sealed class SpriteSheetWriter : ContentTypeWriter<SpriteSheetDocument>
     protected override void Write (ContentWriter output, SpriteSheetDocument value)
     {
         output.Write (value.Name);
+        output.WriteObject (value.Texture);
         WriteRegions (output, value);
         WriteAnimations (output, value);
-        output.WriteObject (value.Texture);
     }
 
     private static void WriteRegions (ContentWriter output, SpriteSheetDocument value)

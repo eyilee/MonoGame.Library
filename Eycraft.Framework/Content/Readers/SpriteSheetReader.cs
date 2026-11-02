@@ -12,9 +12,12 @@ public sealed class SpriteSheetReader : ContentTypeReader<SpriteSheet>
         SpriteSheet spriteSheet = existingInstance ?? new SpriteSheet ();
 
         spriteSheet.Name = input.ReadString ();
+        spriteSheet.Texture = new (spriteSheet.Name, input.ReadObject<Texture2D> ());
+        spriteSheet.Regions = [];
+        spriteSheet.Animations = [];
+
         ReadRegions (input, spriteSheet);
         ReadAnimations (input, spriteSheet);
-        spriteSheet.Texture = new Texture2DResource (spriteSheet.Name, input.ReadObject<Texture2D> ());
 
         return spriteSheet;
     }
@@ -26,15 +29,11 @@ public sealed class SpriteSheetReader : ContentTypeReader<SpriteSheet>
         for (int i = 0; i < count; i++)
         {
             string name = input.ReadString ();
-
-            spriteSheet.Regions.Add (name, new SpriteSheetRegion
-            {
-                Name = name,
-                X = input.ReadInt32 (),
-                Y = input.ReadInt32 (),
-                Width = input.ReadInt32 (),
-                Height = input.ReadInt32 ()
-            });
+            int x = input.ReadInt32 ();
+            int y = input.ReadInt32 ();
+            int width = input.ReadInt32 ();
+            int height = input.ReadInt32 ();
+            spriteSheet.Regions.Add (name, new TextureRegion (spriteSheet.Texture, x, y, width, height));
         }
     }
 
@@ -45,30 +44,28 @@ public sealed class SpriteSheetReader : ContentTypeReader<SpriteSheet>
         for (int i = 0; i < count; i++)
         {
             string name = input.ReadString ();
-
-            List<SpriteSheetAnimationFrame> frames = ReadFrames (input);
-
-            spriteSheet.Animations.Add (name, new SpriteSheetAnimation
-            {
-                Name = name,
-                Frames = frames
-            });
+            List<SpriteAnimationFrame> frames = ReadFrames (input, spriteSheet);
+            spriteSheet.Animations.Add (name, new SpriteAnimation (name, frames));
         }
     }
 
-    private static List<SpriteSheetAnimationFrame> ReadFrames (ContentReader input)
+    private static List<SpriteAnimationFrame> ReadFrames (ContentReader input, SpriteSheet spriteSheet)
     {
-        List<SpriteSheetAnimationFrame> frames = [];
+        List<SpriteAnimationFrame> frames = [];
 
         int count = input.ReadInt32 ();
 
-        for (int j = 0; j < count; j++)
+        for (int i = 0; i < count; i++)
         {
-            frames.Add (new SpriteSheetAnimationFrame
+            string name = input.ReadString ();
+            int duration = input.ReadInt32 ();
+
+            if (!spriteSheet.Regions.TryGetValue (name, out TextureRegion? region))
             {
-                Region = input.ReadString (),
-                Duration = input.ReadInt32 ()
-            });
+                throw new ContentLoadException ($"Region '{name}' not found in sprite sheet '{spriteSheet.Name}'.");
+            }
+
+            frames.Add (new SpriteAnimationFrame (region, duration));
         }
 
         return frames;

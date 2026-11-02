@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Eycraft.Framework.Graphics;
 
-public class Sprite (TextureRegion region)
+public class Sprite
 {
     private readonly Mesh _mesh = new ();
 
@@ -22,9 +22,9 @@ public class Sprite (TextureRegion region)
         }
     }
 
-    private TextureRegion _region = region;
+    private TextureRegion? _region;
 
-    public TextureRegion Region
+    public TextureRegion? Region
     {
         get { return _region; }
         set
@@ -32,23 +32,38 @@ public class Sprite (TextureRegion region)
             if (!ReferenceEquals (_region, value))
             {
                 _region = value;
+                AlignOrigin ();
                 _dirty = true;
             }
         }
     }
 
-    private Vector2 _size = new (region.Width, region.Height);
+    private Vector2? _preferredSize;
+
+    public Vector2? PreferredSize
+    {
+        get { return _preferredSize; }
+        set
+        {
+            if (_preferredSize != value)
+            {
+                _preferredSize = value;
+                AlignOrigin ();
+                _dirty = true;
+            }
+        }
+    }
 
     public Vector2 Size
     {
-        get { return _size; }
-        set
+        get
         {
-            if (_size != value)
+            if (_preferredSize.HasValue)
             {
-                _size = value;
-                _dirty = true;
+                return _preferredSize.Value;
             }
+
+            return _region != null ? new Vector2 (_region.Width, _region.Height) : Vector2.Zero;
         }
     }
 
@@ -97,16 +112,37 @@ public class Sprite (TextureRegion region)
         }
     }
 
-    private Vector2 _origin = new (region.Width / 2f, region.Height / 2f);
+    private Vector2 _origin = Vector2.Zero;
 
     public Vector2 Origin
     {
         get { return _origin; }
         set
         {
+            if (_originAlignment != OriginAlignment.None)
+            {
+                _originAlignment = OriginAlignment.None;
+            }
+
             if (_origin != value)
             {
                 _origin = value;
+                _dirty = true;
+            }
+        }
+    }
+
+    private OriginAlignment _originAlignment = OriginAlignment.Center;
+
+    public OriginAlignment OriginAlignment
+    {
+        get { return _originAlignment; }
+        set
+        {
+            if (_originAlignment != value)
+            {
+                _originAlignment = value;
+                AlignOrigin ();
                 _dirty = true;
             }
         }
@@ -144,12 +180,21 @@ public class Sprite (TextureRegion region)
 
     private bool _dirty = true;
 
+    private void AlignOrigin ()
+    {
+        Vector2 size = Size;
+        _origin = new Vector2 (size.X * 0.5f, size.Y * 0.5f);
+    }
+
     private void PopulateMesh ()
     {
         float x = _position.X;
         float y = _position.Y;
-        float w = _size.X;
-        float h = _size.Y;
+
+        Vector2 size = Size;
+        float w = size.X;
+        float h = size.Y;
+
         float dx = -_origin.X;
         float dy = -_origin.Y;
 
@@ -177,10 +222,18 @@ public class Sprite (TextureRegion region)
 
         _mesh.SetColors ([_color, _color, _color, _color]);
 
-        float top = _region.TopTextureCoordinate;
-        float bottom = _region.BottomTextureCoordinate;
-        float left = _region.LeftTextureCoordinate;
-        float right = _region.RightTextureCoordinate;
+        float top = 0f;
+        float bottom = 1f;
+        float left = 0f;
+        float right = 1f;
+
+        if (_region != null)
+        {
+            top = _region.TopTextureCoordinate;
+            bottom = _region.BottomTextureCoordinate;
+            left = _region.LeftTextureCoordinate;
+            right = _region.RightTextureCoordinate;
+        }
 
         if (_spriteEffects.HasFlag (SpriteEffects.FlipHorizontally))
         {
@@ -210,18 +263,9 @@ public class Sprite (TextureRegion region)
 
         _material ??= Materials.Sprite;
 
-        render.Enqueue (new RenderCommand (_material, null, _mesh, Region.Texture));
+        if (_region != null)
+        {
+            render.Enqueue (new RenderCommand (_material, null, _mesh, _region.Texture));
+        }
     }
-
-    public Sprite Clone () => new (Region)
-    {
-        Material = Material,
-        Size = Size,
-        Position = Position,
-        Color = Color,
-        Rotation = Rotation,
-        Origin = Origin,
-        SpriteEffects = SpriteEffects,
-        Depth = Depth
-    };
 }

@@ -20,6 +20,8 @@ public class GameScene : Scene
 
     private readonly List<Polygon> _polygons = [];
 
+    private readonly Sprite _teemo = new ();
+
     private readonly PhysicsWorld _physicsWorld = new ();
 
     public override void Initialize ()
@@ -64,6 +66,10 @@ public class GameScene : Scene
     {
         SpriteSheet sp = Content.Load<SpriteSheet> ("teemo");
 
+        _teemo.Region = sp.Regions["teemo_up_1"];
+        _teemo.Position = new Vector2 (Core.ScreenWidth / 2f, Core.ScreenHeight / 2f);
+        _teemo.PreferredSize = new Vector2 (100f, 100f);
+
         base.LoadContent ();
     }
 
@@ -95,6 +101,8 @@ public class GameScene : Scene
         {
             polygon.Draw (Render);
         }
+
+        _teemo.Draw (Render);
 
         base.Draw (gameTime);
     }

@@ -13,7 +13,7 @@ public class Canvas : IDisposable
     public Vector2 Size
     {
         get => _sprite.Size;
-        set => _sprite.Size = value;
+        set => _sprite.PreferredSize = value;
     }
 
     public Vector2 Position
@@ -76,11 +76,12 @@ public class Canvas : IDisposable
 
         _textureResource = new Texture2DResource (name, _texture);
 
-        _sprite = new Sprite (new TextureRegion (_textureResource, new Rectangle (0, 0, width, height)))
+        _sprite = new Sprite ()
         {
-            Size = new Vector2 (width * cellSize, height * cellSize),
+            Region = new TextureRegion (_textureResource, new Rectangle (0, 0, width, height)),
+            PreferredSize = new Vector2 (width * cellSize, height * cellSize),
             Position = new Vector2 (x, y),
-            Origin = new Vector2 (width * cellSize / 2f, height * cellSize / 2f)
+            OriginAlignment = OriginAlignment.Center,
         };
 
         _pixels = new Color[width * height];
