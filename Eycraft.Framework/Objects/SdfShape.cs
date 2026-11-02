@@ -1,4 +1,4 @@
-﻿namespace Eycraft.Framework.Graphics.Shapes;
+﻿namespace Eycraft.Framework.Objects;
 
 public abstract class SdfShape : Shape
 {

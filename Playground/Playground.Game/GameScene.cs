@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using Eycraft.Framework;
+﻿using Eycraft.Framework;
 using Eycraft.Framework.Graphics;
-using Eycraft.Framework.Graphics.Shapes;
+using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
-namespace Playground;
+namespace Playground.Game;
 
 public class GameScene : Scene
 {

@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Eycraft.Framework.Graphics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Eycraft.Framework.Graphics;
+namespace Eycraft.Framework.Objects;
 
 public class Sprite
 {
@@ -261,7 +262,7 @@ public class Sprite
             _dirty = false;
         }
 
-        _material ??= Materials.Sprite;
+        _material ??= Material.Sprite;
 
         if (_region != null)
         {

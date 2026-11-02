@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Eycraft.Framework.Graphics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
-namespace Eycraft.Framework.Graphics;
+namespace Eycraft.Framework.Objects;
 
 public class Text (Font font)
 {
@@ -288,7 +289,7 @@ public class Text (Font font)
             _dirty = false;
         }
 
-        _material ??= Materials.Sprite;
+        _material ??= Material.Sprite;
 
         foreach (Mesh mesh in _meshes)
         {

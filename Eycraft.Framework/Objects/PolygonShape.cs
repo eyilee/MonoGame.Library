@@ -1,8 +1,9 @@
-﻿using Eycraft.Framework.Utilities;
+﻿using Eycraft.Framework.Graphics;
+using Eycraft.Framework.Utilities;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
-namespace Eycraft.Framework.Graphics.Shapes;
+namespace Eycraft.Framework.Objects;
 
 public class PolygonShape : Shape
 {
@@ -69,7 +70,7 @@ public class PolygonShape : Shape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Materials.Standard, _mesh, Textures.Pixel, _depth));
+        render.Enqueue (new RenderCommand (Material.Standard, _mesh, Texture2DResource.Pixel, _depth));
     }
 
     private void CalculateIndices ()

@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Eycraft.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
-namespace Eycraft.Framework.Graphics.Shapes;
+namespace Eycraft.Framework.Objects;
 
 public class SdfParabola : SdfShape
 {
@@ -83,6 +84,6 @@ public class SdfParabola : SdfShape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Materials.SdfParabola, _mesh, _depth));
+        render.Enqueue (new RenderCommand (Material.SdfParabola, _mesh, _depth));
     }
 }

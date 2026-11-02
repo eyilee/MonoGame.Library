@@ -1,12 +1,12 @@
 ﻿using Eycraft.Framework;
 using Eycraft.Framework.Graphics;
-using Eycraft.Framework.Graphics.Shapes;
 using Eycraft.Framework.Input;
+using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace Playground;
+namespace Playground.Game;
 
 public class Player : Entity
 {

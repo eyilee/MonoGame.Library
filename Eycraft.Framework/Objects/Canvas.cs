@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Eycraft.Framework.Graphics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Eycraft.Framework.Graphics;
+namespace Eycraft.Framework.Objects;
 
 public class Canvas : IDisposable
 {
@@ -80,8 +81,7 @@ public class Canvas : IDisposable
         {
             Region = new TextureRegion (_textureResource, new Rectangle (0, 0, width, height)),
             PreferredSize = new Vector2 (width * cellSize, height * cellSize),
-            Position = new Vector2 (x, y),
-            OriginAlignment = OriginAlignment.Center,
+            Position = new Vector2 (x, y)
         };
 
         _pixels = new Color[width * height];
@@ -133,8 +133,6 @@ public class Canvas : IDisposable
             _textureResource.Texture.SetData (_pixels);
             _dirty = false;
         }
-
-        _sprite.Material ??= Materials.Canvas;
 
         _sprite.Draw (render);
     }

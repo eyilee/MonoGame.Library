@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Eycraft.Framework.Graphics;
 
@@ -27,4 +28,22 @@ public class Texture2DResource (string name, Texture2D texture) : TextureResourc
 
         return texture2D != null;
     }
+
+    #region Built-in Textures
+    private static Texture2DResource? _pixel;
+
+    public static Texture2DResource Pixel
+    {
+        get
+        {
+            if (_pixel == null)
+            {
+                _pixel = new Texture2DResource ("Pixel", new Texture2D (Core.GraphicsDevice, 1, 1));
+                _pixel.Texture.SetData ([Color.White]);
+            }
+
+            return _pixel;
+        }
+    }
+    #endregion
 }

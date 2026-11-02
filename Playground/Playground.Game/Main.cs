@@ -1,6 +1,6 @@
 ﻿using Eycraft.Framework.DesktopGL;
 
-namespace Playground;
+namespace Playground.Game;
 
 public class Main : Core
 {

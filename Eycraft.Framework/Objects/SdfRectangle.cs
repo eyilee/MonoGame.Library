@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Eycraft.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
-namespace Eycraft.Framework.Graphics.Shapes;
+namespace Eycraft.Framework.Objects;
 
-public class SdfCircle : SdfShape
+public class SdfRectangle : SdfShape
 {
     protected Vector2 _position = Vector2.Zero;
 
@@ -19,16 +20,16 @@ public class SdfCircle : SdfShape
         }
     }
 
-    protected float _radius = 0f;
+    protected Vector2 _size = Vector2.Zero;
 
-    public float Radius
+    public Vector2 Size
     {
-        get { return _radius; }
+        get { return _size; }
         set
         {
-            if (_radius != value)
+            if (_size != value)
             {
-                _radius = value;
+                _size = value;
                 _dirty = true;
             }
         }
@@ -50,11 +51,11 @@ public class SdfCircle : SdfShape
 
     protected override void PopulateMesh ()
     {
-        Vector2 scale = new ((_radius + _thickness) * 2f, (_radius + _thickness) * 2f);
+        Vector2 scale = new ((_size.X * 0.5f + _thickness) * 2f, (_size.Y * 0.5f + _thickness) * 2f);
 
         _mesh.SetUVs ([new Vector3 (_position, _depth)]);
         _mesh.SetUV1s ([new Vector4 (_rotation, scale.X, scale.Y, _thickness)]);
-        _mesh.SetUV2s ([_radius]);
+        _mesh.SetUV2s ([_size * 0.5f]);
         _mesh.SetColors ([_color]);
     }
 
@@ -66,6 +67,6 @@ public class SdfCircle : SdfShape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Filled ? Materials.SdfFilledCircle : Materials.SdfCircle, _mesh, _depth));
+        render.Enqueue (new RenderCommand (Filled ? Material.SdfFilledRectangle : Material.SdfRectangle, _mesh, _depth));
     }
 }

@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Eycraft.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
-namespace Eycraft.Framework.Graphics.Shapes;
+namespace Eycraft.Framework.Objects;
 
 public class SdfLine : SdfShape
 {
@@ -53,6 +54,6 @@ public class SdfLine : SdfShape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Materials.SdfLine, _mesh, _depth));
+        render.Enqueue (new RenderCommand (Material.SdfLine, _mesh, _depth));
     }
 }

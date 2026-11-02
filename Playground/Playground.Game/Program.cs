@@ -1,2 +1,2 @@
-﻿using var game = new Playground.Main ();
+﻿using var game = new Playground.Game.Main ();
 game.Run ();
