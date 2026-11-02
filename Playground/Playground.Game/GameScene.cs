@@ -31,7 +31,7 @@ public class GameScene : Scene
         _center.Position = position;
         _center.Thickness = 1f;
         _center.Color = Color.Green;
-        _center.Radius = 5f;
+        _center.Radius = 50f;
 
         _player.Initialize (position, 0f);
         _player.AttachPhysics (_physicsWorld);
@@ -69,6 +69,7 @@ public class GameScene : Scene
         _teemo.Region = sp.Regions["teemo_up_1"];
         _teemo.Position = new Vector2 (Core.ScreenWidth / 2f, Core.ScreenHeight / 2f);
         _teemo.PreferredSize = new Vector2 (100f, 100f);
+        _teemo.OriginAlignment = OriginAlignment.BottomCenter;
 
         base.LoadContent ();
     }

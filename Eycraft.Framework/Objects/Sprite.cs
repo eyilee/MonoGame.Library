@@ -184,8 +184,23 @@ public class Sprite
     private void AlignOrigin ()
     {
         Vector2 size = Size;
-        _origin = new Vector2 (size.X * 0.5f, size.Y * 0.5f);
+        _origin = AlignOrigin (_originAlignment, size.X, size.Y);
     }
+
+    private Vector2 AlignOrigin (OriginAlignment alignment, float x, float y) => alignment switch
+    {
+        OriginAlignment.None => _origin,
+        OriginAlignment.TopLeft => new Vector2 (0f, 0f),
+        OriginAlignment.TopCenter => new Vector2 (x * 0.5f, 0f),
+        OriginAlignment.TopRight => new Vector2 (x, 0f),
+        OriginAlignment.CenterLeft => new Vector2 (0f, y * 0.5f),
+        OriginAlignment.Center => new Vector2 (x * 0.5f, y * 0.5f),
+        OriginAlignment.CenterRight => new Vector2 (x, y * 0.5f),
+        OriginAlignment.BottomLeft => new Vector2 (0f, y),
+        OriginAlignment.BottomCenter => new Vector2 (x * 0.5f, y),
+        OriginAlignment.BottomRight => new Vector2 (x, y),
+        _ => _origin
+    };
 
     private void PopulateMesh ()
     {
