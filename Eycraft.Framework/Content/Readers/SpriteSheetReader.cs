@@ -14,7 +14,7 @@ public sealed class SpriteSheetReader : ContentTypeReader<SpriteSheet>
         spriteSheet.Name = input.ReadString ();
         ReadRegions (input, spriteSheet);
         ReadAnimations (input, spriteSheet);
-        spriteSheet.Texture = input.ReadObject<Texture2D> ();
+        spriteSheet.Texture = new Texture2DResource (spriteSheet.Name, input.ReadObject<Texture2D> ());
 
         return spriteSheet;
     }

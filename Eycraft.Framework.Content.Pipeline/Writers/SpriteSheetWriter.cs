@@ -10,7 +10,7 @@ public sealed class SpriteSheetWriter : ContentTypeWriter<SpriteSheetDocument>
 {
     protected override void Write (ContentWriter output, SpriteSheetDocument value)
     {
-        output.Write (value.Sprite);
+        output.Write (value.Name);
         WriteRegions (output, value);
         WriteAnimations (output, value);
         output.WriteObject (value.Texture);

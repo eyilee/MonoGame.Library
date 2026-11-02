@@ -5,7 +5,7 @@ namespace Eycraft.Framework.Content.Pipeline;
 
 public sealed class SpriteSheetDocument
 {
-    public string Sprite { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     public Dictionary<string, SpriteSheetRegionDocument> Regions { get; set; } = [];
 

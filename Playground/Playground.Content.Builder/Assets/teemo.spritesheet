@@ -1,0 +1,45 @@
+{
+    "name": "teemo.png",
+    "regions": [
+        {
+            "name": "teemo_up_0",
+            "x": 0,
+            "y": 0,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "teemo_up_1",
+            "x": 0,
+            "y": 16,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "teemo_up_2",
+            "x": 0,
+            "y": 32,
+            "width": 16,
+            "height": 16
+        }
+    ],
+    "animations": [
+        {
+            "name": "teemo_up",
+            "frames": [
+                {
+                    "region": "teemo_up_0",
+                    "duration": 200
+                },
+                {
+                    "region": "teemo_up_1",
+                    "duration": 200
+                },
+                {
+                    "region": "teemo_up_2",
+                    "duration": 200
+                }
+            ]
+        }
+    ]
+}

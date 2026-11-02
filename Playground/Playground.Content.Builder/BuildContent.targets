@@ -1,0 +1,18 @@
+<Project>
+  <Target Name="BuildContent" BeforeTargets="BeforeCompile">
+    <PropertyGroup>
+      <ContentOutput>$(ProjectDir)$(OutputPath)</ContentOutput>
+      <ContentTemp>$(ProjectDir)$(IntermediateOutputPath)</ContentTemp>
+      <ContentArgs>build -p $(MonoGamePlatform) -s Playground.Content.Builder/Assets -o $(ContentOutput) -i $(ContentTemp)</ContentArgs>
+      <ContentCommand>$(MSBuildThisFileDirectory)bin\$(Configuration)\Playground.Content.Builder</ContentCommand>
+    </PropertyGroup>
+    <MSBuild Projects="$(MSBuildThisFileDirectory)Playground.Content.Builder.csproj" Targets="Build" RemoveProperties="TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
+    <Exec Command="&quot;$(ContentCommand)&quot; $(ContentArgs)" WorkingDirectory="$(MSBuildThisFileDirectory)..\" CustomErrorRegularExpression="\[E\] .+" CustomWarningRegularExpression="\[W\] .+" />
+   </Target>
+  <Target Name="AddGeneratedContentAssets"
+    AfterTargets="BuildContent">
+    <ItemGroup>
+      <GeneratedAsset Include="$(ProjectDir)$(OutputPath)Content\**\*" />
+    </ItemGroup>
+  </Target>
+</Project>

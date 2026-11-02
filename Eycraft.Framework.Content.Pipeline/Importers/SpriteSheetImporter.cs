@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace Eycraft.Framework.Content.Pipeline.Importers;
 
-[ContentImporter (".spritesheet.json", DisplayName = "SpriteSheet JSON Importer", DefaultProcessor = "SpriteSheetProcessor")]
+[ContentImporter (".spritesheet", DisplayName = "SpriteSheet JSON Importer", DefaultProcessor = "SpriteSheetProcessor")]
 public sealed class SpriteSheetImporter : ContentImporter<SpriteSheetDocument>
 {
     public override string Version => "1";
@@ -24,7 +24,7 @@ public sealed class SpriteSheetImporter : ContentImporter<SpriteSheetDocument>
 
         return new SpriteSheetDocument
         {
-            Sprite = jsonDocument.RootElement.GetProperty ("sprite").GetString () ?? string.Empty,
+            Name = jsonDocument.RootElement.GetProperty ("name").GetString () ?? string.Empty,
             Regions = GetRegions (jsonDocument),
             Animations = GetAnimations (jsonDocument)
         };
@@ -34,7 +34,7 @@ public sealed class SpriteSheetImporter : ContentImporter<SpriteSheetDocument>
     {
         Dictionary<string, SpriteSheetRegionDocument> regions = [];
 
-        foreach (JsonElement spriteElement in jsonDocument.RootElement.GetProperty ("sprites").EnumerateArray ())
+        foreach (JsonElement spriteElement in jsonDocument.RootElement.GetProperty ("regions").EnumerateArray ())
         {
             regions.Add (spriteElement.GetProperty ("name").GetString () ?? string.Empty, new SpriteSheetRegionDocument
             {

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RollForward>Major</RollForward>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <TieredCompilation>false</TieredCompilation>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eycraft.Framework.DesktopGL\Eycraft.Framework.DesktopGL.csproj" />
+  </ItemGroup>
+  <Import Project="..\Playground.Content.Builder\BuildContent.targets" />
+</Project>

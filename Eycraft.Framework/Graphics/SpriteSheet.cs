@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Eycraft.Framework.Graphics;
 
@@ -11,7 +10,7 @@ public class SpriteSheet
 
     public Dictionary<string, SpriteSheetAnimation> Animations { get; set; } = [];
 
-    public Texture2D Texture { get; set; } = null!;
+    public Texture2DResource Texture { get; set; } = null!;
 }
 
 public sealed class SpriteSheetRegion

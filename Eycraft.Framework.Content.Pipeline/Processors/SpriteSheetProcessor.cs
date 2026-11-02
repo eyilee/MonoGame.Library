@@ -13,13 +13,13 @@ public sealed class SpriteSheetProcessor : ContentProcessor<SpriteSheetDocument,
     public override SpriteSheetDocument Process (SpriteSheetDocument input, ContentProcessorContext context)
     {
         string jsonPath = context.SourceIdentity.SourceFilename;
-        string directory = Path.GetDirectoryName (jsonPath) ?? string.Empty;
+        string directory = Path.Combine (context.ProjectDirectory, Path.GetDirectoryName (jsonPath) ?? string.Empty);
 
-        string[] candidates = Directory.GetFiles (directory, input.Sprite, SearchOption.TopDirectoryOnly);
+        string[] candidates = Directory.GetFiles (directory, input.Name, SearchOption.TopDirectoryOnly);
 
         if (candidates.Length == 0)
         {
-            throw new FileNotFoundException ($"Sprite sheet texture '{input.Sprite}' not found in '{directory}'.");
+            throw new FileNotFoundException ($"Sprite sheet texture '{input.Name}' not found in '{directory}'.");
         }
 
         string texturePath = candidates[0];
