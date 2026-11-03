@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Eycraft.Framework.Graphics;
 
@@ -8,36 +9,34 @@ public class SpriteAnimation
 
     public List<SpriteAnimationFrame> Frames { get; }
 
-    public int Duration { get; }
+    public TimeSpan Duration { get; }
 
     public SpriteAnimation (string name, List<SpriteAnimationFrame> frames)
     {
         Name = name;
         Frames = frames;
-        Duration = 0;
+        Duration = TimeSpan.Zero;
 
-        foreach (var frame in frames)
+        foreach (SpriteAnimationFrame frame in frames)
         {
             Duration += frame.Duration;
         }
     }
 
-    public SpriteAnimationFrame? EvaluteFrame (int time)
+    public int EvaluteFrame (float elapsedMiliseconds)
     {
-        time %= Duration;
+        elapsedMiliseconds = elapsedMiliseconds % (float)Duration.TotalMilliseconds;
 
-        int elapsed = 0;
-
-        foreach (SpriteAnimationFrame frame in Frames)
+        for (int i = 0; i < Frames.Count; i++)
         {
-            elapsed += frame.Duration;
+            elapsedMiliseconds -= (float)Frames[i].Duration.TotalMilliseconds;
 
-            if (time < elapsed)
+            if (elapsedMiliseconds <= 0)
             {
-                return frame;
+                return i;
             }
         }
 
-        return null;
+        return -1;
     }
 }

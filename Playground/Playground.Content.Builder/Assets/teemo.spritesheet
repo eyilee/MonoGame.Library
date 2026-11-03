@@ -38,6 +38,10 @@
                 {
                     "region": "teemo_up_2",
                     "duration": 200
+                },
+                {
+                    "region": "teemo_up_1",
+                    "duration": 200
                 }
             ]
         }
