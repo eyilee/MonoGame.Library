@@ -84,6 +84,6 @@ public class SdfParabola : SdfShape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Material.SdfParabola, _mesh, _depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfParabola, _mesh, _depth));
     }
 }

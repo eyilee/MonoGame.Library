@@ -27,7 +27,7 @@ public abstract class RenderBatcher : ResourceRegistry<RenderBatcher>, IResource
 
     public abstract void Batch (Mesh mesh);
 
-    public abstract void DrawBatch (Material material, MaterialPropertyBlock? properties, Texture? texture);
+    public abstract void DrawBatch (Material material, MaterialPropertyBlock? properties, TextureResource? texture, TextureResource[]? textures);
 
     public void Dispose ()
     {

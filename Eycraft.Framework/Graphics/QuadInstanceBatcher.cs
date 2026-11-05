@@ -84,7 +84,7 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
         }
     }
 
-    public override void DrawBatch (Material material, MaterialPropertyBlock? properties, Texture? texture)
+    public override void DrawBatch (Material material, MaterialPropertyBlock? properties, TextureResource? texture, TextureResource[]? textures)
     {
         if (_batchCount == 0)
         {
@@ -105,7 +105,7 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
                 batchCountToProcess = _batchSize;
             }
 
-            FlushArray (material, texture, batchIndex, batchCountToProcess);
+            FlushArray (material, texture, textures, batchIndex, batchCountToProcess);
 
             batchIndex += batchCountToProcess;
             batchCount -= batchCountToProcess;
@@ -114,7 +114,7 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
         _batchCount = 0;
     }
 
-    private void FlushArray (Material material, Texture? texture, int batchIndex, int batchCount)
+    private void FlushArray (Material material, TextureResource? texture, TextureResource[]? textures, int batchIndex, int batchCount)
     {
         if (batchCount <= 0)
         {
@@ -130,7 +130,19 @@ internal class QuadInstanceBatcher<T> : RenderBatcher where T : struct, IVertexT
         {
             pass.Apply ();
 
-            _graphicsDevice.Textures[0] = texture;
+            if (texture != null)
+            {
+                _graphicsDevice.Textures[0] = texture.Texture;
+            }
+
+            if (textures != null)
+            {
+                for (int i = 0; i < textures.Length; i++)
+                {
+                    _graphicsDevice.Textures[i] = textures[i].Texture;
+                }
+            }
+
             _graphicsDevice.DrawInstancedPrimitives (PrimitiveType.TriangleList, 0, 0, 2, batchCount);
         }
     }

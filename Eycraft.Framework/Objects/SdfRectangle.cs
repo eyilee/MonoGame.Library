@@ -67,6 +67,6 @@ public class SdfRectangle : SdfShape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Filled ? Material.SdfFilledRectangle : Material.SdfRectangle, _mesh, _depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Filled ? Material.SdfFilledRectangle : Material.SdfRectangle, _mesh, _depth));
     }
 }

@@ -4,18 +4,85 @@ namespace Eycraft.Framework.Graphics;
 
 public class RenderManager
 {
-    private readonly struct SortKey (int index, ulong value) : IComparable<SortKey>
+    private readonly struct BatchKey : IComparable<BatchKey>
+    {
+        public MaterialPropertyBlock? Properties { get; }
+
+        public ushort MaterialId { get; }
+
+        public ulong TextureKey { get; }
+
+        public BatchKey (in RenderCommand command)
+        {
+            Properties = command.Properties;
+            MaterialId = command.Material.Id;
+            TextureKey = (ulong)(command.Texture != null ? command.Texture.Id : 0);
+
+            if (command.Textures != null)
+            {
+                for (int i = 0; i < command.Textures.Length && i < 4; i++)
+                {
+                    TextureKey |= ((ulong)command.Textures[i].Id << (i * 16));
+                }
+            }
+        }
+
+        public static bool operator == (BatchKey left, BatchKey right) => left.Equals (right);
+
+        public static bool operator != (BatchKey left, BatchKey right) => !left.Equals (right);
+
+        public bool Equals (BatchKey other)
+        {
+            return ReferenceEquals (Properties, other.Properties)
+                && MaterialId.Equals (other.MaterialId)
+                && TextureKey.Equals (other.TextureKey);
+        }
+
+        public override bool Equals (object? obj)
+        {
+            return obj is BatchKey other && Equals (other);
+        }
+
+        public override int GetHashCode ()
+        {
+            return HashCode.Combine (Properties, MaterialId, TextureKey);
+        }
+
+        public int CompareTo (BatchKey other)
+        {
+            int value = MaterialId.CompareTo (other.MaterialId);
+
+            if (value != 0)
+            {
+                return value;
+            }
+
+            return TextureKey.CompareTo (other.TextureKey);
+        }
+    }
+
+    private readonly struct SortKey (int index, ushort depth, BatchKey batchKey) : IComparable<SortKey>
     {
         public int Index { get; } = index;
 
-        public ulong Value { get; } = value;
+        public ushort Depth { get; } = depth;
+
+        public BatchKey BatchKey { get; } = batchKey;
 
         public readonly int CompareTo (SortKey other)
         {
-            int r = Value.CompareTo (other.Value);
-            if (r != 0)
+            int value = Depth.CompareTo (other.Depth);
+
+            if (value != 0)
             {
-                return r;
+                return value;
+            }
+
+            value = BatchKey.CompareTo (other.BatchKey);
+
+            if (value != 0)
+            {
+                return value;
             }
 
             return Index.CompareTo (other.Index);
@@ -33,7 +100,7 @@ public class RenderManager
         EnsureArrayCapacity ();
 
         int index = _count++;
-        _sortKeys[index] = new SortKey (index, command.SortKey);
+        _sortKeys[index] = new SortKey (index, command.Depth, new BatchKey (command));
         _commands[index] = command;
     }
 
@@ -61,17 +128,17 @@ public class RenderManager
 
         while (batchStartIndex < _count)
         {
-            int firstCommandIndex = _sortKeys[batchStartIndex].Index;
-            ref RenderCommand firstCommand = ref _commands[firstCommandIndex];
+            ref SortKey firstKey = ref _sortKeys[batchStartIndex];
+            ref RenderCommand firstCommand = ref _commands[firstKey.Index];
 
             int batchEndIndex = batchStartIndex + 1;
 
             while (batchEndIndex < _count)
             {
-                int nextCommandIndex = _sortKeys[batchEndIndex].Index;
-                ref RenderCommand nextCommand = ref _commands[nextCommandIndex];
+                ref SortKey nextKey = ref _sortKeys[batchEndIndex];
+                ref RenderCommand nextCommand = ref _commands[nextKey.Index];
 
-                if (!CanBatch (firstCommand, nextCommand))
+                if (!CanBatch (firstKey, nextKey))
                 {
                     break;
                 }
@@ -88,13 +155,13 @@ public class RenderManager
 
                 if (!batcher.CanBatch (command.Mesh))
                 {
-                    batcher.DrawBatch (firstCommand.Material, firstCommand.Properties, firstCommand.Texture?.Texture);
+                    batcher.DrawBatch (firstCommand.Material, firstCommand.Properties, firstCommand.Texture, firstCommand.Textures);
                 }
 
                 batcher.Batch (command.Mesh);
             }
 
-            batcher.DrawBatch (firstCommand.Material, firstCommand.Properties, firstCommand.Texture?.Texture);
+            batcher.DrawBatch (firstCommand.Material, firstCommand.Properties, firstCommand.Texture, firstCommand.Textures);
 
             batchStartIndex = batchEndIndex;
         }
@@ -102,10 +169,8 @@ public class RenderManager
         _count = 0;
     }
 
-    private static bool CanBatch (in RenderCommand firstCommand, in RenderCommand nextCommand)
+    private static bool CanBatch (in SortKey firstKey, in SortKey nextKey)
     {
-        return ReferenceEquals (firstCommand.Material, nextCommand.Material)
-            && ReferenceEquals (firstCommand.Properties, nextCommand.Properties)
-            && ReferenceEquals (firstCommand.Texture, nextCommand.Texture);
+        return firstKey.BatchKey.Equals (nextKey.BatchKey);
     }
 }

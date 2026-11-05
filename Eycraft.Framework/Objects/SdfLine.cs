@@ -54,6 +54,6 @@ public class SdfLine : SdfShape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Material.SdfLine, _mesh, _depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfLine, _mesh, _depth));
     }
 }

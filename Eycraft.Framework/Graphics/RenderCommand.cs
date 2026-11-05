@@ -10,36 +10,47 @@ public readonly struct RenderCommand
 
     public TextureResource? Texture { get; }
 
-    public float Depth { get; }
+    public TextureResource[]? Textures { get; }
 
-    public ulong SortKey { get; }
+    public ushort Depth { get; }
 
-    public RenderCommand (Material material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource? texture, float depth = 0f)
+    public RenderCommand (Material material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource? texture, TextureResource[]? textures, float depth = 0f)
     {
         Material = material;
         Properties = properties;
         Mesh = mesh;
         Texture = texture;
-        Depth = depth;
-        SortKey = GetSortKey ();
+        Textures = textures;
+        Depth = (ushort)(float.Clamp (depth, 0f, 1f) * ushort.MaxValue);
     }
 
-    public RenderCommand (Material material, Mesh mesh, TextureResource? texture, float depth = 0f)
-        : this (material, null, mesh, texture, depth)
+    public static RenderCommand CreateSingleTexture (Material material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource? texture, float depth = 0f)
     {
+        return new RenderCommand (material, properties, mesh, texture, null, depth);
     }
 
-    public RenderCommand (Material material, Mesh mesh, float depth = 0f)
-        : this (material, null, mesh, null, depth)
+    public static RenderCommand CreateSingleTexture (Material material, Mesh mesh, TextureResource? texture, float depth = 0f)
     {
+        return new RenderCommand (material, null, mesh, texture, null, depth);
     }
 
-    private ulong GetSortKey ()
+    public static RenderCommand CreateSingleTexture (Material material, Mesh mesh, float depth = 0f)
     {
-        ushort depthBits = (ushort)(float.Clamp (Depth, 0f, 1f) * ushort.MaxValue);
+        return new RenderCommand (material, null, mesh, null, null, depth);
+    }
 
-        return (ulong)Material.Id << 32
-            | (ulong)(Texture?.Id ?? 0) << 16
-            | depthBits;
+    public static RenderCommand CreateMultipleTexture (Material material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource[]? textures, float depth = 0f)
+    {
+        return new RenderCommand (material, properties, mesh, null, textures, depth);
+    }
+
+    public static RenderCommand CreateMultipleTexture (Material material, Mesh mesh, TextureResource[]? textures, float depth = 0f)
+    {
+        return new RenderCommand (material, null, mesh, null, textures, depth);
+    }
+
+    public static RenderCommand CreateMultipleTexture (Material material, Mesh mesh, float depth = 0f)
+    {
+        return new RenderCommand (material, null, mesh, null, null, depth);
     }
 }

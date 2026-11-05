@@ -70,7 +70,7 @@ public class PolygonShape : Shape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Material.Standard, _mesh, Texture2DResource.Pixel, _depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Material.Standard, _mesh, Texture2DResource.Pixel, _depth));
     }
 
     private void CalculateIndices ()

@@ -293,19 +293,7 @@ public class Text (Font font)
 
         foreach (Mesh mesh in _meshes)
         {
-            render.Enqueue (new RenderCommand (_material, null, mesh, _font.Texture));
+            render.Enqueue (RenderCommand.CreateSingleTexture (_material, mesh, _font.Texture, _depth));
         }
     }
-
-    public Text Clone () => new (_font)
-    {
-        Material = _material,
-        Value = _value,
-        Position = _position,
-        Color = _color,
-        Rotation = _rotation,
-        Origin = _origin,
-        SpriteEffects = _spriteEffects,
-        Depth = _depth
-    };
 }

@@ -67,6 +67,6 @@ public class SdfCircle : SdfShape
             _dirty = false;
         }
 
-        render.Enqueue (new RenderCommand (Filled ? Material.SdfFilledCircle : Material.SdfCircle, _mesh, _depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Filled ? Material.SdfFilledCircle : Material.SdfCircle, _mesh, _depth));
     }
 }

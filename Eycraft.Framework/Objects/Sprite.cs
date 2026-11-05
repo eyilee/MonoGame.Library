@@ -282,7 +282,7 @@ public class Sprite
 
         if (_region != null)
         {
-            render.Enqueue (new RenderCommand (_material, null, _mesh, _region.Texture));
+            render.Enqueue (RenderCommand.CreateSingleTexture (_material, _mesh, _region.Texture, _depth));
         }
     }
 }
