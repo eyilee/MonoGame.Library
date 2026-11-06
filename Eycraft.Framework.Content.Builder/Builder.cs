@@ -14,8 +14,6 @@ public class Builder : ContentBuilder
 
         contentCollection.Include<WildcardRule> ("**.fx");
 
-        contentCollection.Include<WildcardRule> ("**.spritesheet", new SpriteSheetImporter (), new SpriteSheetProcessor ());
-
         // By default, no content will be imported from the Assets folder using the default importer for their file type.
         // Please define your content collection rules here.
 

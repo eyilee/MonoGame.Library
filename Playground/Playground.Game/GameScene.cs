@@ -2,6 +2,7 @@
 using Eycraft.Framework.Graphics;
 using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
+using Eycraft.Framework.Tilemap;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -71,6 +72,8 @@ public class GameScene : Scene
         _teemo.PreferredSize = new Vector2 (100f, 100f);
         _teemo.OriginAlignment = OriginAlignment.BottomCenter;
         _teemo.PlayAnimation ("teemo_up");
+
+        Tileset tileset = Content.Load<Tileset> ("bitmask_reference");
 
         base.LoadContent ();
     }
