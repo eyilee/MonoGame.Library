@@ -322,8 +322,8 @@ public class Physics2D
     private static Vector2[] ClipEdge (Vector2[] incidentEdge, Vector2 start, Vector2 end)
     {
         Vector2 edge = end - start;
-
         float lengthSquared = edge.LengthSquared ();
+
         if (lengthSquared < EpsilonSquared)
         {
             return incidentEdge;
@@ -384,6 +384,7 @@ public class Physics2D
 
             if (value > maxValue)
             {
+                maxValue = value;
                 edgeResult[0] = a;
                 edgeResult[1] = b;
             }
