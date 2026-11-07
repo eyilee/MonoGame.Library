@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Eycraft.Framework;
+﻿using Eycraft.Framework;
 using Eycraft.Framework.Graphics;
 using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace Playground.Game;
 
@@ -31,6 +31,7 @@ public class Cube : Entity
             return;
         }
 
+        Transform.OnTransformChanged += OnTransformChanged;
         Transform.Position = position;
         Transform.Rotation = rotation;
 
@@ -65,8 +66,6 @@ public class Cube : Entity
                 Collider = collider
             });
         }
-
-        Transform.OnTransformChanged += OnTransformChanged;
 
         _physicsBody.OnCollisionEnter += OnCollisionEnter;
         _physicsBody.OnCollisionStay += OnCollisionStay;

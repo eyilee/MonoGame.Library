@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Eycraft.Framework;
+﻿using Eycraft.Framework;
 using Eycraft.Framework.Graphics;
 using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace Playground.Game;
 
@@ -24,6 +24,7 @@ public class Polygon : Entity
             return;
         }
 
+        Transform.OnTransformChanged += OnTransformChanged;
         Transform.Position = position;
         Transform.Rotation = rotation;
 
@@ -34,8 +35,6 @@ public class Polygon : Entity
         _shape.Color = Color.White;
         _shape.Position = position;
         _shape.SetVertices (vertices);
-
-        Transform.OnTransformChanged += OnTransformChanged;
 
         _physicsBody.OnCollisionEnter += OnCollisionEnter;
         _physicsBody.OnCollisionStay += OnCollisionStay;

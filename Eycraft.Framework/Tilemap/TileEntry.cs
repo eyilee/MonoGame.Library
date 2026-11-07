@@ -1,10 +1,8 @@
-﻿using Eycraft.Framework.Graphics;
+﻿namespace Eycraft.Framework.Tilemap;
 
-namespace Eycraft.Framework.Tilemap;
-
-public readonly struct TileEntry (TextureRegion region, uint requiredMask)
+public readonly struct TileEntry (Tile tile, uint requiredMask)
 {
-    public TextureRegion Region { get; } = region;
+    public Tile Tile { get; } = tile;
 
     public uint RequiredMask { get; } = requiredMask;
 }

@@ -15,6 +15,16 @@ public partial class Tileset
 
     public List<TileEntry> TileEntries { get; internal set; } = [];
 
+    public Tile? GetTile (int index)
+    {
+        if (index < 0 || index >= TileEntries.Count)
+        {
+            return null;
+        }
+
+        return TileEntries[index].Tile;
+    }
+
     public TileEntry? GetTileEntry (uint requiredMask)
     {
         requiredMask = NormalizeMask (requiredMask);

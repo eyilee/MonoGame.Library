@@ -23,6 +23,7 @@ public class Ball : Entity
             return;
         }
 
+        Transform.OnTransformChanged += OnTransformChanged;
         Transform.Position = position;
         Transform.Rotation = rotation;
 
@@ -33,8 +34,6 @@ public class Ball : Entity
         _shape.Color = Color.White;
         _shape.Position = position;
         _shape.Radius = 10f;
-
-        Transform.OnTransformChanged += OnTransformChanged;
 
         _physicsBody.OnCollisionEnter += OnCollisionEnter;
         _physicsBody.OnCollisionStay += OnCollisionStay;

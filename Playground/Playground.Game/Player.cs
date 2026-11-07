@@ -43,6 +43,7 @@ public class Player : Entity
             return;
         }
 
+        Transform.OnTransformChanged += OnTransformChanged;
         Transform.Position = position;
         Transform.Rotation = rotation;
 
@@ -57,8 +58,6 @@ public class Player : Entity
 
         _indicator.Initialize (position, rotation);
         _viewPoint.Initialize (_indicator.Target);
-
-        Transform.OnTransformChanged += OnTransformChanged;
 
         _initialized = true;
     }

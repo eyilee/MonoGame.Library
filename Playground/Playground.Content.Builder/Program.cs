@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.Xna.Framework.Content.Pipeline;
+﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using MonoGame.Framework.Content.Pipeline.Builder;
+using System;
 
 namespace Playground.Content.Builder;
 

@@ -23,6 +23,10 @@ public class GameScene : Scene
 
     private readonly AnimatedSprite _teemo = new ();
 
+    private Tileset _tileset = null!;
+
+    private readonly Tilemap _tilemap = new (16, 16, 16, 16);
+
     private readonly PhysicsWorld _physicsWorld = new ();
 
     public override void Initialize ()
@@ -73,7 +77,20 @@ public class GameScene : Scene
         _teemo.OriginAlignment = OriginAlignment.BottomCenter;
         _teemo.PlayAnimation ("teemo_up");
 
-        Tileset tileset = Content.Load<Tileset> ("bitmask_reference");
+        _tileset = Content.Load<Tileset> ("bitmask_reference");
+
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                Tile? tile = _tileset.GetTile (i * 3 + j);
+
+                if (tile != null)
+                {
+                    _tilemap.SetTile (i + 20, j + 20, tile);
+                }
+            }
+        }
 
         base.LoadContent ();
     }
@@ -98,6 +115,7 @@ public class GameScene : Scene
     {
         GraphicsDevice.Clear (Color.CornflowerBlue);
 
+        _tilemap.Draw (Render);
         _center.Draw (Render);
         _player.Draw (Render);
         //_ball.Draw (Render);

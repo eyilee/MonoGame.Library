@@ -17,15 +17,16 @@ public sealed class TilesetReader : ContentTypeReader<Tileset>
         tileset.TileWidth = input.ReadInt32 ();
         tileset.TileHeight = input.ReadInt32 ();
         tileset.TileEntries = [];
-        tileset.TileEntries.Capacity = Tileset.BlobLayout.Length;
+        tileset.TileEntries.Capacity = TilesetLayout.Blob.Length;
 
-        foreach (TilesetLayout layout in Tileset.BlobLayout)
+        foreach (TilesetLayout layout in TilesetLayout.Blob)
         {
             int x = layout.X * tileset.TileWidth;
             int y = layout.Y * tileset.TileHeight;
             TextureRegion region = new (tileset.Texture, x, y, tileset.TileWidth, tileset.TileHeight);
+            Tile tile = new (region);
             uint requiredMask = Tileset.NormalizeMask (layout.BitMask);
-            tileset.TileEntries.Add (new TileEntry (region, requiredMask));
+            tileset.TileEntries.Add (new TileEntry (tile, requiredMask));
         }
 
         tileset.TileEntries.Sort ((TileEntry left, TileEntry right) => BitOperations.PopCount (right.RequiredMask).CompareTo (BitOperations.PopCount (left.RequiredMask)));
