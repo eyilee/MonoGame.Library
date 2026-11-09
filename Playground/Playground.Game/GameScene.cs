@@ -25,7 +25,7 @@ public class GameScene : Scene
 
     private Tileset _tileset = null!;
 
-    private readonly Tilemap _tilemap = new (16, 16, 16, 16);
+    private GameWorld? _gameWorld;
 
     private readonly PhysicsWorld _physicsWorld = new ();
 
@@ -78,19 +78,7 @@ public class GameScene : Scene
         _teemo.PlayAnimation ("teemo_up");
 
         _tileset = Content.Load<Tileset> ("bitmask_reference");
-
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                Tile? tile = _tileset.GetTile (i * 3 + j);
-
-                if (tile != null)
-                {
-                    _tilemap.SetTile (i + 20, j + 20, tile);
-                }
-            }
-        }
+        _gameWorld = new GameWorld (_tileset);
 
         base.LoadContent ();
     }
@@ -115,7 +103,7 @@ public class GameScene : Scene
     {
         GraphicsDevice.Clear (Color.CornflowerBlue);
 
-        _tilemap.Draw (Render);
+        _gameWorld?.Draw (Render);
         _center.Draw (Render);
         _player.Draw (Render);
         //_ball.Draw (Render);

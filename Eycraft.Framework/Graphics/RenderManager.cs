@@ -27,9 +27,9 @@ public class RenderManager
             }
         }
 
-        public static bool operator == (BatchKey left, BatchKey right) => left.Equals (right);
+        public static bool operator == (BatchKey lhs, BatchKey rhs) => lhs.Equals (rhs);
 
-        public static bool operator != (BatchKey left, BatchKey right) => !left.Equals (right);
+        public static bool operator != (BatchKey lhs, BatchKey rhs) => !lhs.Equals (rhs);
 
         public bool Equals (BatchKey other)
         {

@@ -29,7 +29,7 @@ public sealed class TilesetReader : ContentTypeReader<Tileset>
             tileset.TileEntries.Add (new TileEntry (tile, requiredMask));
         }
 
-        tileset.TileEntries.Sort ((TileEntry left, TileEntry right) => BitOperations.PopCount (right.RequiredMask).CompareTo (BitOperations.PopCount (left.RequiredMask)));
+        tileset.TileEntries.Sort ((TileEntry lhs, TileEntry rhs) => BitOperations.PopCount (rhs.RequiredMask).CompareTo (BitOperations.PopCount (lhs.RequiredMask)));
 
         return tileset;
     }

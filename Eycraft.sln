@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eycraft.Framework", "Eycraft.Framework\Eycraft.Framework.csproj", "{FBD58919-F15A-4F9B-8118-2D3CFC9C9B71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eycraft.Framework.DesktopGL", "Eycraft.Framework.DesktopGL\Eycraft.Framework.DesktopGL.csproj", "{5AE9FBE8-7C7F-4902-A7AB-3A3369BE2247}"
+	ProjectSection(ProjectDependencies) = postProject
+		{95860AC0-FD83-496D-AC4C-BAC5BA6921BB} = {95860AC0-FD83-496D-AC4C-BAC5BA6921BB}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eycraft.Framework.Content.Pipeline", "Eycraft.Framework.Content.Pipeline\Eycraft.Framework.Content.Pipeline.csproj", "{594A0AE6-3FEE-4092-8111-A5C655B29C01}"
 EndProject

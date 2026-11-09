@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.14.37328.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Game", "Playground.Game\Playground.Game.csproj", "{0ED8A672-6103-46B6-9BB6-F7AC1A572D31}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2C555C14-D4DD-4E24-A2BD-0F2D4C9AC883} = {2C555C14-D4DD-4E24-A2BD-0F2D4C9AC883}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Content.Builder", "Playground.Content.Builder\Playground.Content.Builder.csproj", "{2C555C14-D4DD-4E24-A2BD-0F2D4C9AC883}"
 EndProject
