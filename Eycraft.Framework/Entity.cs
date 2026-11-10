@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Eycraft.Framework.Graphics;
+using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace Eycraft.Framework;
@@ -37,4 +39,8 @@ public class Entity
     public void RemoveComponents<T> () where T : EntityComponent => _components.RemoveComponents<T> ();
 
     public void RemoveComponent (EntityComponent component) => _components.RemoveComponent (component);
+
+    public virtual void Update (GameTime gameTime) { }
+
+    public virtual void Draw (RenderManager render) { }
 }

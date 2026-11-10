@@ -177,7 +177,7 @@ public class Player : Entity
         Transform.Rotation += step;
     }
 
-    public void Draw (RenderManager render)
+    public override void Draw (RenderManager render)
     {
         _shape.Draw (render);
         _indicator.Draw (render);

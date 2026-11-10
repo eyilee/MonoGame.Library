@@ -72,7 +72,7 @@ public class Ball : Entity
         _shape.Color = Color.White;
     }
 
-    public void Draw (RenderManager render)
+    public override void Draw (RenderManager render)
     {
         if (!_initialized)
         {

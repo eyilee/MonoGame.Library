@@ -2,23 +2,23 @@
 
 public class TileWorld<TTileData> where TTileData : TileData, new()
 {
-    public int Width { get; }
+    public int Width { get; internal set; }
 
-    public int Height { get; }
+    public int Height { get; internal set; }
 
-    public TTileData[] Tiles { get; }
+    public TTileData[] Tiles { get; internal set; } = [];
 
     public TileWorld (int width, int height)
     {
         Width = width;
         Height = height;
-        Tiles = new TTileData[Width * Height];
+        Tiles = new TTileData[width * height];
 
-        for (int x = 0; x < Width; x++)
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < height; y++)
             {
-                Tiles[y * Width + x] = new TTileData ()
+                Tiles[y * width + x] = new TTileData ()
                 {
                     X = x,
                     Y = y,

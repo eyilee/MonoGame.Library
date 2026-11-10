@@ -1,6 +1,10 @@
 ﻿namespace Eycraft.Framework.World;
 
-public abstract class GenerateStep<TTileData> where TTileData : TileData, new()
+public abstract class GenerateStep<TTileWorld, TTileData> (TTileWorld tileWorld)
+    where TTileWorld : TileWorld<TTileData>, new()
+    where TTileData : TileData, new()
 {
-    public abstract void Run (TileWorld<TTileData> tileWorld);
+    public TTileWorld TileWorld { get; private set; } = tileWorld;
+
+    public abstract void Run ();
 }

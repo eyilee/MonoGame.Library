@@ -2,7 +2,6 @@
 using Eycraft.Framework.Graphics;
 using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
-using Eycraft.Framework.Tilemap;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -22,8 +21,6 @@ public class GameScene : Scene
     private readonly List<Polygon> _polygons = [];
 
     private readonly AnimatedSprite _teemo = new ();
-
-    private Tileset _tileset = null!;
 
     private GameWorld? _gameWorld;
 
@@ -77,8 +74,8 @@ public class GameScene : Scene
         _teemo.OriginAlignment = OriginAlignment.BottomCenter;
         _teemo.PlayAnimation ("teemo_up");
 
-        _tileset = Content.Load<Tileset> ("bitmask_reference");
-        _gameWorld = new GameWorld (_tileset);
+        _gameWorld = new GameWorld ();
+        _gameWorld.Initialize ();
 
         base.LoadContent ();
     }
