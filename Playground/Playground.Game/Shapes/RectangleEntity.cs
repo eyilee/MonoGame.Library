@@ -3,44 +3,31 @@ using Eycraft.Framework.Graphics;
 using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 
-namespace Playground.Game;
+namespace Playground.Game.Shapes;
 
-public class Polygon : Entity
+public class RectangleEntity : Entity
 {
-    private PhysicsBody _physicsBody = null!;
+    private readonly SdfRectangle _shape;
 
-    private PolygonCollider _collider = null!;
+    private readonly PhysicsBody _physicsBody;
 
-    private readonly PolygonShape _shape = new ();
+    private readonly BoxCollider _collider;
 
-    private bool _initialized = false;
-
-    public void Initialize (Vector2 position, float rotation, List<Vector2> vertices)
+    public RectangleEntity ()
     {
-        if (_initialized)
-        {
-            return;
-        }
-
-        Transform.OnTransformChanged += OnTransformChanged;
-        Transform.Position = position;
-        Transform.Rotation = rotation;
+        _shape = AddComponent<SdfRectangle> ();
+        _shape.Color = Color.White;
+        _shape.Size = new Vector2 (30f, 30f);
+        _shape.Filled = true;
 
         _physicsBody = AddComponent<PhysicsBody> ();
-        _collider = _physicsBody.AddCollider<PolygonCollider> ();
-        _collider.SetVertices (vertices);
-
-        _shape.Color = Color.White;
-        _shape.Position = position;
-        _shape.SetVertices (vertices);
+        _collider = _physicsBody.AddCollider<BoxCollider> ();
+        _collider.Size = new Vector2 (30f, 30f);
 
         _physicsBody.OnCollisionEnter += OnCollisionEnter;
         _physicsBody.OnCollisionStay += OnCollisionStay;
         _physicsBody.OnCollisionExit += OnCollisionExit;
-
-        _initialized = true;
     }
 
     public void AttachPhysics (PhysicsWorld physicsWorld)
@@ -51,11 +38,6 @@ public class Polygon : Entity
     public void DetachPhysics (PhysicsWorld physicsWorld)
     {
         physicsWorld.Remove (_physicsBody);
-    }
-
-    private void OnTransformChanged (Transform.ChangedFlags changedFlags)
-    {
-        _shape.Position = Transform.Position;
     }
 
     private void OnCollisionEnter (PhysicsBodyCollision collision)
@@ -75,11 +57,6 @@ public class Polygon : Entity
 
     public override void Draw (RenderManager render)
     {
-        if (!_initialized)
-        {
-            return;
-        }
-
         _shape.Draw (render);
     }
 }

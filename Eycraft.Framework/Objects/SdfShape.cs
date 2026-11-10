@@ -1,22 +1,7 @@
 ﻿namespace Eycraft.Framework.Objects;
 
-public abstract class SdfShape : Shape
+public abstract class SdfShape (Entity entity) : Shape (entity)
 {
-    protected float _rotation = 0f;
-
-    public float Rotation
-    {
-        get => _rotation;
-        set
-        {
-            if (_rotation != value)
-            {
-                _rotation = value;
-                _dirty = true;
-            }
-        }
-    }
-
     protected float _thickness = 1f;
 
     public float Thickness

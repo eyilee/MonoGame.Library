@@ -101,6 +101,11 @@ internal class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Qu
             {
                 foreach (Collider ancestorCollider in ancestorColliders)
                 {
+                    if (collider.PhysicsBody == ancestorCollider.PhysicsBody)
+                    {
+                        continue;
+                    }
+
                     if (collider.Bounds.Intersects (ancestorCollider.Bounds))
                     {
                         collisions.Add (new ColliderCollision (collider, ancestorCollider));
@@ -116,6 +121,11 @@ internal class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Qu
             for (int j = i + 1; j < _colliders.Count; j++)
             {
                 Collider collider2 = _colliders[j];
+
+                if (collider1.PhysicsBody == collider2.PhysicsBody)
+                {
+                    continue;
+                }
 
                 if (collider1.Bounds.Intersects (collider2.Bounds))
                 {

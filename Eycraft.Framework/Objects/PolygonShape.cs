@@ -5,18 +5,18 @@ using System.Collections.Generic;
 
 namespace Eycraft.Framework.Objects;
 
-public class PolygonShape : Shape
+public class PolygonShape (Entity entity) : Shape (entity)
 {
-    protected Vector2 _position = Vector2.Zero;
+    protected Vector2 _offset = Vector2.Zero;
 
-    public Vector2 Position
+    public Vector2 Offset
     {
-        get => _position;
+        get => _offset;
         set
         {
-            if (_position != value)
+            if (_offset != value)
             {
-                _position = value;
+                _offset = value;
                 _dirty = true;
             }
         }
@@ -177,7 +177,8 @@ public class PolygonShape : Shape
 
         foreach (Vector2 vertex in _vertices)
         {
-            vertices.Add (new Vector3 (_position + Vector2.Rotate (vertex, _rotation), _depth));
+            Vector2 position = Transform.Position + Vector2.Rotate (_offset, Transform.Rotation) + Vector2.Rotate (vertex, Transform.Rotation + _rotation);
+            vertices.Add (new Vector3 (position, _depth));
         }
 
         _mesh.SetVertices ([.. vertices]);

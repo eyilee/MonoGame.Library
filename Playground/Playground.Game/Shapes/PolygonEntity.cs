@@ -3,43 +3,35 @@ using Eycraft.Framework.Graphics;
 using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
-namespace Playground.Game;
+namespace Playground.Game.Shapes;
 
-public class Ball : Entity
+public class PolygonEntity : Entity
 {
-    private PhysicsBody _physicsBody = null!;
+    private readonly PolygonShape _shape;
 
-    private CircleCollider _collider = null!;
+    private readonly PhysicsBody _physicsBody;
 
-    private readonly SdfCircle _shape = new ();
+    private readonly PolygonCollider _collider;
 
-    private bool _initialized = false;
-
-    public void Initialize (Vector2 position, float rotation)
+    public PolygonEntity ()
     {
-        if (_initialized)
-        {
-            return;
-        }
-
-        Transform.OnTransformChanged += OnTransformChanged;
-        Transform.Position = position;
-        Transform.Rotation = rotation;
+        _shape = AddComponent<PolygonShape> ();
+        _shape.Color = Color.White;
 
         _physicsBody = AddComponent<PhysicsBody> ();
-        _collider = _physicsBody.AddCollider<CircleCollider> ();
-        _collider.Radius = 10f;
-
-        _shape.Color = Color.White;
-        _shape.Position = position;
-        _shape.Radius = 10f;
+        _collider = _physicsBody.AddCollider<PolygonCollider> ();
 
         _physicsBody.OnCollisionEnter += OnCollisionEnter;
         _physicsBody.OnCollisionStay += OnCollisionStay;
         _physicsBody.OnCollisionExit += OnCollisionExit;
+    }
 
-        _initialized = true;
+    public void SetVertices (List<Vector2> vertices)
+    {
+        _shape.SetVertices (vertices);
+        _collider.SetVertices (vertices);
     }
 
     public void AttachPhysics (PhysicsWorld physicsWorld)
@@ -50,11 +42,6 @@ public class Ball : Entity
     public void DetachPhysics (PhysicsWorld physicsWorld)
     {
         physicsWorld.Remove (_physicsBody);
-    }
-
-    private void OnTransformChanged (Transform.ChangedFlags changedFlags)
-    {
-        _shape.Position = Transform.Position;
     }
 
     private void OnCollisionEnter (PhysicsBodyCollision collision)
@@ -74,11 +61,6 @@ public class Ball : Entity
 
     public override void Draw (RenderManager render)
     {
-        if (!_initialized)
-        {
-            return;
-        }
-
         _shape.Draw (render);
     }
 }

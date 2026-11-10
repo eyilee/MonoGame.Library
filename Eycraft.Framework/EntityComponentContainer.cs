@@ -58,12 +58,11 @@ public sealed class EntityComponentContainer (Entity owner)
 
         AddRequireComponents (type);
 
-        if (Activator.CreateInstance (type) is not EntityComponent component)
+        if (Activator.CreateInstance (type, _entity) is not EntityComponent component)
         {
             throw new InvalidOperationException ($"Type {type.Name} is not a valid EntityComponent.");
         }
 
-        component.Entity = _entity;
         components.Add (component);
         component.Awake ();
 

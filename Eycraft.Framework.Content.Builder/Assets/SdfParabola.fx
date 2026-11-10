@@ -47,8 +47,7 @@ float sdfParabola (float2 pos, float a, float2 o, float k)
 
 float4 MainPS (PSInput i) : SV_Target
 {
-    float2 offset = rotate2D (i.ShapeData0.yz, -i.Rotation_Scale_Thickness.x);
-    float distance = sdfParabola (i.LocalPos, i.ShapeData0.x, offset, i.ShapeData0.w);
+    float distance = sdfParabola (i.LocalPos, i.ShapeData0.x, i.ShapeData0.yz, i.ShapeData0.w);
     float thickness = i.Rotation_Scale_Thickness.w / 2.0;
     float w = fwidth (distance);
     float alpha = 1.0 - smoothstep (thickness - w, thickness + w, distance);

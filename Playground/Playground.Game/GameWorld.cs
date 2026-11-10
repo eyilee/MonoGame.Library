@@ -16,7 +16,7 @@ public class GameWorld : TileWorld<GameTile>
 
     private HashSet<Entity> Entities { get; } = [];
 
-    public GameWorld () : base (32, 32)
+    public GameWorld ()
     {
         GroundTilemap = new Tilemap (16, 16, 32, 32);
         GroundTileset = Core.Content.Load<Tileset> ("bitmask_reference");
@@ -25,6 +25,8 @@ public class GameWorld : TileWorld<GameTile>
 
     public void Initialize ()
     {
+        Initialize (32, 32);
+
         Generate (new GenerateStepGround (this));
         Generate (new GenerateStepObject (this));
     }

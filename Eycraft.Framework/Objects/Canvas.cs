@@ -5,7 +5,7 @@ using System;
 
 namespace Eycraft.Framework.Objects;
 
-public class Canvas : IDisposable
+public class Canvas : Entity, IDisposable
 {
     public int TextureWidth { get; }
 
@@ -15,12 +15,6 @@ public class Canvas : IDisposable
     {
         get => _sprite.Size;
         set => _sprite.PreferredSize = value;
-    }
-
-    public Vector2 Position
-    {
-        get => _sprite.Position;
-        set => _sprite.Position = value;
     }
 
     public Color Color
@@ -77,12 +71,9 @@ public class Canvas : IDisposable
 
         _textureResource = new Texture2DResource (name, _texture);
 
-        _sprite = new Sprite ()
-        {
-            Region = new TextureRegion (_textureResource, new Rectangle (0, 0, width, height)),
-            PreferredSize = new Vector2 (width * cellSize, height * cellSize),
-            Position = new Vector2 (x, y)
-        };
+        _sprite = AddComponent<Sprite> ();
+        _sprite.Region = new TextureRegion (_textureResource, new Rectangle (0, 0, width, height));
+        _sprite.PreferredSize = new Vector2 (width * cellSize, height * cellSize);
 
         _pixels = new Color[width * height];
     }
@@ -126,7 +117,7 @@ public class Canvas : IDisposable
         _dirty = true;
     }
 
-    public void Draw (RenderManager render)
+    public override void Draw (RenderManager render)
     {
         if (_dirty)
         {

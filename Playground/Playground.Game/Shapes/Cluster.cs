@@ -5,9 +5,9 @@ using Eycraft.Framework.Physics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
-namespace Playground.Game;
+namespace Playground.Game.Shapes;
 
-public class Cube : Entity
+public class Cluster : Entity
 {
     private struct SubCube
     {
@@ -18,7 +18,7 @@ public class Cube : Entity
 
     private PhysicsBody _physicsBody = null!;
 
-    private readonly SdfCircle _shape = new ();
+    private SdfCircle _shape = null!;
 
     private readonly List<SubCube> _subCubes = [];
 
@@ -37,10 +37,11 @@ public class Cube : Entity
 
         _physicsBody = AddComponent<PhysicsBody> ();
 
+        _shape = AddComponent<SdfCircle> ();
         _shape.Color = Color.White;
         _shape.Rotation = rotation;
         _shape.Thickness = 1f;
-        _shape.Position = position;
+        _shape.Offset = position;
         _shape.Radius = 5f;
 
         for (int i = 0; i < 4; i++)
@@ -48,13 +49,11 @@ public class Cube : Entity
             Vector2 offset = Vector2.Rotate (Vector2.UnitX * 20f, float.Pi * 2f * i / 4f);
             Vector2 size = new (10f, 10f);
 
-            SdfRectangle shape = new ()
-            {
-                Color = Color.White,
-                Thickness = 3f,
-                Position = Transform.Position + offset,
-                Size = size
-            };
+            SdfRectangle shape = AddComponent<SdfRectangle> ();
+            shape.Color = Color.White;
+            shape.Thickness = 3f;
+            shape.Offset = Transform.Position + offset;
+            shape.Size = size;
 
             BoxCollider collider = _physicsBody.AddCollider<BoxCollider> ();
             collider.Offset = offset;
@@ -76,7 +75,7 @@ public class Cube : Entity
 
     private void OnTransformChanged (Transform.ChangedFlags changedFlags)
     {
-        _shape.Position = Transform.Position;
+        _shape.Offset = Transform.Position;
         _shape.Rotation = Transform.Rotation;
 
         for (int i = 0; i < 4; i++)
@@ -84,7 +83,7 @@ public class Cube : Entity
             Vector2 offset = Vector2.Rotate (Vector2.UnitX * 20f, float.Pi * 2f * i / 4f);
 
             SdfRectangle shape = _subCubes[i].Shape;
-            shape.Position = Transform.Position + Vector2.Rotate (offset, Transform.Rotation);
+            shape.Offset = Transform.Position + Vector2.Rotate (offset, Transform.Rotation);
             shape.Rotation = Transform.Rotation;
         }
     }

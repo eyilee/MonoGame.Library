@@ -10,18 +10,8 @@ public class Grass : Entity
 
     public Grass (TextureRegion region)
     {
-        _sprite = new ()
-        {
-            Region = region
-        };
-
-        Transform.OnTransformChanged += OnTransformChanged;
-    }
-
-    private void OnTransformChanged (Transform.ChangedFlags changedFlags)
-    {
-        _sprite.Position = Transform.Position;
-        _sprite.Rotation = Transform.Rotation;
+        _sprite = AddComponent<Sprite> ();
+        _sprite.Region = region;
     }
 
     public override void Draw (RenderManager render)

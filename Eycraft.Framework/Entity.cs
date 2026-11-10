@@ -28,7 +28,7 @@ public class Entity
 
     public EntityComponent AddComponent (Type type) => _components.AddComponent (type);
 
-    public T AddComponent<T> () where T : EntityComponent, new() => _components.AddComponent<T> ();
+    public T AddComponent<T> () where T : EntityComponent => _components.AddComponent<T> ();
 
     public void RemoveComponent (Type type) => _components.RemoveComponent (type);
 

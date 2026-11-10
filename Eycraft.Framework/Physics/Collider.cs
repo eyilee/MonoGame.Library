@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Eycraft.Framework.Physics;
 
-public abstract class Collider
+public abstract class Collider (PhysicsBody physicsBody)
 {
     [Flags]
     protected enum DirtyFlags
@@ -15,7 +15,7 @@ public abstract class Collider
         All = Bounds | Points
     }
 
-    public PhysicsBody PhysicsBody { get; internal set; } = null!;
+    public PhysicsBody PhysicsBody { get; } = physicsBody;
 
     public Transform Transform => PhysicsBody.Transform;
 

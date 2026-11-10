@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Eycraft.Framework.Objects;
 
-public class AnimatedSprite : Sprite
+public class AnimatedSprite (Entity entity) : Sprite (entity)
 {
     private SpriteSheet? _spriteSheet;
 

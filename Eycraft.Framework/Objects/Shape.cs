@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Eycraft.Framework.Objects;
 
-public abstract class Shape
+public abstract class Shape (Entity entity) : EntityComponent (entity)
 {
     protected readonly Mesh _mesh = new ();
 
@@ -38,6 +38,21 @@ public abstract class Shape
     }
 
     protected bool _dirty = true;
+
+    public override void Awake ()
+    {
+        Transform.OnTransformChanged += OnTransformChanged;
+    }
+
+    public override void Destroy ()
+    {
+        Transform.OnTransformChanged -= OnTransformChanged;
+    }
+
+    protected virtual void OnTransformChanged (Transform.ChangedFlags changedFlags)
+    {
+        _dirty = true;
+    }
 
     protected abstract void PopulateMesh ();
 

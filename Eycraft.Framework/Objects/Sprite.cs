@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Eycraft.Framework.Objects;
 
-public class Sprite
+public class Sprite (Entity entity) : EntityComponent (entity)
 {
     private readonly Mesh _mesh = new ();
 
@@ -65,21 +65,6 @@ public class Sprite
             }
 
             return _region != null ? new Vector2 (_region.Width, _region.Height) : Vector2.Zero;
-        }
-    }
-
-    private Vector2 _position = Vector2.Zero;
-
-    public Vector2 Position
-    {
-        get { return _position; }
-        set
-        {
-            if (_position != value)
-            {
-                _position = value;
-                _dirty = true;
-            }
         }
     }
 
@@ -181,6 +166,21 @@ public class Sprite
 
     private bool _dirty = true;
 
+    public override void Awake ()
+    {
+        Transform.OnTransformChanged += OnTransformChanged;
+    }
+
+    public override void Destroy ()
+    {
+        Transform.OnTransformChanged -= OnTransformChanged;
+    }
+
+    protected virtual void OnTransformChanged (Transform.ChangedFlags changedFlags)
+    {
+        _dirty = true;
+    }
+
     private void AlignOrigin ()
     {
         Vector2 size = Size;
@@ -205,8 +205,8 @@ public class Sprite
 
     private void PopulateMesh ()
     {
-        float x = _position.X;
-        float y = _position.Y;
+        float x = Transform.Position.X;
+        float y = Transform.Position.Y;
 
         Vector2 size = Size;
         float w = size.X;

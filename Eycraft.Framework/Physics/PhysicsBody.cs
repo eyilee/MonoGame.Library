@@ -26,7 +26,7 @@ public class PhysicsBody : EntityComponent
 
     private readonly ColliderContainer _colliders;
 
-    public PhysicsBody ()
+    public PhysicsBody (Entity entity) : base (entity)
     {
         _colliders = new ColliderContainer (this);
     }
@@ -49,7 +49,7 @@ public class PhysicsBody : EntityComponent
         }
     }
 
-    public T AddCollider<T> () where T : Collider, new() => _colliders.AddCollider<T> ();
+    public T AddCollider<T> () where T : Collider => _colliders.AddCollider<T> ();
 
     public void RemoveCollider<T> () where T : Collider => _colliders.RemoveCollider<T> ();
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Eycraft.Framework.Physics;
 
-public class BoxCollider : Collider
+public class BoxCollider (PhysicsBody physicsBody) : Collider (physicsBody)
 {
     protected Vector2 _size = Vector2.Zero;
 

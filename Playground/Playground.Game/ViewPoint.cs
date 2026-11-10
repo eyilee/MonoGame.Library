@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework;
 
 namespace Playground.Game;
 
-public class ViewPoint
+public class ViewPoint : Entity
 {
-    private SdfCircle _shape = null!;
+    private SdfCircle _shape;
 
     private Vector2 _position = Vector2.Zero;
 
@@ -17,18 +17,18 @@ public class ViewPoint
 
     private float _damping = 0.1f;
 
+    public ViewPoint ()
+    {
+        _shape = AddComponent<SdfCircle> ();
+        _shape.Radius = 3f;
+        _shape.Color = Color.Yellow;
+    }
+
     public void Initialize (Vector2 position, float targetLength = 0f, float damping = 0.1f)
     {
         _position = position;
         _targetLength = targetLength;
         _damping = damping;
-
-        _shape = new SdfCircle ()
-        {
-            Position = _position,
-            Radius = 3f,
-            Color = Color.Yellow
-        };
 
         Camera.Main.LookAt (_position);
     }
@@ -49,11 +49,11 @@ public class ViewPoint
         _velocity += acceleration;
         _position += _velocity * deltaTime;
 
-        _shape.Position = _position;
+        _shape.Offset = _position;
         Camera.Main.LookAt (_position);
     }
 
-    public void Draw (RenderManager render)
+    public override void Draw (RenderManager render)
     {
         _shape.Draw (render);
     }

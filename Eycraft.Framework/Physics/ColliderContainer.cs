@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Eycraft.Framework.Physics;
 
@@ -10,16 +11,18 @@ internal sealed class ColliderContainer (PhysicsBody owner)
 
     private readonly List<Collider> _colliders = [];
 
-    public T AddCollider<T> () where T : Collider, new()
+    public T AddCollider<T> () where T : Collider
     {
-        T collider = new ()
+        Type type = typeof (T);
+
+        if (Activator.CreateInstance (type, _physicsBody) is not Collider collider)
         {
-            PhysicsBody = _physicsBody
-        };
+            throw new InvalidOperationException ($"Type {type.Name} is not a valid Collider.");
+        }
 
         _colliders.Add (collider);
 
-        return collider;
+        return (T)collider;
     }
 
     public void RemoveCollider<T> () where T : Collider

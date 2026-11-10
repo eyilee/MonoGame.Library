@@ -6,7 +6,7 @@ using Eycraft.Framework.Physics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace Playground.Game;
+namespace Playground.Game.Character;
 
 public class Player : Entity
 {
@@ -14,9 +14,9 @@ public class Player : Entity
 
     private CircleCollider _collider = null!;
 
-    private readonly SdfCircle _shape = new ();
+    private readonly SdfCircle _shape;
 
-    private readonly Indicator _indicator = new ();
+    private readonly Aiming _aiming;
 
     private readonly ViewPoint _viewPoint = new ();
 
@@ -36,6 +36,16 @@ public class Player : Entity
 
     private bool _initialized = false;
 
+    public Player ()
+    {
+        _shape = AddComponent<SdfCircle> ();
+        _shape.Color = Color.Blue;
+        _shape.Radius = 5f;
+        _shape.Filled = true;
+
+        _aiming = AddComponent<Aiming> ();
+    }
+
     public void Initialize (Vector2 position, float rotation)
     {
         if (_initialized)
@@ -43,7 +53,6 @@ public class Player : Entity
             return;
         }
 
-        Transform.OnTransformChanged += OnTransformChanged;
         Transform.Position = position;
         Transform.Rotation = rotation;
 
@@ -51,13 +60,7 @@ public class Player : Entity
         _collider = _physicsBody.AddCollider<CircleCollider> ();
         _collider.Radius = 5f;
 
-        _shape.Color = Color.Blue;
-        _shape.Thickness = 3f;
-        _shape.Radius = 5f;
-        _shape.Filled = true;
-
-        _indicator.Initialize (position, rotation);
-        _viewPoint.Initialize (_indicator.Target);
+        _viewPoint.Initialize (_aiming.Target);
 
         _initialized = true;
     }
@@ -72,20 +75,12 @@ public class Player : Entity
         physicsWorld.Remove (_physicsBody);
     }
 
-    private void OnTransformChanged (Transform.ChangedFlags changedFlags)
-    {
-        _shape.Position = Transform.Position;
-        _shape.Rotation = Transform.Rotation;
-        _indicator.Position = Transform.Position;
-        _indicator.Rotation = Transform.Rotation;
-    }
-
     public void Update (InputManager input, float deltaTime)
     {
         ProcessPosition (input, deltaTime);
         ProcessRotation (input, deltaTime);
 
-        _viewPoint.Update (_indicator.Target, deltaTime);
+        _viewPoint.Update (_aiming.Target, deltaTime);
     }
 
     private void ProcessPosition (InputManager input, float deltaTime)
@@ -180,7 +175,7 @@ public class Player : Entity
     public override void Draw (RenderManager render)
     {
         _shape.Draw (render);
-        _indicator.Draw (render);
+        _aiming.Draw (render);
         _viewPoint.Draw (render);
     }
 }

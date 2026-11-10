@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Eycraft.Framework.Physics;
 
-public class CircleCollider : Collider
+public class CircleCollider (PhysicsBody physicsBody) : Collider (physicsBody)
 {
     protected float _radius = 0f;
 

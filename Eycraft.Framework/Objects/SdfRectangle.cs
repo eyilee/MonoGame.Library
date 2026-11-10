@@ -3,18 +3,33 @@ using Microsoft.Xna.Framework;
 
 namespace Eycraft.Framework.Objects;
 
-public class SdfRectangle : SdfShape
+public class SdfRectangle (Entity entity) : SdfShape (entity)
 {
-    protected Vector2 _position = Vector2.Zero;
+    protected Vector2 _offset = Vector2.Zero;
 
-    public Vector2 Position
+    public Vector2 Offset
     {
-        get => _position;
+        get => _offset;
         set
         {
-            if (_position != value)
+            if (_offset != value)
             {
-                _position = value;
+                _offset = value;
+                _dirty = true;
+            }
+        }
+    }
+
+    protected float _rotation = 0f;
+
+    public float Rotation
+    {
+        get => _rotation;
+        set
+        {
+            if (_rotation != value)
+            {
+                _rotation = value;
                 _dirty = true;
             }
         }
@@ -51,10 +66,12 @@ public class SdfRectangle : SdfShape
 
     protected override void PopulateMesh ()
     {
+        Vector2 position = Transform.Position + Vector2.Rotate (_offset, Transform.Rotation);
+        float rotation = Transform.Rotation + _rotation;
         Vector2 scale = new ((_size.X * 0.5f + _thickness) * 2f, (_size.Y * 0.5f + _thickness) * 2f);
 
-        _mesh.SetUVs ([new Vector3 (_position, _depth)]);
-        _mesh.SetUV1s ([new Vector4 (_rotation, scale.X, scale.Y, _thickness)]);
+        _mesh.SetUVs ([new Vector3 (position, _depth)]);
+        _mesh.SetUV1s ([new Vector4 (rotation, scale.X, scale.Y, _thickness)]);
         _mesh.SetUV2s ([_size * 0.5f]);
         _mesh.SetColors ([_color]);
     }

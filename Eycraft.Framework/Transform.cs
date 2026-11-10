@@ -6,7 +6,7 @@ namespace Eycraft.Framework;
 
 [DisallowMultipleComponent]
 [RequiredComponent]
-public class Transform : EntityComponent
+public class Transform (Entity entity) : EntityComponent (entity)
 {
     [Flags]
     public enum ChangedFlags

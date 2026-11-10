@@ -4,32 +4,28 @@ using Microsoft.Xna.Framework;
 
 namespace Eycraft.Framework.Tilemap;
 
-public class TilemapTile
+public class TilemapTile : Entity
 {
-    private readonly int _x;
+    public int X { get; }
 
-    public int X => _x;
+    public int Y { get; }
 
-    private readonly int _y;
-
-    public int Y => _y;
-
-    private readonly Sprite _sprite = new ();
+    private readonly Sprite _sprite;
 
     private Tile? _tile;
 
     public Tile? Tile => _tile;
 
-    public TilemapTile (int x, int y, int width, int height)
+    public TilemapTile (int x, int y)
     {
-        _x = x;
-        _y = y;
-        SetSize (width, height);
+        X = x;
+        Y = y;
+        _sprite = AddComponent<Sprite> ();
     }
 
     public void SetSize (int width, int height)
     {
-        _sprite.Position = new Vector2 (_x * width, _y * height);
+        Transform.Position = new Vector2 (X * width, Y * height);
         _sprite.PreferredSize = new Vector2 (width, height);
     }
 
@@ -45,7 +41,7 @@ public class TilemapTile
         _sprite.Region = null;
     }
 
-    public void Draw (RenderManager render)
+    public override void Draw (RenderManager render)
     {
         if (_tile != null)
         {

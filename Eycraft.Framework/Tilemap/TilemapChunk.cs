@@ -77,7 +77,8 @@ public class TilemapChunk
 
         if (chunkTile == null)
         {
-            chunkTile = new TilemapTile (_x * _width + x, _y * _height + y, _tileWidth, _tileHeight);
+            chunkTile = new TilemapTile (_x * _width + x, _y * _height + y);
+            chunkTile.SetSize (_tileWidth, _tileHeight);
             _chunkTiles[index] = chunkTile;
         }
 

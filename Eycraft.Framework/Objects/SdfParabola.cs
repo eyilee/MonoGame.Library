@@ -3,48 +3,48 @@ using Microsoft.Xna.Framework;
 
 namespace Eycraft.Framework.Objects;
 
-public class SdfParabola : SdfShape
+public class SdfParabola (Entity entity) : SdfShape (entity)
 {
-    protected Vector2 _position = Vector2.Zero;
+    protected Vector2 _offset = Vector2.Zero;
 
-    public Vector2 Position
+    public Vector2 Offset
     {
-        get => _position;
+        get => _offset;
         set
         {
-            if (_position != value)
+            if (_offset != value)
             {
-                _position = value;
+                _offset = value;
                 _dirty = true;
             }
         }
     }
 
-    protected Vector2 _scale = Vector2.Zero;
+    protected float _rotation = 0f;
 
-    public Vector2 Scale
+    public float Rotation
     {
-        get => _scale;
+        get => _rotation;
         set
         {
-            if (_scale != value)
+            if (_rotation != value)
             {
-                _scale = value;
+                _rotation = value;
                 _dirty = true;
             }
         }
     }
 
-    protected Vector2 _focus = Vector2.Zero;
+    protected Vector2 _size = Vector2.Zero;
 
-    public Vector2 Focus
+    public Vector2 Size
     {
-        get { return _focus; }
+        get => _size;
         set
         {
-            if (_focus != value)
+            if (_size != value)
             {
-                _focus = value;
+                _size = value;
                 _dirty = true;
             }
         }
@@ -65,14 +65,35 @@ public class SdfParabola : SdfShape
         }
     }
 
+    protected float _focalLength = 0f;
+
+    public float FocalLength
+    {
+        get { return _focalLength; }
+        set
+        {
+            if (_focalLength != value)
+            {
+                _focalLength = value;
+                _dirty = true;
+            }
+        }
+    }
+
     protected override void PopulateMesh ()
     {
-        float angle = float.Atan2 (_focus.Y - _vertex.Y, _focus.X - _vertex.X) - float.Pi / 2f;
-        Vector2 offset = _vertex - _position;
+        Vector2 position = Transform.Position + Vector2.Rotate (_offset, Transform.Rotation);
+        float rotation = Transform.Rotation + _rotation;
+        float k = 1f / 4f;
 
-        _mesh.SetUVs ([new Vector3 (_position, _depth)]);
-        _mesh.SetUV1s ([new Vector4 (_rotation, _scale.X, _scale.Y, _thickness)]);
-        _mesh.SetUV2s ([new Vector4 (-angle, offset.X, offset.Y, 1f / (4f * Vector2.Distance (_focus, _vertex)))]);
+        if (_focalLength != 0f)
+        {
+            k = 1f / (4f * _focalLength);
+        }
+
+        _mesh.SetUVs ([new Vector3 (position, _depth)]);
+        _mesh.SetUV1s ([new Vector4 (rotation, _size.X, _size.Y, _thickness)]);
+        _mesh.SetUV2s ([new Vector4 (float.Pi / 2f, _vertex.X, _vertex.Y, k)]);
         _mesh.SetColors ([_color]);
     }
 

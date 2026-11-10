@@ -2,13 +2,13 @@
 
 public class TileWorld<TTileData> where TTileData : TileData, new()
 {
-    public int Width { get; internal set; }
+    public int Width { get; private set; }
 
-    public int Height { get; internal set; }
+    public int Height { get; private set; }
 
-    public TTileData[] Tiles { get; internal set; } = [];
+    public TTileData[] Tiles { get; private set; } = [];
 
-    public TileWorld (int width, int height)
+    public void Initialize (int width, int height)
     {
         Width = width;
         Height = height;

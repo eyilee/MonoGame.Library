@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Eycraft.Framework.Physics;
 
-public class PolygonCollider : Collider
+public class PolygonCollider (PhysicsBody physicsBody) : Collider (physicsBody)
 {
     public IReadOnlyList<Vector2> Vertices => _vertices;
 
