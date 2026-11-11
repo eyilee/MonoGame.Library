@@ -93,16 +93,6 @@ public abstract class Core : Game
         base.Initialize ();
     }
 
-    protected override void LoadContent ()
-    {
-        base.LoadContent ();
-    }
-
-    protected override void UnloadContent ()
-    {
-        base.UnloadContent ();
-    }
-
     protected override void Update (GameTime gameTime)
     {
         Input.Update (gameTime);

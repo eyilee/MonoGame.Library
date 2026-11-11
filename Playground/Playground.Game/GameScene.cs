@@ -1,5 +1,4 @@
 ﻿using Eycraft.Framework;
-using Eycraft.Framework.Graphics;
 using Eycraft.Framework.Physics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,11 +22,9 @@ public class GameScene : Scene
 
     private readonly PolygonEntity _polygon = new ();
 
-    private readonly Player _player = new ();
-
     private readonly Cluster _cluster = new ();
 
-    //private readonly AnimatedSprite _teemo = new ();
+    private readonly Player _player = new ();
 
     private GameWorld? _gameWorld;
 
@@ -61,7 +58,10 @@ public class GameScene : Scene
         _polygon.SetVertices (vertices);
         _polygon.AttachPhysics (_physicsWorld);
 
-        _player.Initialize (position, 0f);
+        _cluster.Transform.Position = position + Vector2.UnitX * -150f;
+        _cluster.AttachPhysics (_physicsWorld);
+
+        _player.Transform.Position = position;
         _player.AttachPhysics (_physicsWorld);
 
         base.Initialize ();
@@ -69,14 +69,6 @@ public class GameScene : Scene
 
     public override void LoadContent ()
     {
-        SpriteSheet sp = Content.Load<SpriteSheet> ("teemo");
-
-        //_teemo.SpriteSheet = sp;
-        //_teemo.Position = new Vector2 (Core.ScreenWidth / 2f, Core.ScreenHeight / 2f);
-        //_teemo.PreferredSize = new Vector2 (100f, 100f);
-        //_teemo.OriginAlignment = OriginAlignment.BottomCenter;
-        //_teemo.PlayAnimation ("teemo_up");
-
         _gameWorld = new GameWorld ();
         _gameWorld.Initialize ();
 
@@ -87,13 +79,7 @@ public class GameScene : Scene
     {
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        _player.Update (Input, deltaTime);
-        //_teemo.Update (gameTime);
-
-        //MouseState state = Mouse.GetState ();
-        //_cubes[0].Position = Camera.Main.Position + state.Position.ToVector2 ();
-        //_polygons[0].Position = Camera.Main.Position + state.Position.ToVector2 ();
-
+        _player.Update (gameTime);
         _physicsWorld.Update (deltaTime);
 
         base.Update (gameTime);
@@ -109,12 +95,8 @@ public class GameScene : Scene
         _parabola.Draw (Render);
         _rectangle.Draw (Render);
         _polygon.Draw (Render);
-
-        //_gameWorld?.Draw (Render);
+        _cluster.Draw (Render);
         _player.Draw (Render);
-        //_ball.Draw (Render);
-        //_cube.Draw (Render);
-        //_teemo.Draw (Render);
 
         base.Draw (gameTime);
     }

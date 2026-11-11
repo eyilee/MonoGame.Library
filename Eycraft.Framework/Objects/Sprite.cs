@@ -39,6 +39,21 @@ public class Sprite (Entity entity) : EntityComponent (entity)
         }
     }
 
+    private Vector2 _offset = Vector2.Zero;
+
+    public Vector2 Offset
+    {
+        get { return _offset; }
+        set
+        {
+            if (_offset != value)
+            {
+                _offset = value;
+                _dirty = true;
+            }
+        }
+    }
+
     private Vector2? _preferredSize;
 
     public Vector2? PreferredSize
@@ -205,8 +220,9 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
     private void PopulateMesh ()
     {
-        float x = Transform.Position.X;
-        float y = Transform.Position.Y;
+        Vector2 offset = Vector2.Rotate (_offset, Transform.Rotation);
+        float x = Transform.Position.X + offset.X;
+        float y = Transform.Position.Y + offset.Y;
 
         Vector2 size = Size;
         float w = size.X;

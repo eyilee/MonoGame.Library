@@ -59,7 +59,7 @@ public class AnimatedSprite (Entity entity) : Sprite (entity)
 
     public void Update (GameTime gameTime)
     {
-        if (_currentAnimation == null)
+        if (_currentAnimation == null || _currentAnimation.Frames.Count <= 1)
         {
             return;
         }

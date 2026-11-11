@@ -2,22 +2,85 @@
     "name": "teemo.png",
     "regions": [
         {
-            "name": "teemo_up_0",
+            "name": "up_0",
             "x": 0,
             "y": 0,
             "width": 16,
             "height": 16
         },
         {
-            "name": "teemo_up_1",
+            "name": "up_1",
             "x": 0,
             "y": 16,
             "width": 16,
             "height": 16
         },
         {
-            "name": "teemo_up_2",
+            "name": "up_2",
             "x": 0,
+            "y": 32,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "left_0",
+            "x": 16,
+            "y": 0,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "left_1",
+            "x": 16,
+            "y": 16,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "left_2",
+            "x": 16,
+            "y": 32,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "down_0",
+            "x": 32,
+            "y": 0,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "down_1",
+            "x": 32,
+            "y": 16,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "down_2",
+            "x": 32,
+            "y": 32,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "right_0",
+            "x": 48,
+            "y": 0,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "right_1",
+            "x": 48,
+            "y": 16,
+            "width": 16,
+            "height": 16
+        },
+        {
+            "name": "right_2",
+            "x": 48,
             "y": 32,
             "width": 16,
             "height": 16
@@ -25,22 +88,121 @@
     ],
     "animations": [
         {
-            "name": "teemo_up",
+            "name": "idle_up",
             "frames": [
                 {
-                    "region": "teemo_up_0",
+                    "region": "up_1",
+                    "duration": 0
+                }
+            ]
+        },
+        {
+            "name": "idle_left",
+            "frames": [
+                {
+                    "region": "left_1",
+                    "duration": 0
+                }
+            ]
+        },
+        {
+            "name": "idle_down",
+            "frames": [
+                {
+                    "region": "down_1",
+                    "duration": 0
+                }
+            ]
+        },
+        {
+            "name": "idle_right",
+            "frames": [
+                {
+                    "region": "right_1",
+                    "duration": 0
+                }
+            ]
+        },
+        {
+            "name": "walk_up",
+            "frames": [
+                {
+                    "region": "up_0",
                     "duration": 200
                 },
                 {
-                    "region": "teemo_up_1",
+                    "region": "up_1",
                     "duration": 200
                 },
                 {
-                    "region": "teemo_up_2",
+                    "region": "up_2",
                     "duration": 200
                 },
                 {
-                    "region": "teemo_up_1",
+                    "region": "up_1",
+                    "duration": 200
+                }
+            ]
+        },
+        {
+            "name": "walk_left",
+            "frames": [
+                {
+                    "region": "left_0",
+                    "duration": 200
+                },
+                {
+                    "region": "left_1",
+                    "duration": 200
+                },
+                {
+                    "region": "left_2",
+                    "duration": 200
+                },
+                {
+                    "region": "left_1",
+                    "duration": 200
+                }
+            ]
+        },
+        {
+            "name": "walk_down",
+            "frames": [
+                {
+                    "region": "down_0",
+                    "duration": 200
+                },
+                {
+                    "region": "down_1",
+                    "duration": 200
+                },
+                {
+                    "region": "down_2",
+                    "duration": 200
+                },
+                {
+                    "region": "down_1",
+                    "duration": 200
+                }
+            ]
+        },
+        {
+            "name": "walk_right",
+            "frames": [
+                {
+                    "region": "right_0",
+                    "duration": 200
+                },
+                {
+                    "region": "right_1",
+                    "duration": 200
+                },
+                {
+                    "region": "right_2",
+                    "duration": 200
+                },
+                {
+                    "region": "right_1",
                     "duration": 200
                 }
             ]

@@ -13,10 +13,8 @@ public class Main : Core
     {
     }
 
-    protected override void Initialize ()
+    protected override void BeginRun ()
     {
         ChangeScene (new GameScene ());
-
-        base.Initialize ();
     }
 }

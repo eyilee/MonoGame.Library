@@ -9,83 +9,65 @@ namespace Playground.Game.Shapes;
 
 public class Cluster : Entity
 {
-    private struct SubCube
+    private readonly SdfCircle _circleShape;
+
+    private readonly SdfRectangle _rectangleShape;
+
+    private readonly PolygonShape _polygonShape;
+
+    private readonly PhysicsBody _physicsBody;
+
+    private readonly CircleCollider _circleCollider;
+
+    private readonly BoxCollider _boxCollider;
+
+    private readonly PolygonCollider _polygonCollider;
+
+    public Cluster ()
     {
-        public SdfRectangle Shape;
+        _circleShape = AddComponent<SdfCircle> ();
+        _circleShape.Color = Color.White;
+        _circleShape.Offset = new Vector2 (5f, 0f);
+        _circleShape.Radius = 10f;
+        _circleShape.Filled = true;
 
-        public BoxCollider Collider;
-    }
+        _rectangleShape = AddComponent<SdfRectangle> ();
+        _rectangleShape.Color = Color.White;
+        _rectangleShape.Offset = new Vector2 (0f, 25f);
+        _rectangleShape.Size = new Vector2 (30f, 30f);
+        _rectangleShape.Filled = true;
 
-    private PhysicsBody _physicsBody = null!;
+        _polygonShape = AddComponent<PolygonShape> ();
+        _polygonShape.Offset = new Vector2 (-25f, 0f);
+        _polygonShape.Color = Color.White;
 
-    private SdfCircle _shape = null!;
+        int vertexCount = 7;
+        List<Vector2> vertices = new (vertexCount);
 
-    private readonly List<SubCube> _subCubes = [];
-
-    private bool _initialized = false;
-
-    public void Initialize (Vector2 position, float rotation)
-    {
-        if (_initialized)
+        for (int i = 0; i < vertexCount; i++)
         {
-            return;
+            vertices.Add (Vector2.Rotate (Vector2.UnitX * 25f, float.Tau * i / vertexCount));
         }
 
-        Transform.OnTransformChanged += OnTransformChanged;
-        Transform.Position = position;
-        Transform.Rotation = rotation;
+        _polygonShape.SetVertices (vertices);
 
         _physicsBody = AddComponent<PhysicsBody> ();
 
-        _shape = AddComponent<SdfCircle> ();
-        _shape.Color = Color.White;
-        _shape.Rotation = rotation;
-        _shape.Thickness = 1f;
-        _shape.Offset = position;
-        _shape.Radius = 5f;
+        _circleCollider = _physicsBody.AddCollider<CircleCollider> ();
+        _circleCollider.Offset = new Vector2 (5f, 0f);
+        _circleCollider.Radius = 10f;
 
-        for (int i = 0; i < 4; i++)
-        {
-            Vector2 offset = Vector2.Rotate (Vector2.UnitX * 20f, float.Pi * 2f * i / 4f);
-            Vector2 size = new (10f, 10f);
+        _boxCollider = _physicsBody.AddCollider<BoxCollider> ();
+        _boxCollider.Offset = new Vector2 (0f, 25f);
+        _boxCollider.Size = new Vector2 (30f, 30f);
 
-            SdfRectangle shape = AddComponent<SdfRectangle> ();
-            shape.Color = Color.White;
-            shape.Thickness = 3f;
-            shape.Offset = Transform.Position + offset;
-            shape.Size = size;
-
-            BoxCollider collider = _physicsBody.AddCollider<BoxCollider> ();
-            collider.Offset = offset;
-            collider.Size = size;
-
-            _subCubes.Add (new SubCube
-            {
-                Shape = shape,
-                Collider = collider
-            });
-        }
+        _polygonCollider = _physicsBody.AddCollider<PolygonCollider> ();
+        _polygonCollider.Offset = new Vector2 (-25f, 0f);
+        _polygonCollider.SetVertices (vertices);
 
         _physicsBody.OnCollisionEnter += OnCollisionEnter;
         _physicsBody.OnCollisionStay += OnCollisionStay;
         _physicsBody.OnCollisionExit += OnCollisionExit;
-
-        _initialized = true;
-    }
-
-    private void OnTransformChanged (Transform.ChangedFlags changedFlags)
-    {
-        _shape.Offset = Transform.Position;
-        _shape.Rotation = Transform.Rotation;
-
-        for (int i = 0; i < 4; i++)
-        {
-            Vector2 offset = Vector2.Rotate (Vector2.UnitX * 20f, float.Pi * 2f * i / 4f);
-
-            SdfRectangle shape = _subCubes[i].Shape;
-            shape.Offset = Transform.Position + Vector2.Rotate (offset, Transform.Rotation);
-            shape.Rotation = Transform.Rotation;
-        }
     }
 
     public void AttachPhysics (PhysicsWorld physicsWorld)
@@ -100,40 +82,29 @@ public class Cluster : Entity
 
     private void OnCollisionEnter (PhysicsBodyCollision collision)
     {
-        foreach (SubCube subCube in _subCubes)
-        {
-            subCube.Shape.Color = Color.Red;
-        }
+        _circleShape.Color = Color.Red;
+        _rectangleShape.Color = Color.Red;
+        _polygonShape.Color = Color.Red;
     }
 
     private void OnCollisionStay (PhysicsBodyCollision collision)
     {
-        foreach (SubCube subCube in _subCubes)
-        {
-            subCube.Shape.Color = Color.Red;
-        }
+        _circleShape.Color = Color.Red;
+        _rectangleShape.Color = Color.Red;
+        _polygonShape.Color = Color.Red;
     }
 
     private void OnCollisionExit (PhysicsBodyCollision collision)
     {
-        foreach (SubCube subCube in _subCubes)
-        {
-            subCube.Shape.Color = Color.White;
-        }
+        _circleShape.Color = Color.White;
+        _rectangleShape.Color = Color.White;
+        _polygonShape.Color = Color.White;
     }
 
     public override void Draw (RenderManager render)
     {
-        if (!_initialized)
-        {
-            return;
-        }
-
-        foreach (SubCube subCube in _subCubes)
-        {
-            subCube.Shape.Draw (render);
-        }
-
-        _shape.Draw (render);
+        _circleShape.Draw (render);
+        _rectangleShape.Draw (render);
+        _polygonShape.Draw (render);
     }
 }

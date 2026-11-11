@@ -1,28 +1,18 @@
 ﻿namespace Eycraft.Framework.Graphics;
 
-public readonly struct RenderCommand
+public readonly struct RenderCommand (Material material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource? texture, TextureResource[]? textures, float depth = 0f)
 {
-    public Material Material { get; }
+    public Material Material { get; } = material;
 
-    public MaterialPropertyBlock? Properties { get; }
+    public MaterialPropertyBlock? Properties { get; } = properties;
 
-    public Mesh Mesh { get; }
+    public Mesh Mesh { get; } = mesh;
 
-    public TextureResource? Texture { get; }
+    public TextureResource? Texture { get; } = texture;
 
-    public TextureResource[]? Textures { get; }
+    public TextureResource[]? Textures { get; } = textures;
 
-    public ushort Depth { get; }
-
-    public RenderCommand (Material material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource? texture, TextureResource[]? textures, float depth = 0f)
-    {
-        Material = material;
-        Properties = properties;
-        Mesh = mesh;
-        Texture = texture;
-        Textures = textures;
-        Depth = (ushort)(float.Clamp (depth, 0f, 1f) * ushort.MaxValue);
-    }
+    public ushort Depth { get; } = (ushort)(float.Clamp (depth, 0f, 1f) * ushort.MaxValue);
 
     public static RenderCommand CreateSingleTexture (Material material, MaterialPropertyBlock? properties, Mesh mesh, TextureResource? texture, float depth = 0f)
     {

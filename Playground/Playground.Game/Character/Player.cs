@@ -1,8 +1,8 @@
 ﻿using Eycraft.Framework;
 using Eycraft.Framework.Graphics;
-using Eycraft.Framework.Input;
 using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
+using Eycraft.Framework.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -10,15 +10,15 @@ namespace Playground.Game.Character;
 
 public class Player : Entity
 {
-    private PhysicsBody _physicsBody = null!;
+    private readonly AnimatedSprite _sprite;
 
-    private CircleCollider _collider = null!;
+    private readonly PhysicsBody _physicsBody;
 
-    private readonly SdfCircle _shape;
+    private readonly CircleCollider _collider;
 
     private readonly Aiming _aiming;
 
-    private readonly ViewPoint _viewPoint = new ();
+    private readonly TrackingCamera _trackingCamera;
 
     private readonly float _maxVelocity = 300f;
 
@@ -34,35 +34,27 @@ public class Player : Entity
 
     private float _angularVelocity = 0f;
 
-    private bool _initialized = false;
+    private Direction _direction = new (Direction.Down);
+
+    private bool _isMoving = false;
 
     public Player ()
     {
-        _shape = AddComponent<SdfCircle> ();
-        _shape.Color = Color.Blue;
-        _shape.Radius = 5f;
-        _shape.Filled = true;
-
-        _aiming = AddComponent<Aiming> ();
-    }
-
-    public void Initialize (Vector2 position, float rotation)
-    {
-        if (_initialized)
-        {
-            return;
-        }
-
-        Transform.Position = position;
-        Transform.Rotation = rotation;
+        _sprite = AddComponent<AnimatedSprite> ();
+        _sprite.PreferredSize = new Vector2 (32f, 32f);
+        _sprite.SpriteSheet = Core.Content.Load<SpriteSheet> ("teemo");
+        _sprite.PlayAnimation ("idle_down");
 
         _physicsBody = AddComponent<PhysicsBody> ();
+
         _collider = _physicsBody.AddCollider<CircleCollider> ();
-        _collider.Radius = 5f;
+        _collider.Radius = 16f;
 
-        _viewPoint.Initialize (_aiming.Target);
+        _aiming = AddComponent<Aiming> ();
+        _aiming.Length = 50f;
 
-        _initialized = true;
+        _trackingCamera = AddComponent<TrackingCamera> ();
+        _trackingCamera.Camera = Camera.Main;
     }
 
     public void AttachPhysics (PhysicsWorld physicsWorld)
@@ -75,19 +67,25 @@ public class Player : Entity
         physicsWorld.Remove (_physicsBody);
     }
 
-    public void Update (InputManager input, float deltaTime)
+    public override void Update (GameTime gameTime)
     {
-        ProcessPosition (input, deltaTime);
-        ProcessRotation (input, deltaTime);
+        _sprite.Update (gameTime);
 
-        _viewPoint.Update (_aiming.Target, deltaTime);
+        ProcessPosition (gameTime);
+        ProcessRotation (gameTime);
+
+        _trackingCamera.Target = _aiming.Target;
+        _trackingCamera.Update (gameTime);
+
+        UpdateActor ();
     }
 
-    private void ProcessPosition (InputManager input, float deltaTime)
+    private void ProcessPosition (GameTime gameTime)
     {
+        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
         float acceleration = 0f;
 
-        if (input.Keyboard.IsKeyDown (Keys.A))
+        if (Core.Input.Keyboard.IsKeyDown (Keys.A))
         {
             acceleration = _acceleration;
         }
@@ -129,27 +127,28 @@ public class Player : Entity
         Transform.Position += _velocity * deltaTime;
     }
 
-    private void ProcessRotation (InputManager input, float deltaTime)
+    private void ProcessRotation (GameTime gameTime)
     {
+        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
         float x = 0f;
         float y = 0f;
 
-        if (input.Keyboard.IsKeyDown (Keys.Up))
+        if (Core.Input.Keyboard.IsKeyDown (Keys.Up))
         {
             y -= 1f;
         }
 
-        if (input.Keyboard.IsKeyDown (Keys.Down))
+        if (Core.Input.Keyboard.IsKeyDown (Keys.Down))
         {
             y += 1f;
         }
 
-        if (input.Keyboard.IsKeyDown (Keys.Left))
+        if (Core.Input.Keyboard.IsKeyDown (Keys.Left))
         {
             x -= 1f;
         }
 
-        if (input.Keyboard.IsKeyDown (Keys.Right))
+        if (Core.Input.Keyboard.IsKeyDown (Keys.Right))
         {
             x += 1f;
         }
@@ -172,10 +171,39 @@ public class Player : Entity
         Transform.Rotation += step;
     }
 
+    private void UpdateActor ()
+    {
+        Direction direction = Direction.FromRotation (Transform.Rotation);
+        bool isMoving = _velocity.LengthSquared () > 0f;
+
+        if (_direction != direction || _isMoving != isMoving)
+        {
+            _direction = direction;
+            _isMoving = isMoving;
+
+            switch (direction.Value)
+            {
+                case Direction.Up:
+                    _sprite.PlayAnimation (isMoving ? "walk_up" : "idle_up");
+                    break;
+                case Direction.Down:
+                    _sprite.PlayAnimation (isMoving ? "walk_down" : "idle_down");
+                    break;
+                case Direction.Left:
+                    _sprite.PlayAnimation (isMoving ? "walk_left" : "idle_left");
+                    break;
+                case Direction.Right:
+                    _sprite.PlayAnimation (isMoving ? "walk_right" : "idle_right");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     public override void Draw (RenderManager render)
     {
-        _shape.Draw (render);
+        _sprite.Draw (render);
         _aiming.Draw (render);
-        _viewPoint.Draw (render);
     }
 }
