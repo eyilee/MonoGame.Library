@@ -89,6 +89,8 @@ public class GameScene : Scene
     {
         GraphicsDevice.Clear (Color.CornflowerBlue);
 
+        _gameWorld?.Draw (Render);
+
         _origin.Draw (Render);
         _circle.Draw (Render);
         _line.Draw (Render);

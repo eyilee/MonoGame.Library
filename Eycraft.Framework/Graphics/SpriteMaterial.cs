@@ -8,7 +8,7 @@ public class SpriteMaterial (string name, SpriteEffect effect, RenderBatcher ren
     SamplerState? samplerState = null,
     DepthStencilState? depthStencilState = null,
     RasterizerState? rasterizerState = null)
-    : Material (name, effect, renderBatcher, blendState, samplerSlot, samplerState, depthStencilState ?? DepthStencilState.Default, rasterizerState)
+    : Material (name, effect, renderBatcher, blendState, samplerSlot, samplerState, depthStencilState ?? DepthStencilState.DepthRead, rasterizerState)
 {
     private readonly SpriteEffect _spriteEffect = effect;
 

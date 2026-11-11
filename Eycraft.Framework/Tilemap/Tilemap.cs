@@ -46,7 +46,8 @@ public class Tilemap
 
                     if (!newChunks.TryGetValue (newChunkIndex, out TilemapChunk? newChunk))
                     {
-                        newChunk = new TilemapChunk (newChunkIndex.X, newChunkIndex.Y, _chunkWidth, _chunkHeight, _tileWidth, _tileHeight);
+                        newChunk = new TilemapChunk (newChunkIndex.X, newChunkIndex.Y, _chunkWidth, _chunkHeight);
+                        newChunk.SetTileSize (_tileWidth, _tileHeight);
                         newChunks.Add (newChunkIndex, newChunk);
                     }
 
@@ -72,10 +73,7 @@ public class Tilemap
 
         foreach ((Point chunkIndex, TilemapChunk chunk) in _chunks)
         {
-            foreach (TilemapTile? chunkTile in chunk.ChunkTiles)
-            {
-                chunkTile?.SetSize (tileWidth, tileHeight);
-            }
+            chunk.SetTileSize (tileWidth, tileHeight);
         }
     }
 
@@ -85,25 +83,14 @@ public class Tilemap
 
         if (!_chunks.TryGetValue (chunkIndex, out TilemapChunk? chunk))
         {
-            chunk = new TilemapChunk (chunkIndex.X, chunkIndex.Y, _chunkWidth, _chunkHeight, _tileWidth, _tileHeight);
+            chunk = new TilemapChunk (chunkIndex.X, chunkIndex.Y, _chunkWidth, _chunkHeight);
+            chunk.SetTileSize (_tileWidth, _tileHeight);
             _chunks.Add (chunkIndex, chunk);
         }
 
         int localX = x % _chunkWidth;
         int localY = y % _chunkHeight;
         chunk.SetTile (localX, localY, tile);
-    }
-
-    public void RemoveTile (int x, int y)
-    {
-        Point chunkIndex = new (x / _chunkWidth, y / _chunkHeight);
-
-        if (_chunks.TryGetValue (chunkIndex, out TilemapChunk? chunk))
-        {
-            int localX = x % _chunkWidth;
-            int localY = y % _chunkHeight;
-            chunk.RemoveTile (localX, localY);
-        }
     }
 
     public void Draw (RenderManager render)

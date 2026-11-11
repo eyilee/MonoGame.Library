@@ -2,7 +2,6 @@
 using Eycraft.Framework.Graphics;
 using Eycraft.Framework.Objects;
 using Eycraft.Framework.Physics;
-using Eycraft.Framework.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -42,6 +41,7 @@ public class Player : Entity
     {
         _sprite = AddComponent<AnimatedSprite> ();
         _sprite.PreferredSize = new Vector2 (32f, 32f);
+        _sprite.Depth = 0.5f;
         _sprite.SpriteSheet = Core.Content.Load<SpriteSheet> ("teemo");
         _sprite.PlayAnimation ("idle_down");
 
