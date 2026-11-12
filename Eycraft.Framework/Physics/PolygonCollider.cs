@@ -5,9 +5,9 @@ namespace Eycraft.Framework.Physics;
 
 public class PolygonCollider (PhysicsBody physicsBody) : Collider (physicsBody)
 {
-    public IReadOnlyList<Vector2> Vertices => _vertices;
+    private readonly List<Vector2> _vertices = [];
 
-    protected List<Vector2> _vertices = [];
+    public IReadOnlyList<Vector2> Vertices => _vertices;
 
     public void SetVertices (List<Vector2> vertices)
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Eycraft.Framework.Physics;
 
-public struct Polygon (List<Vector2> points) : ISupportable
+public struct Polygon (IReadOnlyList<Vector2> points) : ISupportable
 {
-    public List<Vector2> Points { get; set; } = points;
+    public IReadOnlyList<Vector2> Points { get; set; } = points;
 
     public readonly Vector2 Position => Points[0];
 

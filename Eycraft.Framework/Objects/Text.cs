@@ -5,37 +5,23 @@ using System.Collections.Generic;
 
 namespace Eycraft.Framework.Objects;
 
-public class Text (Font font)
+public class Text (Entity entity) : EntityComponent (entity)
 {
-    private readonly List<Mesh> _meshes = [];
+    private readonly Mesh _mesh = new ();
 
-    private Material? _material;
+    public Material? Material { get; set; }
 
-    public Material? Material
+    private Font? _font;
+
+    public Font? Font
     {
-        get { return _material; }
-        set
-        {
-            if (!ReferenceEquals (_material, value))
-            {
-                _material = value;
-                _dirty = true;
-            }
-        }
-    }
-
-    private Font _font = font;
-
-    public Font Font
-    {
-        get { return _font; }
+        get => _font;
         set
         {
             if (!ReferenceEquals (_font, value))
             {
                 _font = value;
                 _dirty = true;
-                _sizeDirty = true;
             }
         }
     }
@@ -44,44 +30,27 @@ public class Text (Font font)
 
     public string Value
     {
-        get { return _value; }
+        get => _value;
         set
         {
             if (_value != value)
             {
                 _value = value;
                 _dirty = true;
-                _sizeDirty = true;
             }
         }
     }
 
-    private Vector2 _size = Vector2.Zero;
+    private Vector2 _offset = Vector2.Zero;
 
-    public Vector2 Size
+    public Vector2 Offset
     {
-        get
-        {
-            if (_sizeDirty)
-            {
-                _size = _font.MeasureString (_value);
-                _sizeDirty = false;
-            }
-
-            return _size;
-        }
-    }
-
-    private Vector2 _position = Vector2.Zero;
-
-    public Vector2 Position
-    {
-        get { return _position; }
+        get => _offset;
         set
         {
-            if (_position != value)
+            if (_offset != value)
             {
-                _position = value;
+                _offset = value;
                 _dirty = true;
             }
         }
@@ -91,7 +60,7 @@ public class Text (Font font)
 
     public Color Color
     {
-        get { return _color; }
+        get => _color;
         set
         {
             if (_color != value)
@@ -106,7 +75,7 @@ public class Text (Font font)
 
     public float Rotation
     {
-        get { return _rotation; }
+        get => _rotation;
         set
         {
             if (_rotation != value)
@@ -117,16 +86,33 @@ public class Text (Font font)
         }
     }
 
-    private Vector2? _origin;
+    private Vector2 _origin = Vector2.Zero;
 
-    public Vector2? Origin
+    public Vector2 Origin
     {
-        get { return _origin ?? Vector2.Zero; }
+        get => _origin;
         set
         {
+            OriginAlignment = OriginAlignment.None;
+
             if (_origin != value)
             {
                 _origin = value;
+                _dirty = true;
+            }
+        }
+    }
+
+    private OriginAlignment _originAlignment = OriginAlignment.None;
+
+    public OriginAlignment OriginAlignment
+    {
+        get => _originAlignment;
+        set
+        {
+            if (_originAlignment != value)
+            {
+                _originAlignment = value;
                 _dirty = true;
             }
         }
@@ -136,7 +122,7 @@ public class Text (Font font)
 
     public SpriteEffects SpriteEffects
     {
-        get { return _spriteEffects; }
+        get => _spriteEffects;
         set
         {
             if (_spriteEffects != value)
@@ -151,7 +137,7 @@ public class Text (Font font)
 
     public float Depth
     {
-        get { return _depth; }
+        get => _depth;
         set
         {
             if (_depth != value)
@@ -164,32 +150,73 @@ public class Text (Font font)
 
     private bool _dirty = true;
 
-    private bool _sizeDirty = true;
+    public override void Awake ()
+    {
+        Transform.OnTransformChanged += OnTransformChanged;
+    }
+
+    public override void Destroy ()
+    {
+        Transform.OnTransformChanged -= OnTransformChanged;
+    }
+
+    protected virtual void OnTransformChanged (Transform.ChangedFlags changedFlags)
+    {
+        _dirty = true;
+    }
+
+    private void AlignOrigin (Vector2 size)
+    {
+        float x = size.X;
+        float y = size.Y;
+
+        Origin = OriginAlignment switch
+        {
+            OriginAlignment.None => Origin,
+            OriginAlignment.TopLeft => new Vector2 (0f, 0f),
+            OriginAlignment.TopCenter => new Vector2 (x * 0.5f, 0f),
+            OriginAlignment.TopRight => new Vector2 (x, 0f),
+            OriginAlignment.CenterLeft => new Vector2 (0f, y * 0.5f),
+            OriginAlignment.Center => new Vector2 (x * 0.5f, y * 0.5f),
+            OriginAlignment.CenterRight => new Vector2 (x, y * 0.5f),
+            OriginAlignment.BottomLeft => new Vector2 (0f, y),
+            OriginAlignment.BottomCenter => new Vector2 (x * 0.5f, y),
+            OriginAlignment.BottomRight => new Vector2 (x, y),
+            _ => Origin
+        };
+    }
 
     private void PopulateMesh ()
     {
-        _meshes.Clear ();
-
-        if (string.IsNullOrEmpty (_value))
+        if (Font == null || string.IsNullOrEmpty (Value))
         {
             return;
         }
 
-        Vector2 origin = _origin ?? _size / 2f;
-        bool flipHorizontally = _spriteEffects.HasFlag (SpriteEffects.FlipHorizontally);
-        bool flipVertically = _spriteEffects.HasFlag (SpriteEffects.FlipVertically);
+        Vector2 size = Font.MeasureString (Value);
+        AlignOrigin (size);
 
-        Matrix transform = Matrix.CreateTranslation (-_position.X - origin.X, -_position.Y - origin.Y, 0f)
+        bool flipHorizontally = SpriteEffects.HasFlag (SpriteEffects.FlipHorizontally);
+        bool flipVertically = SpriteEffects.HasFlag (SpriteEffects.FlipVertically);
+
+        Matrix transform = Matrix.CreateTranslation (-Origin.X, -Origin.Y, 0f)
             * Matrix.CreateScale (flipHorizontally ? -1f : 1f, flipVertically ? -1f : 1f, 1f)
-            * Matrix.CreateRotationZ (_rotation)
-            * Matrix.CreateTranslation (_position.X, _position.Y, 0f);
+            * Matrix.CreateRotationZ (Rotation)
+            * Matrix.CreateTranslation (Offset.X, Offset.Y, 0f)
+            * Matrix.CreateRotationZ (Transform.Rotation)
+            * Matrix.CreateTranslation (Transform.Position.X, Transform.Position.Y, 0f);
 
         Vector2 offset = Vector2.Zero;
         bool firstGlyphOfLine = true;
 
-        for (var i = 0; i < _value.Length; ++i)
+        List<ushort> indices = new (Value.Length * 6);
+        List<Vector3> vertices = new (Value.Length * 4);
+        List<Color> colors = new (Value.Length * 4);
+        List<Vector2> uvs = new (Value.Length * 4);
+
+        for (var i = 0; i < Value.Length; ++i)
         {
-            char c = _value[i];
+            char c = Value[i];
 
             if (c == '\r')
             {
@@ -199,12 +226,12 @@ public class Text (Font font)
             if (c == '\n')
             {
                 offset.X = 0;
-                offset.Y += _font.LineSpacing;
+                offset.Y += Font.LineSpacing;
                 firstGlyphOfLine = true;
                 continue;
             }
 
-            if (!_font.Glyphs.TryGetValue (c, out SpriteFont.Glyph glyph))
+            if (!Font.Glyphs.TryGetValue (c, out SpriteFont.Glyph glyph))
             {
                 continue;
             }
@@ -216,11 +243,11 @@ public class Text (Font font)
             }
             else
             {
-                offset.X += _font.Spacing + glyph.LeftSideBearing;
+                offset.X += Font.Spacing + glyph.LeftSideBearing;
             }
 
-            float x = _position.X + offset.X + glyph.Cropping.X;
-            float y = _position.Y + offset.Y + glyph.Cropping.Y;
+            float x = offset.X + glyph.Cropping.X;
+            float y = offset.Y + glyph.Cropping.Y;
             float w = glyph.BoundsInTexture.Width;
             float h = glyph.BoundsInTexture.Height;
 
@@ -236,10 +263,10 @@ public class Text (Font font)
                 h = -h;
             }
 
-            float top = glyph.BoundsInTexture.Y * _font.Texture.TexelHeight;
-            float bottom = (glyph.BoundsInTexture.Y + glyph.BoundsInTexture.Height) * _font.Texture.TexelHeight;
-            float left = glyph.BoundsInTexture.X * _font.Texture.TexelWidth;
-            float right = (glyph.BoundsInTexture.X + glyph.BoundsInTexture.Width) * _font.Texture.TexelWidth;
+            float top = glyph.BoundsInTexture.Y * Font.Texture.TexelHeight;
+            float bottom = (glyph.BoundsInTexture.Y + glyph.BoundsInTexture.Height) * Font.Texture.TexelHeight;
+            float left = glyph.BoundsInTexture.X * Font.Texture.TexelWidth;
+            float right = (glyph.BoundsInTexture.X + glyph.BoundsInTexture.Width) * Font.Texture.TexelWidth;
 
             if (flipHorizontally)
             {
@@ -251,49 +278,51 @@ public class Text (Font font)
                 (top, bottom) = (bottom, top);
             }
 
-            Mesh mesh = new ();
+            ushort index = (ushort)(i * 4);
+            indices.Add ((ushort)(index + 0));
+            indices.Add ((ushort)(index + 1));
+            indices.Add ((ushort)(index + 2));
+            indices.Add ((ushort)(index + 1));
+            indices.Add ((ushort)(index + 3));
+            indices.Add ((ushort)(index + 2));
 
-            mesh.SetVertices ([
-                Vector3.Transform (new Vector3 (x, y, _depth), transform),
-                Vector3.Transform (new Vector3 (x + w, y, _depth), transform),
-                Vector3.Transform (new Vector3 (x, y + h, _depth), transform),
-                Vector3.Transform (new Vector3 (x + w, y + h, _depth), transform)
-                ]);
+            vertices.Add (Vector3.Transform (new Vector3 (x, y, Depth), transform));
+            vertices.Add (Vector3.Transform (new Vector3 (x + w, y, Depth), transform));
+            vertices.Add (Vector3.Transform (new Vector3 (x, y + h, Depth), transform));
+            vertices.Add (Vector3.Transform (new Vector3 (x + w, y + h, Depth), transform));
 
-            mesh.SetColors ([Color, Color, Color, Color]);
+            colors.Add (Color.White);
+            colors.Add (Color.White);
+            colors.Add (Color.White);
+            colors.Add (Color.White);
 
-            mesh.SetUVs ([
-                new Vector2 (left, top),
-                new Vector2 (right, top),
-                new Vector2 (left, bottom),
-                new Vector2 (right, bottom)
-                ]);
-
-            _meshes.Add (mesh);
+            uvs.Add (new Vector2 (left, top));
+            uvs.Add (new Vector2 (right, top));
+            uvs.Add (new Vector2 (left, bottom));
+            uvs.Add (new Vector2 (right, bottom));
 
             offset.X += glyph.Width + glyph.RightSideBearing;
         }
+
+        _mesh.SetIndices ([.. indices]);
+        _mesh.SetVertices ([.. vertices]);
+        _mesh.SetColors ([.. colors]);
+        _mesh.SetUVs ([.. uvs]);
     }
 
     public void Draw (RenderManager render)
     {
-        if (_sizeDirty)
-        {
-            _size = _font.MeasureString (_value);
-            _sizeDirty = false;
-        }
-
         if (_dirty)
         {
             PopulateMesh ();
             _dirty = false;
         }
 
-        _material ??= Material.Sprite;
+        Material ??= Material.SpriteFont;
 
-        foreach (Mesh mesh in _meshes)
+        if (Font != null)
         {
-            render.Enqueue (RenderCommand.CreateSingleTexture (_material, mesh, _font.Texture, _depth));
+            render.Enqueue (RenderCommand.CreateSingleTexture (Material, _mesh, Font.Texture, Depth));
         }
     }
 }

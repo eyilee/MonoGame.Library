@@ -133,6 +133,18 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
         }
     }
 
+    private static Material? _spriteFont;
+
+    public static Material SpriteFont
+    {
+        get
+        {
+            _spriteFont ??= new SpriteMaterial ("SpriteFont", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Standard, samplerState: SamplerState.PointClamp);
+
+            return _spriteFont;
+        }
+    }
+
     private static SdfMaterial? _sdfCircle;
 
     public static SdfMaterial SdfCircle

@@ -77,10 +77,8 @@ public class GameScene : Scene
 
     public override void Update (GameTime gameTime)
     {
-        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
         _player.Update (gameTime);
-        _physicsWorld.Update (deltaTime);
+        _physicsWorld.Update (gameTime);
 
         base.Update (gameTime);
     }
@@ -89,7 +87,7 @@ public class GameScene : Scene
     {
         GraphicsDevice.Clear (Color.CornflowerBlue);
 
-        _gameWorld?.Draw (Render);
+        //_gameWorld?.Draw (Render);
 
         _origin.Draw (Render);
         _circle.Draw (Render);

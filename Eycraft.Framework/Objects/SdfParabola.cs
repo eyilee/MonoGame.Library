@@ -5,7 +5,7 @@ namespace Eycraft.Framework.Objects;
 
 public class SdfParabola (Entity entity) : SdfShape (entity)
 {
-    protected Vector2 _offset = Vector2.Zero;
+    private Vector2 _offset = Vector2.Zero;
 
     public Vector2 Offset
     {
@@ -20,7 +20,7 @@ public class SdfParabola (Entity entity) : SdfShape (entity)
         }
     }
 
-    protected float _rotation = 0f;
+    private float _rotation = 0f;
 
     public float Rotation
     {
@@ -35,7 +35,7 @@ public class SdfParabola (Entity entity) : SdfShape (entity)
         }
     }
 
-    protected Vector2 _size = Vector2.Zero;
+    private Vector2 _size = Vector2.Zero;
 
     public Vector2 Size
     {
@@ -50,11 +50,11 @@ public class SdfParabola (Entity entity) : SdfShape (entity)
         }
     }
 
-    protected Vector2 _vertex = Vector2.Zero;
+    private Vector2 _vertex = Vector2.Zero;
 
     public Vector2 Vertex
     {
-        get { return _vertex; }
+        get => _vertex;
         set
         {
             if (_vertex != value)
@@ -65,11 +65,11 @@ public class SdfParabola (Entity entity) : SdfShape (entity)
         }
     }
 
-    protected float _focalLength = 0f;
+    private float _focalLength = 0f;
 
     public float FocalLength
     {
-        get { return _focalLength; }
+        get => _focalLength;
         set
         {
             if (_focalLength != value)
@@ -82,19 +82,19 @@ public class SdfParabola (Entity entity) : SdfShape (entity)
 
     protected override void PopulateMesh ()
     {
-        Vector2 position = Transform.Position + Vector2.Rotate (_offset, Transform.Rotation);
-        float rotation = Transform.Rotation + _rotation;
+        Vector2 position = Transform.Position + Vector2.Rotate (Offset, Transform.Rotation);
+        float rotation = Transform.Rotation + Rotation;
         float k = 1f / 4f;
 
-        if (_focalLength != 0f)
+        if (FocalLength != 0f)
         {
-            k = 1f / (4f * _focalLength);
+            k = 1f / (4f * FocalLength);
         }
 
-        _mesh.SetUVs ([new Vector3 (position, _depth)]);
-        _mesh.SetUV1s ([new Vector4 (rotation, _size.X, _size.Y, _thickness)]);
-        _mesh.SetUV2s ([new Vector4 (float.Pi / 2f, _vertex.X, _vertex.Y, k)]);
-        _mesh.SetColors ([_color]);
+        _mesh.SetUVs ([new Vector3 (position, Depth)]);
+        _mesh.SetUV1s ([new Vector4 (rotation, Size.X, Size.Y, Thickness)]);
+        _mesh.SetUV2s ([new Vector4 (float.Pi / 2f, Vertex.X, Vertex.Y, k)]);
+        _mesh.SetColors ([Color]);
     }
 
     public override void Draw (RenderManager render)
@@ -105,6 +105,6 @@ public class SdfParabola (Entity entity) : SdfShape (entity)
             _dirty = false;
         }
 
-        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfParabola, _mesh, _depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfParabola, _mesh, Depth));
     }
 }

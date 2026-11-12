@@ -11,7 +11,7 @@ public class TileSprite
 
     public TextureRegion? Region
     {
-        get { return _region; }
+        get => _region;
         set
         {
             if (!ReferenceEquals (_region, value))
@@ -26,7 +26,7 @@ public class TileSprite
 
     public Vector2 Position
     {
-        get { return _position; }
+        get => _position;
         set
         {
             if (_position != value)
@@ -41,7 +41,7 @@ public class TileSprite
 
     public Vector2 Size
     {
-        get { return _size; }
+        get => _size;
         set
         {
             if (_size != value)
@@ -57,7 +57,7 @@ public class TileSprite
 
     public Color Color
     {
-        get { return _color; }
+        get => _color;
         set
         {
             if (_color != value)
@@ -74,7 +74,7 @@ public class TileSprite
 
     public OriginAlignment OriginAlignment
     {
-        get { return _originAlignment; }
+        get => _originAlignment;
         set
         {
             if (_originAlignment != value)
@@ -90,7 +90,7 @@ public class TileSprite
 
     public float Depth
     {
-        get { return _depth; }
+        get => _depth;
         set
         {
             if (_depth != value)

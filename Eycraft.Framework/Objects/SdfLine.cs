@@ -5,7 +5,7 @@ namespace Eycraft.Framework.Objects;
 
 public class SdfLine (Entity entity) : SdfShape (entity)
 {
-    protected Vector2 _offset = Vector2.Zero;
+    private Vector2 _offset = Vector2.Zero;
 
     public Vector2 Offset
     {
@@ -20,11 +20,11 @@ public class SdfLine (Entity entity) : SdfShape (entity)
         }
     }
 
-    protected Vector2 _start = Vector2.Zero;
+    private Vector2 _start = Vector2.Zero;
 
     public Vector2 Start
     {
-        get { return _start; }
+        get => _start;
         set
         {
             if (_start != value)
@@ -35,11 +35,11 @@ public class SdfLine (Entity entity) : SdfShape (entity)
         }
     }
 
-    protected Vector2 _end = Vector2.Zero;
+    private Vector2 _end = Vector2.Zero;
 
     public Vector2 End
     {
-        get { return _end; }
+        get => _end;
         set
         {
             if (_end != value)
@@ -50,7 +50,7 @@ public class SdfLine (Entity entity) : SdfShape (entity)
         }
     }
 
-    protected float _rotation = 0f;
+    private float _rotation = 0f;
 
     public float Rotation
     {
@@ -67,15 +67,15 @@ public class SdfLine (Entity entity) : SdfShape (entity)
 
     protected override void PopulateMesh ()
     {
-        Vector2 start = Transform.Position + Vector2.Rotate (_offset + _start, Transform.Rotation);
-        Vector2 end = Transform.Position + Vector2.Rotate (_offset + _end, Transform.Rotation);
+        Vector2 start = Transform.Position + Vector2.Rotate (Offset + Start, Transform.Rotation);
+        Vector2 end = Transform.Position + Vector2.Rotate (Offset + End, Transform.Rotation);
         Vector2 position = (start + end) * 0.5f;
-        Vector2 scale = new (float.Abs (end.X - start.X) + _thickness * 2f, float.Abs (end.Y - start.Y) + _thickness * 2f);
+        Vector2 scale = new (float.Abs (end.X - start.X) + Thickness * 2f, float.Abs (end.Y - start.Y) + Thickness * 2f);
 
-        _mesh.SetUVs ([new Vector3 (position, _depth)]);
-        _mesh.SetUV1s ([new Vector4 (_rotation, scale.X, scale.Y, _thickness)]);
+        _mesh.SetUVs ([new Vector3 (position, Depth)]);
+        _mesh.SetUV1s ([new Vector4 (Rotation, scale.X, scale.Y, Thickness)]);
         _mesh.SetUV2s ([new Vector4 (start.X - position.X, start.Y - position.Y, end.X - position.X, end.Y - position.Y)]);
-        _mesh.SetColors ([_color]);
+        _mesh.SetColors ([Color]);
     }
 
     public override void Draw (RenderManager render)
@@ -86,6 +86,6 @@ public class SdfLine (Entity entity) : SdfShape (entity)
             _dirty = false;
         }
 
-        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfLine, _mesh, _depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfLine, _mesh, Depth));
     }
 }

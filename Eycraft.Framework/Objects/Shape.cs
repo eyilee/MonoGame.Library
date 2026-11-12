@@ -7,7 +7,7 @@ public abstract class Shape (Entity entity) : EntityComponent (entity)
 {
     protected readonly Mesh _mesh = new ();
 
-    protected Color _color = Color.White;
+    private Color _color = Color.White;
 
     public Color Color
     {
@@ -22,7 +22,7 @@ public abstract class Shape (Entity entity) : EntityComponent (entity)
         }
     }
 
-    protected float _depth = 0f;
+    private float _depth = 0f;
 
     public float Depth
     {

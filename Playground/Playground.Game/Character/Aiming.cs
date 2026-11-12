@@ -13,30 +13,52 @@ public class Aiming : EntityComponent
 
     public float Length
     {
-        get { return _length; }
+        get => _length;
         set
         {
             if (_length != value)
             {
                 _length = value;
-                _shape.Offset = Vector2.UnitX * _length;
+                _dirty = true;
             }
         }
     }
 
-    public Vector2 Target => Transform.Position + new Vector2 (float.Cos (Transform.Rotation), float.Sin (Transform.Rotation)) * _length;
+    private float _rotation = 0f;
+
+    public float Rotation
+    {
+        get => _rotation;
+        set
+        {
+            if (_rotation != value)
+            {
+                _rotation = value;
+                _dirty = true;
+            }
+        }
+    }
+
+    private bool _dirty = true;
+
+    public Vector2 Target => Transform.Position + new Vector2 (float.Cos (Rotation), float.Sin (Rotation)) * Length;
 
     public Aiming (Entity entity) : base (entity)
     {
         _shape = Entity.AddComponent<SdfCircle> ();
         _shape.Color = Color.Red;
-        _shape.Offset = Vector2.UnitX * _length;
         _shape.Radius = 3f;
         _shape.Depth = 0.5f;
     }
 
     public void Draw (RenderManager render)
     {
+        if (_dirty)
+        {
+            _shape.Offset = Vector2.Rotate (Vector2.UnitX, Rotation) * Length;
+            _dirty = false;
+        }
+
         _shape.Draw (render);
     }
 }

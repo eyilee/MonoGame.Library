@@ -7,7 +7,7 @@ namespace Eycraft.Framework.Objects;
 
 public class PolygonShape (Entity entity) : Shape (entity)
 {
-    protected Vector2 _offset = Vector2.Zero;
+    private Vector2 _offset = Vector2.Zero;
 
     public Vector2 Offset
     {
@@ -22,7 +22,7 @@ public class PolygonShape (Entity entity) : Shape (entity)
         }
     }
 
-    protected float _rotation = 0f;
+    private float _rotation = 0f;
 
     public float Rotation
     {
@@ -37,9 +37,9 @@ public class PolygonShape (Entity entity) : Shape (entity)
         }
     }
 
-    protected readonly List<Vector2> _vertices = [];
+    private readonly List<Vector2> _vertices = [];
 
-    public List<Vector2> Vertices => _vertices;
+    public IReadOnlyList<Vector2> Vertices => _vertices;
 
     public void SetVertices (List<Vector2> vertices)
     {
@@ -70,22 +70,22 @@ public class PolygonShape (Entity entity) : Shape (entity)
             _dirty = false;
         }
 
-        render.Enqueue (RenderCommand.CreateSingleTexture (Material.Standard, _mesh, Texture2DResource.Pixel, _depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Material.Standard, _mesh, Texture2DResource.Pixel, Depth));
     }
 
     private void CalculateIndices ()
     {
         List<ushort> triangles = [];
-        List<ushort> indices = new (_vertices.Count);
+        List<ushort> indices = new (Vertices.Count);
 
-        for (int i = 0; i < _vertices.Count; i++)
+        for (int i = 0; i < Vertices.Count; i++)
         {
             indices.Add ((ushort)i);
         }
 
         while (indices.Count > 3)
         {
-            if (!FindEarIndex (_vertices, indices, out int earIndex))
+            if (!FindEarIndex (Vertices, indices, out int earIndex))
             {
                 break;
             }
@@ -94,7 +94,7 @@ public class PolygonShape (Entity entity) : Shape (entity)
             ushort i1 = indices[earIndex];
             ushort i2 = indices[(earIndex + 1) % indices.Count];
 
-            float z = (_vertices[i1] - _vertices[i0]).Cross (_vertices[i2] - _vertices[i0]);
+            float z = (Vertices[i1] - Vertices[i0]).Cross (Vertices[i2] - Vertices[i0]);
             if (z <= 0f)
             {
                 (i1, i2) = (i2, i1);
@@ -110,7 +110,7 @@ public class PolygonShape (Entity entity) : Shape (entity)
             ushort i1 = indices[1];
             ushort i2 = indices[2];
 
-            float z = (_vertices[i1] - _vertices[i0]).Cross (_vertices[i2] - _vertices[i0]);
+            float z = (Vertices[i1] - Vertices[i0]).Cross (Vertices[i2] - Vertices[i0]);
             if (z <= 0f)
             {
                 (i1, i2) = (i2, i1);
@@ -122,7 +122,7 @@ public class PolygonShape (Entity entity) : Shape (entity)
         _mesh.SetIndices ([.. triangles]);
     }
 
-    private static bool FindEarIndex (List<Vector2> vertices, List<ushort> indices, out int index)
+    private static bool FindEarIndex (IReadOnlyList<Vector2> vertices, List<ushort> indices, out int index)
     {
         for (index = 0; index < indices.Count; index++)
         {
@@ -173,12 +173,16 @@ public class PolygonShape (Entity entity) : Shape (entity)
 
     private void CalculateVertices ()
     {
-        List<Vector3> vertices = new (_vertices.Count);
+        Matrix transform = Matrix.CreateRotationZ (Rotation)
+            * Matrix.CreateTranslation (Offset.X, Offset.Y, 0f)
+            * Matrix.CreateRotationZ (Transform.Rotation)
+            * Matrix.CreateTranslation (Transform.Position.X, Transform.Position.Y, 0f);
 
-        foreach (Vector2 vertex in _vertices)
+        List<Vector3> vertices = new (Vertices.Count);
+
+        foreach (Vector2 vertex in Vertices)
         {
-            Vector2 position = Transform.Position + Vector2.Rotate (_offset, Transform.Rotation) + Vector2.Rotate (vertex, Transform.Rotation + _rotation);
-            vertices.Add (new Vector3 (position, _depth));
+            vertices.Add (Vector3.Transform (new Vector3 (vertex, Depth), transform));
         }
 
         _mesh.SetVertices ([.. vertices]);
@@ -186,10 +190,10 @@ public class PolygonShape (Entity entity) : Shape (entity)
 
     private void CalculateUVs ()
     {
-        Vector2 min = _vertices[0];
+        Vector2 min = Vertices[0];
         Vector2 max = min;
 
-        foreach (Vector2 vertex in _vertices)
+        foreach (Vector2 vertex in Vertices)
         {
             min.X = float.Min (min.X, vertex.X);
             min.Y = float.Min (min.Y, vertex.Y);
@@ -200,9 +204,9 @@ public class PolygonShape (Entity entity) : Shape (entity)
         float width = max.X - min.X;
         float height = max.Y - min.Y;
 
-        List<Vector2> uvs = new (_vertices.Count);
+        List<Vector2> uvs = new (Vertices.Count);
 
-        foreach (Vector2 vertex in _vertices)
+        foreach (Vector2 vertex in Vertices)
         {
             float u = width < float.Epsilon ? 0f : (vertex.X - min.X) / width;
             float v = height < float.Epsilon ? 0f : (vertex.Y - min.Y) / height;
@@ -214,11 +218,11 @@ public class PolygonShape (Entity entity) : Shape (entity)
 
     private void CalculateColors ()
     {
-        List<Color> colors = new (_vertices.Count);
+        List<Color> colors = new (Vertices.Count);
 
-        for (int i = 0; i < _vertices.Count; i++)
+        for (int i = 0; i < Vertices.Count; i++)
         {
-            colors.Add (_color);
+            colors.Add (Color);
         }
 
         _mesh.SetColors ([.. colors]);

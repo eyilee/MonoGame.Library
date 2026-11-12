@@ -5,7 +5,7 @@ namespace Eycraft.Framework.Physics;
 
 public class CircleCollider (PhysicsBody physicsBody) : Collider (physicsBody)
 {
-    protected float _radius = 0f;
+    private float _radius = 0f;
 
     public float Radius
     {

@@ -37,10 +37,7 @@ public class Camera
     public float Zoom
     {
         get => _zoom;
-        set
-        {
-            _zoom = float.Clamp (value, _minZoom, _maxZoom);
-        }
+        set => _zoom = float.Clamp (value, _minZoom, _maxZoom);
     }
 
     public float MinZoom

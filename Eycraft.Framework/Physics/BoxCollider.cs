@@ -5,7 +5,7 @@ namespace Eycraft.Framework.Physics;
 
 public class BoxCollider (PhysicsBody physicsBody) : Collider (physicsBody)
 {
-    protected Vector2 _size = Vector2.Zero;
+    private Vector2 _size = Vector2.Zero;
 
     public Vector2 Size
     {

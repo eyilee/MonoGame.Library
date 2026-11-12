@@ -8,26 +8,13 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 {
     private readonly Mesh _mesh = new ();
 
-    private Material? _material;
-
-    public Material? Material
-    {
-        get { return _material; }
-        set
-        {
-            if (!ReferenceEquals (_material, value))
-            {
-                _material = value;
-                _dirty = true;
-            }
-        }
-    }
+    public Material? Material { get; set; }
 
     private TextureRegion? _region;
 
     public TextureRegion? Region
     {
-        get { return _region; }
+        get => _region;
         set
         {
             if (!ReferenceEquals (_region, value))
@@ -43,7 +30,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
     public Vector2 Offset
     {
-        get { return _offset; }
+        get => _offset;
         set
         {
             if (_offset != value)
@@ -58,7 +45,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
     public Vector2? PreferredSize
     {
-        get { return _preferredSize; }
+        get => _preferredSize;
         set
         {
             if (_preferredSize != value)
@@ -74,12 +61,12 @@ public class Sprite (Entity entity) : EntityComponent (entity)
     {
         get
         {
-            if (_preferredSize.HasValue)
+            if (PreferredSize.HasValue)
             {
-                return _preferredSize.Value;
+                return PreferredSize.Value;
             }
 
-            return _region != null ? new Vector2 (_region.Width, _region.Height) : Vector2.Zero;
+            return Region != null ? new Vector2 (Region.Width, Region.Height) : Vector2.Zero;
         }
     }
 
@@ -87,7 +74,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
     public Color Color
     {
-        get { return _color; }
+        get => _color;
         set
         {
             if (_color != value)
@@ -102,7 +89,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
     public float Rotation
     {
-        get { return _rotation; }
+        get => _rotation;
         set
         {
             if (_rotation != value)
@@ -117,13 +104,10 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
     public Vector2 Origin
     {
-        get { return _origin; }
+        get => _origin;
         set
         {
-            if (_originAlignment != OriginAlignment.None)
-            {
-                _originAlignment = OriginAlignment.None;
-            }
+            OriginAlignment = OriginAlignment.None;
 
             if (_origin != value)
             {
@@ -133,11 +117,11 @@ public class Sprite (Entity entity) : EntityComponent (entity)
         }
     }
 
-    private OriginAlignment _originAlignment = OriginAlignment.Center;
+    private OriginAlignment _originAlignment = OriginAlignment.None;
 
     public OriginAlignment OriginAlignment
     {
-        get { return _originAlignment; }
+        get => _originAlignment;
         set
         {
             if (_originAlignment != value)
@@ -153,7 +137,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
     public SpriteEffects SpriteEffects
     {
-        get { return _spriteEffects; }
+        get => _spriteEffects;
         set
         {
             if (_spriteEffects != value)
@@ -168,7 +152,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
     public float Depth
     {
-        get { return _depth; }
+        get => _depth;
         set
         {
             if (_depth != value)
@@ -202,9 +186,9 @@ public class Sprite (Entity entity) : EntityComponent (entity)
         float x = size.X;
         float y = size.Y;
 
-        _origin = _originAlignment switch
+        Origin = OriginAlignment switch
         {
-            OriginAlignment.None => _origin,
+            OriginAlignment.None => Origin,
             OriginAlignment.TopLeft => new Vector2 (0f, 0f),
             OriginAlignment.TopCenter => new Vector2 (x * 0.5f, 0f),
             OriginAlignment.TopRight => new Vector2 (x, 0f),
@@ -214,66 +198,64 @@ public class Sprite (Entity entity) : EntityComponent (entity)
             OriginAlignment.BottomLeft => new Vector2 (0f, y),
             OriginAlignment.BottomCenter => new Vector2 (x * 0.5f, y),
             OriginAlignment.BottomRight => new Vector2 (x, y),
-            _ => _origin
+            _ => Origin
         };
     }
 
     private void PopulateMesh ()
     {
-        Vector2 offset = Vector2.Rotate (_offset, Transform.Rotation);
-        float x = Transform.Position.X + offset.X;
-        float y = Transform.Position.Y + offset.Y;
-
         Vector2 size = Size;
         float w = size.X;
         float h = size.Y;
 
-        float dx = -_origin.X;
-        float dy = -_origin.Y;
+        bool flipHorizontally = SpriteEffects.HasFlag (SpriteEffects.FlipHorizontally);
+        bool flipVertically = SpriteEffects.HasFlag (SpriteEffects.FlipVertically);
 
-        if (_rotation == 0f)
-        {
-            _mesh.SetVertices ([
-                new Vector3 (x + dx, y + dy, _depth),
-                new Vector3 (x + dx + w, y + dy, _depth),
-                new Vector3 (x + dx, y + dy + h, _depth),
-                new Vector3 (x + dx + w, y + dy + h, _depth)
-                ]);
-        }
-        else
-        {
-            float sin = float.Sin (_rotation);
-            float cos = float.Cos (_rotation);
+        Matrix transform = Matrix.CreateTranslation (-Origin.X, -Origin.Y, 0f)
+            * Matrix.CreateScale (flipHorizontally ? -1f : 1f, flipVertically ? -1f : 1f, 1f)
+            * Matrix.CreateRotationZ (Rotation)
+            * Matrix.CreateTranslation (Offset.X, Offset.Y, 0f)
+            * Matrix.CreateRotationZ (Transform.Rotation)
+            * Matrix.CreateTranslation (Transform.Position.X, Transform.Position.Y, 0f);
 
-            _mesh.SetVertices ([
-                new Vector3 (x + dx * cos - dy * sin, y + dx * sin + dy * cos, _depth),
-                new Vector3 (x + (dx + w) * cos - dy * sin, y + (dx + w) * sin + dy * cos, _depth),
-                new Vector3 (x + dx * cos - (dy + h) * sin, y + dx * sin + (dy + h) * cos, _depth),
-                new Vector3 (x + (dx + w) * cos - (dy + h) * sin, y + (dx + w) * sin + (dy + h) * cos, _depth)
-                ]);
+        if (flipHorizontally)
+        {
+            w = -w;
         }
 
-        _mesh.SetColors ([_color, _color, _color, _color]);
+        if (flipVertically)
+        {
+            h = -h;
+        }
+
+        _mesh.SetVertices ([
+            Vector3.Transform (new Vector3 (0f, 0f, Depth), transform),
+            Vector3.Transform (new Vector3 (w, 0f, Depth), transform),
+            Vector3.Transform (new Vector3 (0f, h, Depth), transform),
+            Vector3.Transform (new Vector3 (w, h, Depth), transform)
+        ]);
+
+        _mesh.SetColors ([Color, Color, Color, Color]);
 
         float top = 0f;
         float bottom = 1f;
         float left = 0f;
         float right = 1f;
 
-        if (_region != null)
+        if (Region != null)
         {
-            top = _region.TopTextureCoordinate;
-            bottom = _region.BottomTextureCoordinate;
-            left = _region.LeftTextureCoordinate;
-            right = _region.RightTextureCoordinate;
+            top = Region.TopTextureCoordinate;
+            bottom = Region.BottomTextureCoordinate;
+            left = Region.LeftTextureCoordinate;
+            right = Region.RightTextureCoordinate;
         }
 
-        if (_spriteEffects.HasFlag (SpriteEffects.FlipHorizontally))
+        if (flipHorizontally)
         {
             (left, right) = (right, left);
         }
 
-        if (_spriteEffects.HasFlag (SpriteEffects.FlipVertically))
+        if (flipVertically)
         {
             (top, bottom) = (bottom, top);
         }
@@ -294,11 +276,11 @@ public class Sprite (Entity entity) : EntityComponent (entity)
             _dirty = false;
         }
 
-        _material ??= Material.Sprite;
+        Material ??= Material.Sprite;
 
-        if (_region != null)
+        if (Region != null)
         {
-            render.Enqueue (RenderCommand.CreateSingleTexture (_material, _mesh, _region.Texture, _depth));
+            render.Enqueue (RenderCommand.CreateSingleTexture (Material, _mesh, Region.Texture, Depth));
         }
     }
 }

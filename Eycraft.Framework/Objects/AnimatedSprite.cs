@@ -9,38 +9,33 @@ public class AnimatedSprite (Entity entity) : Sprite (entity)
 
     public SpriteSheet? SpriteSheet
     {
-        get { return _spriteSheet; }
+        get => _spriteSheet;
         set
         {
             if (!ReferenceEquals (_spriteSheet, value))
             {
-                SetSpriteSheet (value);
+                _spriteSheet = value;
+                _currentAnimation = null;
+                _currentFrame = 0;
+                _elapsedTime = 0;
             }
         }
     }
 
     private SpriteAnimation? _currentAnimation;
 
-    private int _currentFrame;
+    private int _currentFrame = 0;
 
-    private float _elapsedTime;
-
-    private void SetSpriteSheet (SpriteSheet? spriteSheet)
-    {
-        _spriteSheet = spriteSheet;
-        _currentAnimation = null;
-        _currentFrame = 0;
-        _elapsedTime = 0;
-    }
+    private float _elapsedTime = 0f;
 
     public void PlayAnimation (string animationName, int time = 0)
     {
-        if (_spriteSheet == null)
+        if (SpriteSheet == null)
         {
             return;
         }
 
-        SpriteAnimation? animation = _spriteSheet.GetAnimation (animationName);
+        SpriteAnimation? animation = SpriteSheet.GetAnimation (animationName);
         if (animation == null || animation.Frames.Count == 0)
         {
             return;

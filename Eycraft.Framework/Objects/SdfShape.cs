@@ -2,7 +2,7 @@
 
 public abstract class SdfShape (Entity entity) : Shape (entity)
 {
-    protected float _thickness = 1f;
+    private float _thickness = 1f;
 
     public float Thickness
     {

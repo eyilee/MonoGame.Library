@@ -21,7 +21,7 @@ public class PhysicsWorld
 
     public void Remove (PhysicsBody body) => _bodies.Remove (body);
 
-    public void Update (float deltaTime)
+    public void Update (GameTime gameTime)
     {
         _quadTree.Reset ();
 

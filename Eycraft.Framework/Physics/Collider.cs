@@ -23,6 +23,8 @@ public abstract class Collider (PhysicsBody physicsBody)
 
     public float Rotation => Transform.Rotation;
 
+    private Vector2 _offset;
+
     public Vector2 Offset
     {
         get => _offset;
@@ -35,6 +37,8 @@ public abstract class Collider (PhysicsBody physicsBody)
             }
         }
     }
+
+    private BoundingBox2D _bounds;
 
     public BoundingBox2D Bounds
     {
@@ -50,7 +54,9 @@ public abstract class Collider (PhysicsBody physicsBody)
         }
     }
 
-    public List<Vector2> Points
+    private readonly List<Vector2> _points = [];
+
+    public IReadOnlyList<Vector2> Points
     {
         get
         {
@@ -63,12 +69,6 @@ public abstract class Collider (PhysicsBody physicsBody)
             return _points;
         }
     }
-
-    private Vector2 _offset;
-
-    private BoundingBox2D _bounds;
-
-    private readonly List<Vector2> _points = [];
 
     private DirtyFlags _dirtyFlags = DirtyFlags.All;
 

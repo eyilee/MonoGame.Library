@@ -9,6 +9,8 @@ namespace Playground.Game.Character;
 
 public class Player : Entity
 {
+    private readonly Text _text;
+
     private readonly AnimatedSprite _sprite;
 
     private readonly PhysicsBody _physicsBody;
@@ -33,14 +35,23 @@ public class Player : Entity
 
     private float _angularVelocity = 0f;
 
+    private float _rotation = 0f;
+
     private Direction _direction = new (Direction.Down);
 
     private bool _isMoving = false;
 
     public Player ()
     {
+        _text = AddComponent<Text> ();
+        _text.Font = Font.Default;
+        _text.Value = "Eyi";
+        _text.OriginAlignment = OriginAlignment.BottomCenter;
+        _text.Offset = new Vector2 (0f, -24f);
+
         _sprite = AddComponent<AnimatedSprite> ();
         _sprite.PreferredSize = new Vector2 (32f, 32f);
+        _sprite.OriginAlignment = OriginAlignment.Center;
         _sprite.Depth = 0.5f;
         _sprite.SpriteSheet = Core.Content.Load<SpriteSheet> ("teemo");
         _sprite.PlayAnimation ("idle_down");
@@ -74,6 +85,7 @@ public class Player : Entity
         ProcessPosition (gameTime);
         ProcessRotation (gameTime);
 
+        _aiming.Rotation = _rotation;
         _trackingCamera.Target = _aiming.Target;
         _trackingCamera.Update (gameTime);
 
@@ -92,14 +104,14 @@ public class Player : Entity
 
         if (acceleration != 0f)
         {
-            float deltaRotation = MathHelper.WrapAngle (Transform.Rotation - float.Atan2 (_velocity.Y, _velocity.X));
+            float deltaRotation = MathHelper.WrapAngle (_rotation - float.Atan2 (_velocity.Y, _velocity.X));
 
             if (float.Abs (deltaRotation) < float.Pi / 6f)
             {
                 _velocity.Rotate (deltaRotation);
             }
 
-            Vector2 direction = new (float.Cos (Transform.Rotation), float.Sin (Transform.Rotation));
+            Vector2 direction = new (float.Cos (_rotation), float.Sin (_rotation));
 
             _velocity += direction * acceleration * deltaTime;
 
@@ -160,7 +172,7 @@ public class Player : Entity
         }
 
         float targetAngle = float.Atan2 (y, x);
-        float delta = MathHelper.WrapAngle (targetAngle - Transform.Rotation);
+        float delta = MathHelper.WrapAngle (targetAngle - _rotation);
 
         _angularVelocity += _angularAcceleration * deltaTime * float.Sign (delta);
         _angularVelocity = float.Clamp (_angularVelocity, -_maxAngularVelocity, _maxAngularVelocity);
@@ -168,12 +180,12 @@ public class Player : Entity
         float maxStep = float.Abs (_angularVelocity * deltaTime);
         float step = float.Clamp (delta, -maxStep, maxStep);
 
-        Transform.Rotation += step;
+        _rotation += step;
     }
 
     private void UpdateActor ()
     {
-        Direction direction = Direction.FromRotation (Transform.Rotation);
+        Direction direction = Direction.FromRotation (_rotation);
         bool isMoving = _velocity.LengthSquared () > 0f;
 
         if (_direction != direction || _isMoving != isMoving)
@@ -203,6 +215,7 @@ public class Player : Entity
 
     public override void Draw (RenderManager render)
     {
+        _text.Draw (render);
         _sprite.Draw (render);
         _aiming.Draw (render);
     }
