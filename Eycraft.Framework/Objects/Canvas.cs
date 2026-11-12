@@ -7,9 +7,9 @@ namespace Eycraft.Framework.Objects;
 
 public class Canvas : Entity, IDisposable
 {
-    public int TextureWidth { get; }
+    public int Width { get; }
 
-    public int TextureHeight { get; }
+    public int Height { get; }
 
     public Vector2 Size
     {
@@ -35,6 +35,12 @@ public class Canvas : Entity, IDisposable
         set => _sprite.Origin = value;
     }
 
+    public OriginAlignment OriginAlignment
+    {
+        get => _sprite.OriginAlignment;
+        set => _sprite.OriginAlignment = value;
+    }
+
     public SpriteEffects SpriteEffects
     {
         get => _sprite.SpriteEffects;
@@ -55,25 +61,24 @@ public class Canvas : Entity, IDisposable
 
     private readonly Color[] _pixels;
 
+    public Color[] Pixels => _pixels;
+
     private bool _dirty = true;
 
     private bool _disposed;
 
-    public Canvas (GraphicsDevice graphicsDevice, string name, int x, int y, int width, int height, int cellSize)
+    public Canvas (GraphicsDevice graphicsDevice, string name, int width, int height, int cellSize)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero (width, nameof (width));
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero (height, nameof (height));
-
-        TextureWidth = width;
-        TextureHeight = height;
+        Width = width;
+        Height = height;
 
         _texture = new Texture2D (graphicsDevice, width, height);
-
         _textureResource = new Texture2DResource (name, _texture);
 
         _sprite = AddComponent<Sprite> ();
         _sprite.Region = new TextureRegion (_textureResource, new Rectangle (0, 0, width, height));
         _sprite.PreferredSize = new Vector2 (width * cellSize, height * cellSize);
+        _sprite.OriginAlignment = OriginAlignment.Center;
 
         _pixels = new Color[width * height];
     }
@@ -98,17 +103,17 @@ public class Canvas : Entity, IDisposable
 
     public Color GetPixel (int index) => _pixels[index];
 
-    public Vector2 GetPosition (int x, int y) => new (x * Size.X / TextureWidth, y * Size.Y / TextureHeight);
+    public Vector2 GetPosition (int x, int y) => new (x * Size.X / Width, y * Size.Y / Height);
 
     public Vector2 GetPosition (int index)
     {
-        int x = index % TextureWidth;
-        int y = index / TextureWidth;
+        int x = index % Width;
+        int y = index / Width;
 
         return GetPosition (x, y);
     }
 
-    private int GetIndex (int x, int y) => y * TextureWidth + x;
+    private int GetIndex (int x, int y) => y * Width + x;
 
     public void Clear (Color? color)
     {
