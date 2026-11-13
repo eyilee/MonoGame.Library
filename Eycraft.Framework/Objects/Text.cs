@@ -88,22 +88,7 @@ public class Text (Entity entity) : EntityComponent (entity)
 
     private Vector2 _origin = Vector2.Zero;
 
-    public Vector2 Origin
-    {
-        get => _origin;
-        set
-        {
-            OriginAlignment = OriginAlignment.None;
-
-            if (_origin != value)
-            {
-                _origin = value;
-                _dirty = true;
-            }
-        }
-    }
-
-    private OriginAlignment _originAlignment = OriginAlignment.None;
+    private OriginAlignment _originAlignment = OriginAlignment.TopLeft;
 
     public OriginAlignment OriginAlignment
     {
@@ -148,6 +133,10 @@ public class Text (Entity entity) : EntityComponent (entity)
         }
     }
 
+    public short SortingLayer { get; set; } = 0;
+
+    public short SortingOrder { get; set; } = 0;
+
     private bool _dirty = true;
 
     public override void Awake ()
@@ -170,9 +159,9 @@ public class Text (Entity entity) : EntityComponent (entity)
         float x = size.X;
         float y = size.Y;
 
-        Origin = OriginAlignment switch
+        _origin = OriginAlignment switch
         {
-            OriginAlignment.None => Origin,
+            OriginAlignment.None => _origin,
             OriginAlignment.TopLeft => new Vector2 (0f, 0f),
             OriginAlignment.TopCenter => new Vector2 (x * 0.5f, 0f),
             OriginAlignment.TopRight => new Vector2 (x, 0f),
@@ -182,7 +171,7 @@ public class Text (Entity entity) : EntityComponent (entity)
             OriginAlignment.BottomLeft => new Vector2 (0f, y),
             OriginAlignment.BottomCenter => new Vector2 (x * 0.5f, y),
             OriginAlignment.BottomRight => new Vector2 (x, y),
-            _ => Origin
+            _ => _origin
         };
     }
 
@@ -199,7 +188,7 @@ public class Text (Entity entity) : EntityComponent (entity)
         bool flipHorizontally = SpriteEffects.HasFlag (SpriteEffects.FlipHorizontally);
         bool flipVertically = SpriteEffects.HasFlag (SpriteEffects.FlipVertically);
 
-        Matrix transform = Matrix.CreateTranslation (-Origin.X, -Origin.Y, 0f)
+        Matrix transform = Matrix.CreateTranslation (-_origin.X, -_origin.Y, 0f)
             * Matrix.CreateScale (flipHorizontally ? -1f : 1f, flipVertically ? -1f : 1f, 1f)
             * Matrix.CreateRotationZ (Rotation)
             * Matrix.CreateTranslation (Offset.X, Offset.Y, 0f)
@@ -322,7 +311,7 @@ public class Text (Entity entity) : EntityComponent (entity)
 
         if (Font != null)
         {
-            render.Enqueue (RenderCommand.CreateSingleTexture (Material, _mesh, Font.Texture, Depth));
+            render.Enqueue (RenderCommand.CreateSingleTexture (Material, _mesh, Font.Texture, SortingLayer, SortingOrder));
         }
     }
 }

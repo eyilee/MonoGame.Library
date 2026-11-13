@@ -15,6 +15,7 @@ public class Origin : Entity
         _shape.Thickness = 2f;
         _shape.Color = Color.Green;
         _shape.Radius = 5f;
+        _shape.SortingLayer = 1;
     }
 
     public override void Draw (RenderManager render)

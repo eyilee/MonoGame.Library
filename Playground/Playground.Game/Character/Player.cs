@@ -52,7 +52,6 @@ public class Player : Entity
         _sprite = AddComponent<AnimatedSprite> ();
         _sprite.PreferredSize = new Vector2 (32f, 32f);
         _sprite.OriginAlignment = OriginAlignment.Center;
-        _sprite.Depth = 0.5f;
         _sprite.SpriteSheet = Core.Content.Load<SpriteSheet> ("teemo");
         _sprite.PlayAnimation ("idle_down");
 

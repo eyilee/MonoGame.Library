@@ -2,15 +2,17 @@
 
 namespace Eycraft.Framework.Graphics;
 
-public class SpriteMaterial (string name, SpriteEffect effect, RenderBatcher renderBatcher,
-    BlendState? blendState = null,
-    int samplerSlot = 0,
-    SamplerState? samplerState = null,
-    DepthStencilState? depthStencilState = null,
-    RasterizerState? rasterizerState = null)
-    : Material (name, effect, renderBatcher, blendState, samplerSlot, samplerState, depthStencilState ?? DepthStencilState.DepthRead, rasterizerState)
+public class SpriteMaterial : Material
 {
-    private readonly SpriteEffect _spriteEffect = effect;
+    private readonly SpriteEffect _spriteEffect;
+
+    public SpriteMaterial (string name, SpriteEffect effect, RenderBatcher renderBatcher)
+        : base (name, effect, renderBatcher)
+    {
+        SamplerState = SamplerState.PointClamp;
+
+        _spriteEffect = effect;
+    }
 
     public override void OnApply ()
     {

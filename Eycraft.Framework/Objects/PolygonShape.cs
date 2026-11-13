@@ -70,7 +70,7 @@ public class PolygonShape (Entity entity) : Shape (entity)
             _dirty = false;
         }
 
-        render.Enqueue (RenderCommand.CreateSingleTexture (Material.Standard, _mesh, Texture2DResource.Pixel, Depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Material.Standard, _mesh, Texture2DResource.Pixel, SortingLayer, SortingOrder));
     }
 
     private void CalculateIndices ()

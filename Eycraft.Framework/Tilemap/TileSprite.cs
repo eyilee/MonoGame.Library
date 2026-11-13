@@ -70,7 +70,7 @@ public class TileSprite
 
     private Vector2 _origin = Vector2.Zero;
 
-    private OriginAlignment _originAlignment = OriginAlignment.Center;
+    private OriginAlignment _originAlignment = OriginAlignment.TopLeft;
 
     public OriginAlignment OriginAlignment
     {
@@ -101,12 +101,11 @@ public class TileSprite
         }
     }
 
-    private bool _dirty = true;
+    public short SortingLayer { get; set; } = 0;
 
-    public TileSprite ()
-    {
-        AlignOrigin ();
-    }
+    public short SortingOrder { get; set; } = 0;
+
+    private bool _dirty = true;
 
     private void AlignOrigin ()
     {
@@ -178,7 +177,7 @@ public class TileSprite
 
         if (Region != null)
         {
-            render.Enqueue (RenderCommand.CreateSingleTexture (Material.Sprite, _mesh, Region.Texture, Depth));
+            render.Enqueue (RenderCommand.CreateSingleTexture (Material.Sprite, _mesh, Region.Texture, SortingLayer, SortingOrder));
         }
     }
 }

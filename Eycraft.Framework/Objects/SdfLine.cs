@@ -86,6 +86,6 @@ public class SdfLine (Entity entity) : SdfShape (entity)
             _dirty = false;
         }
 
-        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfLine, _mesh, Depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfLine, _mesh, SortingLayer, SortingOrder));
     }
 }

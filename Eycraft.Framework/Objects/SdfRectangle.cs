@@ -72,6 +72,6 @@ public class SdfRectangle (Entity entity) : SdfShape (entity)
             _dirty = false;
         }
 
-        render.Enqueue (RenderCommand.CreateSingleTexture (Filled ? Material.SdfFilledRectangle : Material.SdfRectangle, _mesh, Depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Filled ? Material.SdfFilledRectangle : Material.SdfRectangle, _mesh, SortingLayer, SortingOrder));
     }
 }

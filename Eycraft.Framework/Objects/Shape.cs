@@ -37,6 +37,10 @@ public abstract class Shape (Entity entity) : EntityComponent (entity)
         }
     }
 
+    public short SortingLayer { get; set; } = 0;
+
+    public short SortingOrder { get; set; } = 0;
+
     protected bool _dirty = true;
 
     public override void Awake ()

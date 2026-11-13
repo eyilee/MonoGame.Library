@@ -105,6 +105,6 @@ public class SdfParabola (Entity entity) : SdfShape (entity)
             _dirty = false;
         }
 
-        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfParabola, _mesh, Depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Material.SdfParabola, _mesh, SortingLayer, SortingOrder));
     }
 }

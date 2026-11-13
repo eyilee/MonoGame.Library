@@ -71,7 +71,7 @@ public class Tilemap
         _tileWidth = tileWidth;
         _tileHeight = tileHeight;
 
-        foreach ((Point chunkIndex, TilemapChunk chunk) in _chunks)
+        foreach ((_, TilemapChunk chunk) in _chunks)
         {
             chunk.SetTileSize (tileWidth, tileHeight);
         }

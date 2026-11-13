@@ -13,17 +13,21 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
 
     public Effect Effect { get; }
 
-    public BlendState BlendState { get; }
+    public RenderBatcher RenderBatcher { get; set; }
 
-    public int SamplerSlot { get; }
+    public ushort RenderQueue { get; set; } = 3000;
 
-    public SamplerState SamplerState { get; }
+    public RenderQueueType RenderQueueType { get; set; } = RenderQueueType.Transparent;
 
-    public DepthStencilState DepthStencilState { get; }
+    public BlendState BlendState { get; set; } = BlendState.AlphaBlend;
 
-    public RasterizerState RasterizerState { get; }
+    public int SamplerSlot { get; set; } = 0;
 
-    public RenderBatcher RenderBatcher { get; }
+    public SamplerState SamplerState { get; set; } = SamplerState.LinearClamp;
+
+    public DepthStencilState DepthStencilState { get; set; } = DepthStencilState.DepthRead;
+
+    public RasterizerState RasterizerState { get; set; } = RasterizerState.CullCounterClockwise;
 
     public MaterialPropertyBlock PropertyBlock { get; } = new ();
 
@@ -31,22 +35,12 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
 
     private bool _disposed;
 
-    public Material (string name, Effect effect, RenderBatcher renderBatcher,
-        BlendState? blendState = null,
-        int samplerSlot = 0,
-        SamplerState? samplerState = null,
-        DepthStencilState? depthStencilState = null,
-        RasterizerState? rasterizerState = null)
+    public Material (string name, Effect effect, RenderBatcher renderBatcher)
     {
         Id = Regist (name, this);
         Name = name;
         Effect = effect;
         RenderBatcher = renderBatcher;
-        BlendState = blendState ?? BlendState.AlphaBlend;
-        SamplerSlot = samplerSlot;
-        SamplerState = samplerState ?? SamplerState.LinearClamp;
-        DepthStencilState = depthStencilState ?? DepthStencilState.None;
-        RasterizerState = rasterizerState ?? RasterizerState.CullCounterClockwise;
 
         foreach (EffectParameter? parameter in Effect.Parameters)
         {
@@ -68,6 +62,8 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
 
         return parameter;
     }
+
+    public EffectParameter? GetParameter (string name) => GetParameter (MaterialPropertyIds.GetId (name));
 
     public virtual void OnApply () { }
 
@@ -127,7 +123,7 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
     {
         get
         {
-            _sprite ??= new SpriteMaterial ("Sprite", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Sprite, samplerState: SamplerState.PointClamp);
+            _sprite ??= new SpriteMaterial ("Sprite", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Sprite);
 
             return _sprite;
         }
@@ -139,7 +135,10 @@ public class Material : ResourceRegistry<Material>, IResource, IDisposable
     {
         get
         {
-            _spriteFont ??= new SpriteMaterial ("SpriteFont", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Standard, samplerState: SamplerState.PointClamp);
+            _spriteFont ??= new SpriteMaterial ("SpriteFont", new SpriteEffect (Core.GraphicsDevice), RenderBatchers.Standard)
+            {
+                SamplerState = SamplerState.LinearClamp
+            };
 
             return _spriteFont;
         }

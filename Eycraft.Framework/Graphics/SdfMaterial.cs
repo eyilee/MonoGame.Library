@@ -7,15 +7,10 @@ public class SdfMaterial : Material
 {
     private readonly EffectParameter _worldViewProjection;
 
-    public SdfMaterial (string name, Effect effect, RenderBatcher renderBatcher,
-        BlendState? blendState = null,
-        int samplerSlot = 0,
-        SamplerState? samplerState = null,
-        DepthStencilState? depthStencilState = null,
-        RasterizerState? rasterizerState = null)
-        : base (name, effect, renderBatcher, blendState, samplerSlot, samplerState, depthStencilState ?? DepthStencilState.DepthRead, rasterizerState)
+    public SdfMaterial (string name, Effect effect, RenderBatcher renderBatcher)
+        : base (name, effect, renderBatcher)
     {
-        _worldViewProjection = GetParameter (MaterialPropertyIds.GetId ("WorldViewProjection")) ?? throw new NullReferenceException ();
+        _worldViewProjection = GetParameter ("WorldViewProjection") ?? throw new NullReferenceException ();
     }
 
     public override void OnApply ()

@@ -48,7 +48,6 @@ public class Aiming : EntityComponent
         _shape = Entity.AddComponent<SdfCircle> ();
         _shape.Color = Color.Red;
         _shape.Radius = 3f;
-        _shape.Depth = 0.5f;
     }
 
     public void Draw (RenderManager render)

@@ -22,7 +22,7 @@ public class RenderManager
             {
                 for (int i = 0; i < command.Textures.Length && i < 4; i++)
                 {
-                    TextureKey |= ((ulong)command.Textures[i].Id << (i * 16));
+                    TextureKey |= (ulong)command.Textures[i].Id << (i * 16);
                 }
             }
         }
@@ -61,35 +61,49 @@ public class RenderManager
         }
     }
 
-    private readonly struct SortKey (int index, ushort depth, BatchKey batchKey) : IComparable<SortKey>
+    private readonly struct RenderKey (int index, in RenderCommand command) : IComparable<RenderKey>
     {
         public int Index { get; } = index;
 
-        public ushort Depth { get; } = depth;
+        public ushort RenderQueue { get; } = command.Material.RenderQueue;
 
-        public BatchKey BatchKey { get; } = batchKey;
+        public RenderQueueType RenderQueueType { get; } = command.Material.RenderQueueType;
 
-        public readonly int CompareTo (SortKey other)
+        public uint SortingKey { get; } = command.SortingKey;
+
+        public BatchKey BatchKey { get; } = new BatchKey (command);
+
+        public readonly int CompareTo (RenderKey other)
         {
-            int value = Depth.CompareTo (other.Depth);
+            int value = RenderQueue.CompareTo (other.RenderQueue);
 
             if (value != 0)
             {
                 return value;
             }
 
-            value = BatchKey.CompareTo (other.BatchKey);
+            value = SortingKey.CompareTo (other.SortingKey);
 
             if (value != 0)
             {
                 return value;
+            }
+
+            if (RenderQueueType == RenderQueueType.Opaque)
+            {
+                value = BatchKey.CompareTo (other.BatchKey);
+
+                if (value != 0)
+                {
+                    return value;
+                }
             }
 
             return Index.CompareTo (other.Index);
         }
     }
 
-    private SortKey[] _sortKeys = new SortKey[32];
+    private RenderKey[] _keys = new RenderKey[32];
 
     private RenderCommand[] _commands = new RenderCommand[32];
 
@@ -100,18 +114,18 @@ public class RenderManager
         EnsureArrayCapacity ();
 
         int index = _count++;
-        _sortKeys[index] = new SortKey (index, command.Depth, new BatchKey (command));
+        _keys[index] = new RenderKey (index, command);
         _commands[index] = command;
     }
 
     private void EnsureArrayCapacity ()
     {
-        if (_count < _sortKeys.Length)
+        if (_count < _keys.Length)
         {
             return;
         }
 
-        Array.Resize (ref _sortKeys, _sortKeys.Length * 2);
+        Array.Resize (ref _keys, _keys.Length * 2);
         Array.Resize (ref _commands, _commands.Length * 2);
     }
 
@@ -122,20 +136,20 @@ public class RenderManager
             return;
         }
 
-        Array.Sort (_sortKeys, 0, _count);
+        Array.Sort (_keys, 0, _count);
 
         int batchStartIndex = 0;
 
         while (batchStartIndex < _count)
         {
-            ref SortKey firstKey = ref _sortKeys[batchStartIndex];
+            ref RenderKey firstKey = ref _keys[batchStartIndex];
             ref RenderCommand firstCommand = ref _commands[firstKey.Index];
 
             int batchEndIndex = batchStartIndex + 1;
 
             while (batchEndIndex < _count)
             {
-                ref SortKey nextKey = ref _sortKeys[batchEndIndex];
+                ref RenderKey nextKey = ref _keys[batchEndIndex];
                 ref RenderCommand nextCommand = ref _commands[nextKey.Index];
 
                 if (!CanBatch (firstKey, nextKey))
@@ -150,7 +164,7 @@ public class RenderManager
 
             for (int i = batchStartIndex; i < batchEndIndex; i++)
             {
-                int commandIndex = _sortKeys[i].Index;
+                int commandIndex = _keys[i].Index;
                 ref RenderCommand command = ref _commands[commandIndex];
 
                 if (!batcher.CanBatch (command.Mesh))
@@ -169,7 +183,7 @@ public class RenderManager
         _count = 0;
     }
 
-    private static bool CanBatch (in SortKey firstKey, in SortKey nextKey)
+    private static bool CanBatch (in RenderKey firstKey, in RenderKey nextKey)
     {
         return firstKey.BatchKey.Equals (nextKey.BatchKey);
     }

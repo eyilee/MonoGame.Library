@@ -11,6 +11,7 @@ public class Grass : Entity
     public Grass (TextureRegion region)
     {
         _sprite = AddComponent<Sprite> ();
+        _sprite.OriginAlignment = OriginAlignment.Center;
         _sprite.Region = region;
     }
 

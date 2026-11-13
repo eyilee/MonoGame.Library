@@ -117,7 +117,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
         }
     }
 
-    private OriginAlignment _originAlignment = OriginAlignment.None;
+    private OriginAlignment _originAlignment = OriginAlignment.TopLeft;
 
     public OriginAlignment OriginAlignment
     {
@@ -163,6 +163,10 @@ public class Sprite (Entity entity) : EntityComponent (entity)
         }
     }
 
+    public short SortingLayer { get; set; } = 0;
+
+    public short SortingOrder { get; set; } = 0;
+
     private bool _dirty = true;
 
     public override void Awake ()
@@ -204,6 +208,11 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
     private void PopulateMesh ()
     {
+        if (Region == null)
+        {
+            return;
+        }
+
         Vector2 size = Size;
         float w = size.X;
         float h = size.Y;
@@ -237,18 +246,10 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
         _mesh.SetColors ([Color, Color, Color, Color]);
 
-        float top = 0f;
-        float bottom = 1f;
-        float left = 0f;
-        float right = 1f;
-
-        if (Region != null)
-        {
-            top = Region.TopTextureCoordinate;
-            bottom = Region.BottomTextureCoordinate;
-            left = Region.LeftTextureCoordinate;
-            right = Region.RightTextureCoordinate;
-        }
+        float top = Region.TopTextureCoordinate;
+        float bottom = Region.BottomTextureCoordinate;
+        float left = Region.LeftTextureCoordinate;
+        float right = Region.RightTextureCoordinate;
 
         if (flipHorizontally)
         {
@@ -280,7 +281,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
 
         if (Region != null)
         {
-            render.Enqueue (RenderCommand.CreateSingleTexture (Material, _mesh, Region.Texture, Depth));
+            render.Enqueue (RenderCommand.CreateSingleTexture (Material, _mesh, Region.Texture, SortingLayer, SortingOrder));
         }
     }
 }

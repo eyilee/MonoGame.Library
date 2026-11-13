@@ -72,6 +72,6 @@ public class SdfCircle (Entity entity) : SdfShape (entity)
             _dirty = false;
         }
 
-        render.Enqueue (RenderCommand.CreateSingleTexture (Filled ? Material.SdfFilledCircle : Material.SdfCircle, _mesh, Depth));
+        render.Enqueue (RenderCommand.CreateSingleTexture (Filled ? Material.SdfFilledCircle : Material.SdfCircle, _mesh, SortingLayer, SortingOrder));
     }
 }
