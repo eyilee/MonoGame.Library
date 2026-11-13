@@ -16,6 +16,10 @@ public class Tilemap
 
     private int _tileHeight;
 
+    private Vector2 _origin = Vector2.Zero;
+
+    private OriginAlignment _originAlignment = OriginAlignment.TopLeft;
+
     public Tilemap (int chunkWidth, int chunkHeight, int tileWidth, int tileHeight)
     {
         SetChunkSize (chunkWidth, chunkHeight);
@@ -75,6 +79,41 @@ public class Tilemap
         {
             chunk.SetTileSize (tileWidth, tileHeight);
         }
+
+        AlignOrigin ();
+    }
+
+    private void AlignOrigin ()
+    {
+        float x = _tileWidth;
+        float y = _tileHeight;
+
+        _origin = _originAlignment switch
+        {
+            OriginAlignment.None => _origin,
+            OriginAlignment.TopLeft => new Vector2 (0f, 0f),
+            OriginAlignment.TopCenter => new Vector2 (x * 0.5f, 0f),
+            OriginAlignment.TopRight => new Vector2 (x, 0f),
+            OriginAlignment.CenterLeft => new Vector2 (0f, y * 0.5f),
+            OriginAlignment.Center => new Vector2 (x * 0.5f, y * 0.5f),
+            OriginAlignment.CenterRight => new Vector2 (x, y * 0.5f),
+            OriginAlignment.BottomLeft => new Vector2 (0f, y),
+            OriginAlignment.BottomCenter => new Vector2 (x * 0.5f, y),
+            OriginAlignment.BottomRight => new Vector2 (x, y),
+            _ => _origin
+        };
+    }
+
+    public void SetOriginAlignment (OriginAlignment originAlignment)
+    {
+        _originAlignment = originAlignment;
+
+        foreach ((_, TilemapChunk chunk) in _chunks)
+        {
+            chunk.SetOriginAlignment (originAlignment);
+        }
+
+        AlignOrigin ();
     }
 
     public void SetTile (int x, int y, Tile tile)
@@ -92,6 +131,10 @@ public class Tilemap
         int localY = y % _chunkHeight;
         chunk.SetTile (localX, localY, tile);
     }
+
+    public Vector2 GetPosition (int x, int y) => new (x * _tileWidth, y * _tileHeight);
+
+    public Vector2 GetCenterPosition (int x, int y) => new (x * _tileWidth - _origin.X + _tileWidth * 0.5f, y * _tileHeight - _origin.Y + _tileHeight * 0.5f);
 
     public void Draw (RenderManager render)
     {

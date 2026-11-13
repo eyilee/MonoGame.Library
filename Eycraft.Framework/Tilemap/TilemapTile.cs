@@ -15,10 +15,15 @@ public class TilemapTile (int x, int y)
 
     public Tile? Tile => _tile;
 
-    public void SetSize (int width, int height)
+    public void SetSize (float width, float height)
     {
         _tileSprite.Position = new Vector2 (X * width, Y * height);
         _tileSprite.Size = new Vector2 (width, height);
+    }
+
+    public void SetOriginAlignment (OriginAlignment originAlignment)
+    {
+        _tileSprite.OriginAlignment = originAlignment;
     }
 
     public void SetTile (Tile? tile)

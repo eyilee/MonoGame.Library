@@ -34,7 +34,7 @@ public class GenerateStepObject (GameWorld gameWorld) : GenerateStep<GameWorld, 
                 if (random.NextDouble () < 0.05)
                 {
                     Grass grass = new (grassRegion);
-                    grass.Transform.Position = new (x * 32, y * 32);
+                    grass.Transform.Position = TileWorld.GroundTilemap.GetCenterPosition (x, y);
                     TileWorld.AddEntity (grass);
                 }
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Eycraft.Framework.Graphics;
+using System;
 
 namespace Eycraft.Framework.Tilemap;
 
@@ -14,11 +15,11 @@ public class TilemapChunk (int x, int y, int width, int height)
 
     public TilemapTile?[] ChunkTiles { get; } = new TilemapTile?[width * height];
 
-    private int _tileWidth;
+    private float _tileWidth;
 
-    private int _tileHeight;
+    private float _tileHeight;
 
-    public void SetTileSize (int tileWidth, int tileHeight)
+    public void SetTileSize (float tileWidth, float tileHeight)
     {
         _tileWidth = tileWidth;
         _tileHeight = tileHeight;
@@ -26,6 +27,14 @@ public class TilemapChunk (int x, int y, int width, int height)
         foreach (TilemapTile? chunkTile in ChunkTiles)
         {
             chunkTile?.SetSize (tileWidth, tileHeight);
+        }
+    }
+
+    public void SetOriginAlignment (OriginAlignment originAlignment)
+    {
+        foreach (TilemapTile? chunkTile in ChunkTiles)
+        {
+            chunkTile?.SetOriginAlignment (originAlignment);
         }
     }
 

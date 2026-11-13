@@ -112,6 +112,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
             if (_origin != value)
             {
                 _origin = value;
+                AlignOrigin ();
                 _dirty = true;
             }
         }
@@ -190,7 +191,7 @@ public class Sprite (Entity entity) : EntityComponent (entity)
         float x = size.X;
         float y = size.Y;
 
-        Origin = OriginAlignment switch
+        _origin = OriginAlignment switch
         {
             OriginAlignment.None => Origin,
             OriginAlignment.TopLeft => new Vector2 (0f, 0f),
