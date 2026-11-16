@@ -14,7 +14,6 @@ struct VSInput
     float3 WorldPos : TEXCOORD0;
     float4 Rotation_Scale_Thickness : TEXCOORD1;
     float4 ShapeData0 : TEXCOORD2;
-    float4 ShapeData1 : TEXCOORD3;
     float4 Color : COLOR0;
 };
 
@@ -24,7 +23,6 @@ struct PSInput
     float2 LocalPos : TEXCOORD0;
     float4 Rotation_Scale_Thickness : TEXCOORD1;
     float4 ShapeData0 : TEXCOORD2;
-    float4 ShapeData1 : TEXCOORD3;
     float4 Color : COLOR0;
 };
 
@@ -50,7 +48,6 @@ PSInput MainVS (VSInput input)
     o.LocalPos = localPos;
     o.Rotation_Scale_Thickness = input.Rotation_Scale_Thickness;
     o.ShapeData0 = input.ShapeData0;
-    o.ShapeData1 = input.ShapeData1;
     o.Color = float4 (input.Color.rgb * input.Color.a, input.Color.a);
 
     return o;
