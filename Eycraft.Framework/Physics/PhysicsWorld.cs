@@ -13,7 +13,7 @@ public class PhysicsWorld
 
     private Dictionary<ColliderPair, Collision> _currentCollisions = [];
 
-    private readonly QuadTree _quadTree = new (4, 4, new BoundingBox2D (new Vector2 (-1000f, -1000f), new Vector2 (1000f, 1000f)));
+    private readonly SpatialIndex _spatialIndex = new (4, 4, new BoundingBox2D (new Vector2 (-1000f, -1000f), new Vector2 (1000f, 1000f)));
 
     private PhysicsResolver Resolver { get; } = new ();
 
@@ -23,21 +23,21 @@ public class PhysicsWorld
 
     public void Update (GameTime gameTime)
     {
-        _quadTree.Reset ();
+        _spatialIndex.Clear ();
 
         foreach (PhysicsBody body in _bodies)
         {
             foreach (Collider collider in body.Colliders)
             {
-                if (!_quadTree.TryInsert (collider))
+                if (!_spatialIndex.TryInsert (collider))
                 {
-                    _quadTree.Insert (collider);
+                    _spatialIndex.InsertAtRoot (collider);
                 }
             }
         }
 
         _potentialCollisions.Clear ();
-        _quadTree.GetPotentialCollisions (_potentialCollisions);
+        _spatialIndex.GetPotentialCollisions (_potentialCollisions);
 
         _currentCollisions.Clear ();
 
