@@ -80,21 +80,21 @@ public class Cluster : Entity
         physicsWorld.Remove (_physicsBody);
     }
 
-    private void OnCollisionEnter (PhysicsBodyCollision collision)
+    private void OnCollisionEnter (Collision collision)
     {
         _circleShape.Color = Color.Red;
         _rectangleShape.Color = Color.Red;
         _polygonShape.Color = Color.Red;
     }
 
-    private void OnCollisionStay (PhysicsBodyCollision collision)
+    private void OnCollisionStay (Collision collision)
     {
         _circleShape.Color = Color.Red;
         _rectangleShape.Color = Color.Red;
         _polygonShape.Color = Color.Red;
     }
 
-    private void OnCollisionExit (PhysicsBodyCollision collision)
+    private void OnCollisionExit (Collision collision)
     {
         _circleShape.Color = Color.White;
         _rectangleShape.Color = Color.White;

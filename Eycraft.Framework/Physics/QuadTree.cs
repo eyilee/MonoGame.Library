@@ -93,7 +93,7 @@ internal class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Qu
         return new QuadTree (depth, capacity, bounds, _pool);
     }
 
-    public void GetCollisions (HashSet<ColliderCollision> collisions, List<Collider>? ancestorColliders = null)
+    public void GetPotentialCollisions (HashSet<ColliderPair> potentialCollisions, List<Collider>? ancestorColliders = null)
     {
         if (ancestorColliders != null)
         {
@@ -108,7 +108,7 @@ internal class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Qu
 
                     if (collider.Bounds.Intersects (ancestorCollider.Bounds))
                     {
-                        collisions.Add (new ColliderCollision (collider, ancestorCollider));
+                        potentialCollisions.Add (new (collider, ancestorCollider));
                     }
                 }
             }
@@ -129,7 +129,7 @@ internal class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Qu
 
                 if (collider1.Bounds.Intersects (collider2.Bounds))
                 {
-                    collisions.Add (new ColliderCollision (collider1, collider2));
+                    potentialCollisions.Add (new (collider1, collider2));
                 }
             }
         }
@@ -143,7 +143,7 @@ internal class QuadTree (int depth, int capacity, BoundingBox2D bounds, Stack<Qu
 
         foreach (QuadTree quadTree in _nodes)
         {
-            quadTree.GetCollisions (collisions, nextAncestorColliders);
+            quadTree.GetPotentialCollisions (potentialCollisions, nextAncestorColliders);
         }
     }
 

@@ -18,11 +18,11 @@ public class PhysicsBody : EntityComponent
 
     public IReadOnlyList<Collider> Colliders => _colliders.Colliders;
 
-    public event Action<PhysicsBodyCollision>? OnCollisionEnter;
+    public event Action<Collision>? OnCollisionEnter;
 
-    public event Action<PhysicsBodyCollision>? OnCollisionStay;
+    public event Action<Collision>? OnCollisionStay;
 
-    public event Action<PhysicsBodyCollision>? OnCollisionExit;
+    public event Action<Collision>? OnCollisionExit;
 
     private readonly ColliderContainer _colliders;
 
@@ -63,9 +63,9 @@ public class PhysicsBody : EntityComponent
 
     public bool IsStatic => Type == BodyType.Static;
 
-    public void InvokeCollisionEnter (PhysicsBodyCollision collision) => OnCollisionEnter?.Invoke (collision);
+    public void InvokeCollisionEnter (Collision collision) => OnCollisionEnter?.Invoke (collision);
 
-    public void InvokeCollisionStay (PhysicsBodyCollision collision) => OnCollisionStay?.Invoke (collision);
+    public void InvokeCollisionStay (Collision collision) => OnCollisionStay?.Invoke (collision);
 
-    public void InvokeCollisionExit (PhysicsBodyCollision collision) => OnCollisionExit?.Invoke (collision);
+    public void InvokeCollisionExit (Collision collision) => OnCollisionExit?.Invoke (collision);
 }

@@ -7,11 +7,11 @@ public class PhysicsWorld
 {
     private readonly HashSet<PhysicsBody> _bodies = [];
 
-    private readonly HashSet<ColliderCollision> _colliderCollisions = [];
+    private readonly HashSet<ColliderPair> _potentialCollisions = [];
 
-    private HashSet<PhysicsBodyCollision> _previousBodyCollisions = [];
+    private Dictionary<ColliderPair, Collision> _previousCollisions = [];
 
-    private HashSet<PhysicsBodyCollision> _currentBodyCollisions = [];
+    private Dictionary<ColliderPair, Collision> _currentCollisions = [];
 
     private readonly QuadTree _quadTree = new (4, 4, new BoundingBox2D (new Vector2 (-1000f, -1000f), new Vector2 (1000f, 1000f)));
 
@@ -36,42 +36,49 @@ public class PhysicsWorld
             }
         }
 
-        _colliderCollisions.Clear ();
-        _quadTree.GetCollisions (_colliderCollisions);
-        _colliderCollisions.RemoveWhere (x => !x.Intersects);
+        _potentialCollisions.Clear ();
+        _quadTree.GetPotentialCollisions (_potentialCollisions);
 
-        Resolver.Resolve (_colliderCollisions);
+        _currentCollisions.Clear ();
 
-        _currentBodyCollisions.Clear ();
-
-        foreach (ColliderCollision collision in _colliderCollisions)
+        foreach (ColliderPair pairKey in _potentialCollisions)
         {
-            _currentBodyCollisions.Add (new PhysicsBodyCollision (collision.Self.PhysicsBody, collision.Other.PhysicsBody));
+            (Collider self, Collider other) = pairKey;
+
+            if (self.TryGetContacts (other, out Contact selfContact, out Contact otherContact))
+            {
+                if (!_currentCollisions.ContainsKey (pairKey))
+                {
+                    _currentCollisions.Add (pairKey, new Collision (self, other, selfContact, otherContact));
+                }
+            }
         }
 
-        foreach (PhysicsBodyCollision collision in _currentBodyCollisions)
+        Resolver.Resolve (_currentCollisions);
+
+        foreach ((ColliderPair pairKey, Collision collision) in _currentCollisions)
         {
-            if (_previousBodyCollisions.Contains (collision))
+            if (_previousCollisions.ContainsKey (pairKey))
             {
-                collision.Self.InvokeCollisionStay (collision);
-                collision.Other.InvokeCollisionStay (collision.Reverse);
+                collision.Self.PhysicsBody.InvokeCollisionStay (collision);
+                collision.Other.PhysicsBody.InvokeCollisionStay (new Collision (collision.Other, collision.Self, collision.OtherContact, collision.SelfContact));
             }
             else
             {
-                collision.Self.InvokeCollisionEnter (collision);
-                collision.Other.InvokeCollisionEnter (collision.Reverse);
+                collision.Self.PhysicsBody.InvokeCollisionEnter (collision);
+                collision.Other.PhysicsBody.InvokeCollisionEnter (new Collision (collision.Other, collision.Self, collision.OtherContact, collision.SelfContact));
             }
         }
 
-        foreach (PhysicsBodyCollision collision in _previousBodyCollisions)
+        foreach ((ColliderPair pairKey, Collision collision) in _previousCollisions)
         {
-            if (!_currentBodyCollisions.Contains (collision))
+            if (!_currentCollisions.ContainsKey (pairKey))
             {
-                collision.Self.InvokeCollisionExit (collision);
-                collision.Other.InvokeCollisionExit (collision.Reverse);
+                collision.Self.PhysicsBody.InvokeCollisionExit (collision);
+                collision.Other.PhysicsBody.InvokeCollisionExit (new Collision (collision.Other, collision.Self, collision.OtherContact, collision.SelfContact));
             }
         }
 
-        (_currentBodyCollisions, _previousBodyCollisions) = (_previousBodyCollisions, _currentBodyCollisions);
+        (_currentCollisions, _previousCollisions) = (_previousCollisions, _currentCollisions);
     }
 }

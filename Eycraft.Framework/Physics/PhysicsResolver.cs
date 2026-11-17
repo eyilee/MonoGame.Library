@@ -7,18 +7,18 @@ internal class PhysicsResolver
 {
     public int Iterations { get; set; } = 4;
 
-    public void Resolve (HashSet<ColliderCollision> collisions)
+    public void Resolve (Dictionary<ColliderPair, Collision> collisions)
     {
         for (int i = 0; i < Iterations; i++)
         {
-            foreach (ColliderCollision collision in collisions)
+            foreach ((ColliderPair pairKey, Collision collision) in collisions)
             {
                 Resolve (collision);
             }
         }
     }
 
-    private static void Resolve (ColliderCollision collision)
+    private static void Resolve (Collision collision)
     {
         Collider self = collision.Self;
         Collider other = collision.Other;
@@ -28,7 +28,7 @@ internal class PhysicsResolver
             return;
         }
 
-        if (!collision.TryGetContacts (out Contact selfContact, out Contact otherContact))
+        if (!self.TryGetContacts (other, out Contact selfContact, out Contact otherContact))
         {
             return;
         }

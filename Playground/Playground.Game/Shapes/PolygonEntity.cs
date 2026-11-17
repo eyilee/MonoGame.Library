@@ -44,17 +44,17 @@ public class PolygonEntity : Entity
         physicsWorld.Remove (_physicsBody);
     }
 
-    private void OnCollisionEnter (PhysicsBodyCollision collision)
+    private void OnCollisionEnter (Collision collision)
     {
         _shape.Color = Color.Red;
     }
 
-    private void OnCollisionStay (PhysicsBodyCollision collision)
+    private void OnCollisionStay (Collision collision)
     {
         _shape.Color = Color.Red;
     }
 
-    private void OnCollisionExit (PhysicsBodyCollision collision)
+    private void OnCollisionExit (Collision collision)
     {
         _shape.Color = Color.White;
     }
