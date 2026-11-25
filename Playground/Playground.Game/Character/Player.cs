@@ -69,12 +69,12 @@ public class Player : Entity
 
     public void AttachPhysics (PhysicsWorld physicsWorld)
     {
-        physicsWorld.Add (_physicsBody);
+        _physicsBody.AttachPhysics (physicsWorld);
     }
 
-    public void DetachPhysics (PhysicsWorld physicsWorld)
+    public void DetachPhysics ()
     {
-        physicsWorld.Remove (_physicsBody);
+        _physicsBody.DetachPhysics ();
     }
 
     public override void Update (GameTime gameTime)

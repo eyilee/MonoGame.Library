@@ -5,39 +5,68 @@ namespace Eycraft.Framework.Physics;
 
 public class PhysicsWorld
 {
-    private readonly HashSet<PhysicsBody> _bodies = [];
+    private readonly HashSet<PhysicsBody> _staticBodies = [];
+
+    private readonly HashSet<PhysicsBody> _dynamicBodies = [];
+
+    private readonly HashSet<PhysicsBody> _dirtyBodies = [];
+
+    private readonly HashSet<Collider> _dirtyColliders = [];
 
     private readonly HashSet<ColliderPair> _potentialCollisions = [];
 
-    private Dictionary<ColliderPair, Collision> _previousCollisions = [];
-
     private Dictionary<ColliderPair, Collision> _currentCollisions = [];
 
-    private readonly SpatialIndex _spatialIndex = new (4, 4, new BoundingBox2D (new Vector2 (-1000f, -1000f), new Vector2 (1000f, 1000f)));
+    private Dictionary<ColliderPair, Collision> _previousCollisions = [];
 
-    private PhysicsResolver Resolver { get; } = new ();
+    private readonly SpatialIndex _staticIndex = new (4, 4, new BoundingBox2D (new Vector2 (-1000f, -1000f), new Vector2 (1000f, 1000f)), trackColliderNodes: true);
 
-    public void Add (PhysicsBody body) => _bodies.Add (body);
+    private readonly SpatialIndex _dynamicIndex = new (4, 4, new BoundingBox2D (new Vector2 (-1000f, -1000f), new Vector2 (1000f, 1000f)));
 
-    public void Remove (PhysicsBody body) => _bodies.Remove (body);
+    private readonly PhysicsResolver _resolver = new ();
+
+    internal void Add (PhysicsBody body)
+    {
+        if (body.IsDynamic || body.IsKinematic)
+        {
+            _dynamicBodies.Add (body);
+        }
+        else if (body.IsStatic)
+        {
+            _staticBodies.Add (body);
+            _staticIndex.Remove (body.Colliders);
+            _staticIndex.Insert (body.Colliders);
+        }
+    }
+
+    internal void Remove (PhysicsBody body)
+    {
+        _dynamicBodies.Remove (body);
+
+        _staticBodies.Remove (body);
+        _staticIndex.Remove (body.Colliders);
+
+        _dirtyBodies.Remove (body);
+
+        foreach (Collider collider in body.Colliders)
+        {
+            _dirtyColliders.Remove (collider);
+        }
+    }
+
+    internal void SetDirty (PhysicsBody body) => _dirtyBodies.Add (body);
+
+    internal void SetDirty (Collider collider) => _dirtyColliders.Add (collider);
 
     public void Update (GameTime gameTime)
     {
-        _spatialIndex.Clear ();
-
-        foreach (PhysicsBody body in _bodies)
-        {
-            foreach (Collider collider in body.Colliders)
-            {
-                if (!_spatialIndex.TryInsert (collider))
-                {
-                    _spatialIndex.InsertAtRoot (collider);
-                }
-            }
-        }
+        UpdateDirtyBodies ();
+        UpdateDirtyColliders ();
+        UpdateDynamicIndex ();
 
         _potentialCollisions.Clear ();
-        _spatialIndex.GetPotentialCollisions (_potentialCollisions);
+        _dynamicIndex.GetPotentialCollisions (_staticIndex, _potentialCollisions);
+        _dynamicIndex.GetPotentialCollisions (_potentialCollisions);
 
         _currentCollisions.Clear ();
 
@@ -54,7 +83,7 @@ public class PhysicsWorld
             }
         }
 
-        Resolver.Resolve (_currentCollisions);
+        _resolver.Resolve (_currentCollisions);
 
         foreach ((ColliderPair pairKey, Collision collision) in _currentCollisions)
         {
@@ -80,5 +109,74 @@ public class PhysicsWorld
         }
 
         (_currentCollisions, _previousCollisions) = (_previousCollisions, _currentCollisions);
+    }
+
+    private void UpdateDirtyBodies ()
+    {
+        foreach (PhysicsBody body in _dirtyBodies)
+        {
+            if (body.IsDynamic || body.IsKinematic)
+            {
+                if (_staticBodies.Remove (body))
+                {
+                    _dynamicBodies.Add (body);
+                }
+
+                foreach (Collider collider in body.Colliders)
+                {
+                    _dirtyColliders.Remove (collider);
+                    _staticIndex.Remove (collider);
+                }
+            }
+            else if (body.IsStatic)
+            {
+                if (_dynamicBodies.Remove (body))
+                {
+                    _staticBodies.Add (body);
+                }
+
+                foreach (Collider collider in body.Colliders)
+                {
+                    _dirtyColliders.Remove (collider);
+                    _staticIndex.Remove (collider);
+                    _staticIndex.Insert (collider);
+                }
+            }
+        }
+
+        _dirtyBodies.Clear ();
+    }
+
+    private void UpdateDirtyColliders ()
+    {
+        foreach (Collider collider in _dirtyColliders)
+        {
+            PhysicsBody body = collider.PhysicsBody;
+
+            if (body.IsStatic)
+            {
+                _staticIndex.Remove (collider);
+
+                if (body.Colliders.Contains (collider))
+                {
+                    _staticIndex.Insert (collider);
+                }
+            }
+        }
+
+        _dirtyColliders.Clear ();
+    }
+
+    private void UpdateDynamicIndex ()
+    {
+        _dynamicIndex.Clear ();
+
+        foreach (PhysicsBody body in _dynamicBodies)
+        {
+            foreach (Collider collider in body.Colliders)
+            {
+                _dynamicIndex.Insert (collider);
+            }
+        }
     }
 }

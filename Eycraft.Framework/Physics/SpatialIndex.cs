@@ -26,11 +26,16 @@ internal class SpatialIndex
 
     private readonly Stack<SpatialNode> _pool = new ();
 
-    public SpatialIndex (int maxDepth, int nodeCapacity, BoundingBox2D bounds)
+    private readonly Dictionary<Collider, SpatialNode> _colliderNodes = [];
+
+    private readonly bool _trackColliderNodes;
+
+    public SpatialIndex (int maxDepth, int nodeCapacity, BoundingBox2D bounds, bool trackColliderNodes = false)
     {
         _root.Depth = maxDepth;
         _root.Capacity = nodeCapacity;
         _root.Bounds = bounds;
+        _trackColliderNodes = trackColliderNodes;
     }
 
     public void Clear ()
@@ -72,14 +77,17 @@ internal class SpatialIndex
                 break;
             }
         }
+
+        if (_trackColliderNodes)
+        {
+            _colliderNodes.Clear ();
+        }
     }
 
-    public void InsertAtRoot (Collider collider) => _root.Colliders.Add (collider);
-
-    public bool TryInsert (Collider collider)
+    public void Insert (Collider collider)
     {
         SpatialNode? current = _root;
-        SpatialNode? target = null;
+        SpatialNode? target = _root;
 
         while (current != null)
         {
@@ -124,14 +132,20 @@ internal class SpatialIndex
             current = current.Child;
         }
 
-        if (target != null)
+        target.Colliders.Add (collider);
+
+        if (_trackColliderNodes)
         {
-            target.Colliders.Add (collider);
-
-            return true;
+            _colliderNodes[collider] = target;
         }
+    }
 
-        return false;
+    public void Insert (IReadOnlySet<Collider> colliders)
+    {
+        foreach (Collider collider in colliders)
+        {
+            Insert (collider);
+        }
     }
 
     private SpatialNode Create (int depth, int capacity, BoundingBox2D bounds)
@@ -144,11 +158,101 @@ internal class SpatialIndex
         node.Depth = depth;
         node.Capacity = capacity;
         node.Bounds = bounds;
+        node.Colliders.Clear ();
         node.Parent = null;
         node.Next = null;
         node.Child = null;
 
         return node;
+    }
+
+    public void Remove (Collider collider)
+    {
+        if (_trackColliderNodes)
+        {
+            if (_colliderNodes.Remove (collider, out SpatialNode? node))
+            {
+                node.Colliders.Remove (collider);
+            }
+        }
+    }
+
+    public void Remove (IReadOnlySet<Collider> colliders)
+    {
+        foreach (Collider collider in colliders)
+        {
+            Remove (collider);
+        }
+    }
+
+    private SpatialNode? QueryNode (BoundingBox2D bounds)
+    {
+        SpatialNode? current = _root;
+        SpatialNode? target = _root;
+
+        while (current != null)
+        {
+            if (!current.Bounds.Contains (bounds))
+            {
+                current = current.Next;
+                continue;
+            }
+
+            target = current;
+            current = current.Child;
+        }
+
+        return target;
+    }
+
+    public void GetPotentialCollisions (SpatialIndex other, HashSet<ColliderPair> potentialCollisions)
+    {
+        SpatialNode? current = _root;
+
+        while (current != null)
+        {
+            SpatialNode? otherNode = other.QueryNode (current.Bounds);
+
+            if (otherNode != null)
+            {
+                SpatialNode? ancestor = otherNode.Parent;
+
+                while (ancestor != null)
+                {
+                    GetPotentialCollisions (current.Colliders, ancestor.Colliders, potentialCollisions);
+
+                    ancestor = ancestor.Parent;
+                }
+
+                GetPotentialCollisions (current.Colliders, otherNode.Colliders, potentialCollisions);
+
+                SpatialNode? childNode = otherNode.Child;
+
+                while (childNode != null && childNode != otherNode)
+                {
+                    GetPotentialCollisions (current.Colliders, childNode.Colliders, potentialCollisions);
+
+                    if (childNode.Child != null)
+                    {
+                        childNode = childNode.Child;
+                        continue;
+                    }
+
+                    while (childNode != null && childNode != otherNode)
+                    {
+                        if (childNode.Next != null)
+                        {
+                            childNode = childNode.Next;
+                            break;
+                        }
+
+                        childNode = childNode.Parent;
+                    }
+                }
+            }
+
+            current = FindNextNode (current);
+        }
     }
 
     public void GetPotentialCollisions (HashSet<ColliderPair> potentialCollisions)
@@ -157,65 +261,86 @@ internal class SpatialIndex
 
         while (current != null)
         {
-            foreach (Collider collider in current.Colliders)
+            SpatialNode? ancestor = current.Parent;
+
+            while (ancestor != null)
             {
-                SpatialNode? ancestor = current.Parent;
+                GetPotentialCollisions (current.Colliders, ancestor.Colliders, potentialCollisions);
 
-                while (ancestor != null)
-                {
-                    foreach (Collider ancestorCollider in ancestor.Colliders)
-                    {
-                        if (collider.PhysicsBody == ancestorCollider.PhysicsBody)
-                        {
-                            continue;
-                        }
-
-                        if (collider.Bounds.Intersects (ancestorCollider.Bounds))
-                        {
-                            potentialCollisions.Add (new (collider, ancestorCollider));
-                        }
-                    }
-
-                    ancestor = ancestor.Parent;
-                }
+                ancestor = ancestor.Parent;
             }
 
-            for (int i = 0; i < current.Colliders.Count; i++)
-            {
-                Collider collider1 = current.Colliders[i];
+            GetPotentialCollisions (current.Colliders, potentialCollisions);
 
-                for (int j = i + 1; j < current.Colliders.Count; j++)
+            current = FindNextNode (current);
+        }
+    }
+
+    private static void GetPotentialCollisions (List<Collider> self, List<Collider> other, HashSet<ColliderPair> potentialCollisions)
+    {
+        foreach (Collider selfCollider in self)
+        {
+            foreach (Collider otherCollider in other)
+            {
+                if (selfCollider.PhysicsBody == otherCollider.PhysicsBody)
                 {
-                    Collider collider2 = current.Colliders[j];
-
-                    if (collider1.PhysicsBody == collider2.PhysicsBody)
-                    {
-                        continue;
-                    }
-
-                    if (collider1.Bounds.Intersects (collider2.Bounds))
-                    {
-                        potentialCollisions.Add (new (collider1, collider2));
-                    }
-                }
-            }
-
-            if (current.Child != null)
-            {
-                current = current.Child;
-                continue;
-            }
-
-            while (current != null)
-            {
-                if (current.Next != null)
-                {
-                    current = current.Next;
-                    break;
+                    continue;
                 }
 
-                current = current.Parent;
+                if (selfCollider.Bounds.Intersects (otherCollider.Bounds))
+                {
+                    potentialCollisions.Add (new (selfCollider, otherCollider));
+                }
             }
         }
+    }
+
+    private static void GetPotentialCollisions (List<Collider> self, HashSet<ColliderPair> potentialCollisions)
+    {
+        for (int i = 0; i < self.Count; i++)
+        {
+            Collider collider1 = self[i];
+
+            for (int j = i + 1; j < self.Count; j++)
+            {
+                Collider collider2 = self[j];
+
+                if (collider1.PhysicsBody == collider2.PhysicsBody)
+                {
+                    continue;
+                }
+
+                if (collider1.Bounds.Intersects (collider2.Bounds))
+                {
+                    potentialCollisions.Add (new (collider1, collider2));
+                }
+            }
+        }
+    }
+
+    private static SpatialNode? FindNextNode (SpatialNode? current)
+    {
+        if (current == null)
+        {
+            return null;
+        }
+
+        if (current.Child != null)
+        {
+            return current.Child;
+        }
+
+        while (current != null)
+        {
+            if (current.Next != null)
+            {
+                current = current.Next;
+                break;
+            }
+
+            current = current.Parent;
+        }
+
+        return current;
     }
 }

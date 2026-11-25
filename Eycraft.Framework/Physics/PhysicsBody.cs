@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Eycraft.Framework.Physics;
 
 [DisallowMultipleComponent]
-public class PhysicsBody : EntityComponent
+public class PhysicsBody : EntityComponent, IDisposable
 {
     public enum BodyType
     {
@@ -14,9 +14,28 @@ public class PhysicsBody : EntityComponent
         Static
     }
 
-    public BodyType Type { get; set; } = BodyType.Dynamic;
+    private BodyType _bodyType = BodyType.Dynamic;
 
-    public IReadOnlyList<Collider> Colliders => _colliders.Colliders;
+    public BodyType Type
+    {
+        get => _bodyType;
+        set
+        {
+            if (_bodyType != value)
+            {
+                _bodyType = value;
+                _physicsWorld?.SetDirty (this);
+            }
+        }
+    }
+
+    public bool IsDynamic => Type == BodyType.Dynamic;
+
+    public bool IsKinematic => Type == BodyType.Kinematic;
+
+    public bool IsStatic => Type == BodyType.Static;
+
+    public IReadOnlySet<Collider> Colliders => _colliders.Colliders;
 
     public event Action<Collision>? OnCollisionEnter;
 
@@ -25,6 +44,10 @@ public class PhysicsBody : EntityComponent
     public event Action<Collision>? OnCollisionExit;
 
     private readonly ColliderContainer _colliders;
+
+    private PhysicsWorld? _physicsWorld;
+
+    private bool _disposed;
 
     public PhysicsBody (Entity entity) : base (entity)
     {
@@ -49,23 +72,58 @@ public class PhysicsBody : EntityComponent
         }
     }
 
-    public T AddCollider<T> () where T : Collider => _colliders.AddCollider<T> ();
+    public void AttachPhysics (PhysicsWorld physicsWorld)
+    {
+        _physicsWorld?.Remove (this);
+        _physicsWorld = physicsWorld;
+        _physicsWorld.Add (this);
+    }
 
-    public void RemoveCollider<T> () where T : Collider => _colliders.RemoveCollider<T> ();
+    public void DetachPhysics ()
+    {
+        _physicsWorld?.Remove (this);
+        _physicsWorld = null;
+    }
 
-    public void RemoveColliders<T> () where T : Collider => _colliders.RemoveColliders<T> ();
+    internal void SetDirty (Collider collider)
+    {
+        if (IsStatic)
+        {
+            _physicsWorld?.SetDirty (collider);
+        }
+    }
 
-    public void RemoveCollider (Collider collider) => _colliders.RemoveCollider (collider);
+    public T AddCollider<T> () where T : Collider
+    {
+        T collider = _colliders.AddCollider<T> ();
 
-    public bool IsDynamic => Type == BodyType.Dynamic;
+        SetDirty (collider);
 
-    public bool IsKinematic => Type == BodyType.Kinematic;
+        return collider;
+    }
 
-    public bool IsStatic => Type == BodyType.Static;
+    public void RemoveCollider (Collider collider)
+    {
+        _colliders.RemoveCollider (collider);
+
+        SetDirty (collider);
+    }
 
     public void InvokeCollisionEnter (Collision collision) => OnCollisionEnter?.Invoke (collision);
 
     public void InvokeCollisionStay (Collision collision) => OnCollisionStay?.Invoke (collision);
 
     public void InvokeCollisionExit (Collision collision) => OnCollisionExit?.Invoke (collision);
+
+    public virtual void Dispose ()
+    {
+        if (!_disposed)
+        {
+            DetachPhysics ();
+
+            _disposed = true;
+        }
+
+        GC.SuppressFinalize (this);
+    }
 }

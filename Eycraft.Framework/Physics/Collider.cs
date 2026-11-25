@@ -78,7 +78,12 @@ public abstract class Collider (PhysicsBody physicsBody)
 
     protected bool IsDirty (DirtyFlags dirtyFlag) => _dirtyFlags.HasFlag (dirtyFlag);
 
-    protected void SetDirty (DirtyFlags dirtyFlag) => _dirtyFlags |= dirtyFlag;
+    protected void SetDirty (DirtyFlags dirtyFlag)
+    {
+        _dirtyFlags |= dirtyFlag;
+
+        PhysicsBody.SetDirty (this);
+    }
 
     protected void ClearDirty (DirtyFlags dirtyFlag) => _dirtyFlags &= ~dirtyFlag;
 

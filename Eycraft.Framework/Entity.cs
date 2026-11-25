@@ -2,20 +2,31 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Eycraft.Framework;
 
-public class Entity
+public class Entity : IDisposable
 {
     private readonly EntityComponentContainer _components;
 
     public Transform Transform { get; }
+
+    private bool _disposed;
 
     public Entity ()
     {
         _components = new EntityComponentContainer (this);
 
         Transform = AddComponent<Transform> ();
+    }
+
+    ~Entity ()
+    {
+        if (!_disposed)
+        {
+            Debug.WriteLine ("An entity was not disposed.");
+        }
     }
 
     public EntityComponent? GetComponent (Type type) => _components.GetComponent (type);
@@ -43,4 +54,16 @@ public class Entity
     public virtual void Update (GameTime gameTime) { }
 
     public virtual void Draw (RenderManager render) { }
+
+    public virtual void Dispose ()
+    {
+        if (!_disposed)
+        {
+            _components.Dispose ();
+
+            _disposed = true;
+        }
+
+        GC.SuppressFinalize (this);
+    }
 }

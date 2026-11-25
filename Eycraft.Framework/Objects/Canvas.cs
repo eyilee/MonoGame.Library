@@ -2,10 +2,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Diagnostics;
 
 namespace Eycraft.Framework.Objects;
 
-public class Canvas : Entity, IDisposable
+public class Canvas : Entity
 {
     public int Width { get; }
 
@@ -83,7 +84,13 @@ public class Canvas : Entity, IDisposable
         _pixels = new Color[width * height];
     }
 
-    ~Canvas () => Dispose (false);
+    ~Canvas ()
+    {
+        if (!_disposed)
+        {
+            Debug.WriteLine ("An canvas was not disposed.");
+        }
+    }
 
     public void SetPixel (int x, int y, Color color)
     {
@@ -133,23 +140,18 @@ public class Canvas : Entity, IDisposable
         _sprite.Draw (render);
     }
 
-    public void Dispose ()
+    public override void Dispose ()
     {
-        Dispose (true);
-        GC.SuppressFinalize (this);
-    }
+        base.Dispose ();
 
-    protected virtual void Dispose (bool disposing)
-    {
         if (!_disposed)
         {
-            if (disposing)
-            {
-                _textureResource.Dispose ();
-                _texture.Dispose ();
-            }
+            _textureResource.Dispose ();
+            _texture.Dispose ();
 
             _disposed = true;
         }
+
+        GC.SuppressFinalize (this);
     }
 }

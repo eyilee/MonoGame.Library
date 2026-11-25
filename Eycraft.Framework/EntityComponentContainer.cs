@@ -4,11 +4,13 @@ using System.Linq;
 
 namespace Eycraft.Framework;
 
-public sealed class EntityComponentContainer (Entity owner)
+public sealed class EntityComponentContainer (Entity owner) : IDisposable
 {
     private readonly Entity _entity = owner;
 
     private readonly Dictionary<Type, List<EntityComponent>> _components = [];
+
+    private bool _disposed;
 
     public EntityComponent? GetComponent (Type type)
     {
@@ -96,6 +98,12 @@ public sealed class EntityComponentContainer (Entity owner)
 
         EntityComponent component = components[0];
         component.Destroy ();
+
+        if (component is IDisposable disposable)
+        {
+            disposable.Dispose ();
+        }
+
         components.Remove (component);
     }
 
@@ -116,6 +124,11 @@ public sealed class EntityComponentContainer (Entity owner)
         foreach (EntityComponent component in components)
         {
             component.Destroy ();
+
+            if (component is IDisposable disposable)
+            {
+                disposable.Dispose ();
+            }
         }
 
         components.Clear ();
@@ -140,6 +153,12 @@ public sealed class EntityComponentContainer (Entity owner)
         if (components.Contains (component))
         {
             component.Destroy ();
+
+            if (component is IDisposable disposable)
+            {
+                disposable.Dispose ();
+            }
+
             components.Remove (component);
         }
     }
@@ -166,5 +185,28 @@ public sealed class EntityComponentContainer (Entity owner)
                 }
             }
         }
+    }
+
+    public void Dispose ()
+    {
+        if (!_disposed)
+        {
+            foreach ((Type type, List<EntityComponent> components) in _components)
+            {
+                foreach (EntityComponent component in components)
+                {
+                    component.Destroy ();
+
+                    if (component is IDisposable disposable)
+                    {
+                        disposable.Dispose ();
+                    }
+                }
+            }
+
+            _disposed = true;
+        }
+
+        GC.SuppressFinalize (this);
     }
 }
